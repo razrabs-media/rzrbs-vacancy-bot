@@ -1,0 +1,42 @@
+{
+  "name": "rzrbs-vacancy-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier": "prettier --write .",
+    "prettier-check": "prettier --check .",
+    "pre-commit": "npm run prettier-check && lint-staged && tsc --noEmit",
+    "pre-push": "npm run prettier-check && lint-staged && tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openworld-community/rzrbs-vacancy-bot.git"
+  },
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/openworld-community/rzrbs-vacancy-bot/issues"
+  },
+  "homepage": "https://github.com/openworld-community/rzrbs-vacancy-bot#readme",
+  "lint-staged": {
+    "*.ts": "eslint . --ext .ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "telegraf": "^4.12.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.16.3",
+    "@typescript-eslint/eslint-plugin": "^5.59.2",
+    "@typescript-eslint/parser": "^5.59.2",
+    "eslint": "^8.39.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.2",
+    "prettier": "2.8.8",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  }
+}
