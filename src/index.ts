@@ -1,16 +1,14 @@
 import dotenv from "dotenv";
-import { Telegraf, Context } from "telegraf";
+import { Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
+import { BotContext } from "./types/context";
+import { MessagePreviewService, SubscribeToActionsService } from "./services";
 
 dotenv.config();
 
 if (!process.env.BOT_TOKEN) {
   throw Error("Failed to start, BOT_TOKEN is missing");
 }
-
-// mock type for now
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface BotContext extends Context {}
 
 const bot = new Telegraf<BotContext>(process.env.BOT_TOKEN);
 
@@ -24,11 +22,12 @@ bot.on(message("text"), async (ctx) => {
   console.log(ctx.telegram);
   console.log(ctx.state);
 
-  await ctx.telegram.sendMessage(
-    ctx.message.chat.id,
-    `Hello ${ctx.message.from.username}`
-  );
+  // here we generate vacancy text from message somehow
+
+  await MessagePreviewService.sendMessagePreview(ctx /* messageText */);
 });
+
+SubscribeToActionsService.subscribeToButtonActions(bot);
 
 bot.launch();
 console.log("Bot is listening...");
