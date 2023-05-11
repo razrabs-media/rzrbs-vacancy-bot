@@ -20,16 +20,12 @@ export const sendMessagePreview = async (
 ) => {
   const replyMarkupButtons = Markup.inlineKeyboard([
     Markup.button.callback(
-      ActionButtonLabels[BotActions.EditMessage],
-      BotActions.EditMessage
-    ),
-    Markup.button.callback(
       ActionButtonLabels[BotActions.PublishVacancy],
       BotActions.PublishVacancy
     ),
     Markup.button.callback(
-      ActionButtonLabels[BotActions.DeclineVacancy],
-      BotActions.DeclineVacancy
+      ActionButtonLabels[BotActions.CancelVacancy],
+      BotActions.CancelVacancy
     ),
   ]);
 

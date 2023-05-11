@@ -1,5 +1,5 @@
 export * as MessagePreviewService from "./message-preview";
-export * as EditMessageService from "./edit-message";
-export * as DeclineVacancyService from "./decline-vacancy";
+export * as CancelVacancyService from "./cancel-vacancy";
+export * as RevokeVacancyService from "./revoke-vacancy";
 export * as PublishVacancyService from "./publish-vacancy";
 export * as SubscribeToActionsService from "./subscribe-to-actions";
