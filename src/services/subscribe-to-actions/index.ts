@@ -43,5 +43,5 @@ export const subscribeToPublishQueue = () => {
       );
     }
     // PUBLISH_INTERVAL hours
-  }, 1000 * 60 /* * 60 * Number(process.env.PUBLISH_INTERVAL)*/);
+  }, 1000 * 60 * 60 * Number(process.env.PUBLISH_INTERVAL));
 };
