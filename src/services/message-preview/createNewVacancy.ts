@@ -1,5 +1,6 @@
 import VacancyModel from "../../schemas/vacancy";
 import { IVacancy } from "../../types/vacancy";
+import logger from "../logger";
 
 export const createNewVacancy = async ({
   vacancy,
@@ -12,7 +13,7 @@ export const createNewVacancy = async ({
 }) => {
   const newVacancy = await VacancyModel.create(vacancy);
 
-  console.info(
+  logger.info(
     `Vacancy from message ${messageId}::${chatId} succesfully created - ${newVacancy._id}`
   );
 };

@@ -1,13 +1,18 @@
 import { EmploymentType, FormatOfWork, SalaryType } from "../constants/vacancy";
 
-export interface IVacancyModel {
-  title: string;
-  description: string;
-  published_at?: Date;
+interface IVacancyFlags {
   published?: boolean;
   edited?: boolean;
   revoked?: boolean;
+  removed?: boolean;
+}
+
+export interface IVacancyModel extends IVacancyFlags {
+  title: string;
+  description: string;
+  published_at?: Date;
   tg_message_id: number;
+  tg_chat_id: number;
   company: {
     name: string;
   };
@@ -27,8 +32,11 @@ export interface IVacancyModel {
   contact_info: string;
 }
 
-export interface IVacancy extends IVacancyModel {
-  published: boolean;
-  edited: boolean;
-  revoked: boolean;
-}
+export interface IVacancy
+  extends Omit<IVacancyModel, keyof IVacancyFlags>,
+    Required<IVacancyFlags> {}
+
+// interface is not the same with IVacancy
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IVacancyParsed
+  extends Omit<IVacancy, "tg_message_id" | "tg_chat_id"> {}

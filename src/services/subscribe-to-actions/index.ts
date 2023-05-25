@@ -4,6 +4,7 @@ import {
   PublishVacancyService,
   RevokeVacancyService,
   CancelVacancyService,
+  logger,
 } from "../index";
 import { BotActions } from "../../constants/actions";
 import PublishQueueItemModel from "../../schemas/publish_queue";
@@ -14,29 +15,29 @@ export const subscribeToButtonActions = (bot: Telegraf<BotContext>) => {
   bot.action(BotActions.CancelVacancy, CancelVacancyService.onVacancyCancel);
 };
 
-export const subscribeToPublishQueue = () => {
+export const subscribeToPublishQueueMonitoring = () => {
   if (!process.env.PUBLISH_INTERVAL) {
-    console.warn(
-      "WARN: Publish queue won't work until PUBLISH_INTERVAL is set"
-    );
+    logger.warn("WARN: Publish queue won't work until PUBLISH_INTERVAL is set");
     return;
   }
 
-  console.info(`Subscribed to check publish queue each ${process.env.PUBLISH_INTERVAL} hours`)
+  logger.info(
+    `Subscribed to check publish queue each ${process.env.PUBLISH_INTERVAL} hours`
+  );
   return setInterval(async () => {
     try {
       const publishQueueItems = await PublishQueueItemModel.find({
         published: false,
-        removed: false
+        removed: false,
       });
 
       if (!publishQueueItems.length) {
-        console.info(`[${Date.now()}]: Publish queue is empty`);
+        logger.info(`[${Date.now()}]: Publish queue is empty`);
       } else {
         // TODO: add publish logic
       }
     } catch (err) {
-      console.error(
+      logger.error(
         `[${Date.now()}]: Failed to fetch publish queue items - ${JSON.stringify(
           err
         )}`

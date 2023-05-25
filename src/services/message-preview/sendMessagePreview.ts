@@ -1,11 +1,12 @@
 import { Markup } from "telegraf";
 import { ActionButtonLabels, BotActions } from "../../constants/actions";
-import { IVacancy } from "../../types/vacancy";
+import { IVacancyParsed } from "../../types/vacancy";
 import { EmploymentType, FormatOfWork } from "../../constants/vacancy";
 import { getParsedVacancyPreviewMsg } from "./getParsedVacancyPreviewMsg";
 import { createNewVacancy } from "./createNewVacancy";
+import logger from "../logger";
 
-const MOCK_VACANCY: Omit<IVacancy, "tg_message_id"> = {
+const MOCK_VACANCY: IVacancyParsed = {
   title: "Mock vacancy title",
   description: `
 Lorem ipsum dolor sit amet. Aut itaque inventore quo aspernatur possimus et possimus quidem. 
@@ -22,6 +23,7 @@ doloremque adipisci vel voluptatem amet sit nobis dicta.
   published: false,
   edited: false,
   revoked: false,
+  removed: false,
   company: {
     name: "Company of your dreams LLC",
   },
@@ -35,7 +37,7 @@ doloremque adipisci vel voluptatem amet sit nobis dicta.
 
 export const sendMessagePreview = async (
   ctx,
-  parsedVacancy: Omit<IVacancy, "tg_message_id"> = MOCK_VACANCY
+  parsedVacancy: IVacancyParsed = MOCK_VACANCY
 ) => {
   const replyMarkupButtons = Markup.inlineKeyboard([
     Markup.button.callback(
@@ -59,18 +61,22 @@ export const sendMessagePreview = async (
 
     if (response.message_id) {
       await createNewVacancy({
-        vacancy: { ...parsedVacancy, tg_message_id: response.message_id },
+        vacancy: {
+          ...parsedVacancy,
+          tg_message_id: response.message_id,
+          tg_chat_id: response.chat.id,
+        },
         messageId: response.message_id,
         chatId: response.chat.id,
       });
     } else {
-      console.error(
+      logger.error(
         `Failed to create vacancy from message - ${ctx.update.message_id}. Preview wasn't sent`
       );
     }
   } catch (err) {
-    console.error(
-      `Failed to create vacancy from message - ${
+    logger.error(
+      `Failed to create vacancy from message - ${ctx.update.chat.id}::${
         ctx.update.message_id
       }. ${JSON.stringify(err)}`
     );

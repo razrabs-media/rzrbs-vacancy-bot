@@ -2,7 +2,7 @@ import { Markup } from "telegraf";
 import { ActionButtonLabels, BotActions } from "../../constants/actions";
 
 export const updateButtonsUnderMessage = async (ctx) => {
-  ctx.editMessageReplyMarkup({
+  await ctx.editMessageReplyMarkup({
     inline_keyboard: [
       [
         Markup.button.callback(

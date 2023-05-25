@@ -1,4 +1,4 @@
-import { IVacancy } from "../../types/vacancy";
+import { IVacancyParsed } from "../../types/vacancy";
 
 export const getParsedVacancyPreviewMsg = ({
   title,
@@ -11,7 +11,7 @@ export const getParsedVacancyPreviewMsg = ({
   hiring_process,
   location,
   desired_start_date,
-}: Omit<IVacancy, "tg_message_id">): string => {
+}: IVacancyParsed): string => {
   const header =
     `${title}` +
     `${location ? `\n${location}` : ""}` +

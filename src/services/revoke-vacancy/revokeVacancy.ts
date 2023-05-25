@@ -1,17 +1,21 @@
 import PublishQueueItemModel from "../../schemas/publish_queue";
 import VacancyModel from "../../schemas/vacancy";
+import logger from "../logger";
 
 export const onVacancyRevoke = async (ctx) => {
   try {
     if (!ctx.update.callback_query.message) {
       return;
     }
-    const { message_id, caption } = ctx.update.callback_query.message;
+    const { message_id, caption, chat } = ctx.update.callback_query.message;
 
-    const vacancy = await VacancyModel.findOne({ tg_message_id: message_id });
+    const vacancy = await VacancyModel.findOne({
+      tg_message_id: message_id,
+      tg_chat_id: chat.id,
+    });
 
     if (!vacancy) {
-      console.error(`Failed: vacancy from message ${message_id} is not found`);
+      logger.error(`Failed: vacancy from message ${message_id} is not found`);
       return;
     }
 
@@ -20,22 +24,22 @@ export const onVacancyRevoke = async (ctx) => {
     });
 
     if (!vacancyInQueue) {
-      console.error(`Failed: vacancy ${vacancy._id} is not in publish queue`);
+      logger.error(`Failed: vacancy ${vacancy._id} is not in publish queue`);
       return;
     }
 
     vacancyInQueue.removed = true;
     await vacancyInQueue.save();
-    console.log(
+    logger.info(
       `Revoke: vacancy ${vacancyInQueue._id} removed from publish queue`
     );
 
     vacancy.revoked = true;
     await vacancy.save();
-    console.log(`Revoke: vacancy ${vacancyInQueue._id} marked as revoked`);
+    logger.info(`Revoke: vacancy ${vacancyInQueue._id} marked as revoked`);
 
-    ctx.editMessageCaption(`[ОТОЗВАНО]\n${caption}`, undefined);
+    await ctx.editMessageCaption(`[ОТОЗВАНО]\n${caption}`, undefined);
   } catch (err) {
-    console.error(`Revoke: Failed to revoke vacancy - ${JSON.stringify(err)}`);
+    logger.error(`Revoke: Failed to revoke vacancy - ${JSON.stringify(err)}`);
   }
 };

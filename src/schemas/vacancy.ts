@@ -10,7 +10,9 @@ export const VacancySchema = new mongoose.Schema<IVacancyModel>(
     published: { type: Boolean, default: "false", required: true },
     edited: { type: Boolean, default: "false", required: true },
     revoked: { type: Boolean, default: "false", required: true },
+    removed: { type: Boolean, default: "false", required: true },
     tg_message_id: { type: Number, required: true },
+    tg_chat_id: { type: Number, required: true },
     company: {
       name: { type: String, required: true },
     },
