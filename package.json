@@ -26,7 +26,9 @@
   },
   "dependencies": {
     "dotenv": "^16.0.3",
-    "telegraf": "^4.12.2"
+    "mongoose": "^7.2.0",
+    "telegraf": "^4.12.2",
+    "winston": "^3.8.2"
   },
   "devDependencies": {
     "@types/node": "^18.16.3",

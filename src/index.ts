@@ -1,8 +1,6 @@
 import dotenv from "dotenv";
-import { Telegraf } from "telegraf";
-import { message } from "telegraf/filters";
-import { BotContext } from "./types/context";
-import { MessagePreviewService, SubscribeToActionsService } from "./services";
+import mongoose from "mongoose";
+import { logger } from "./services";
 
 dotenv.config();
 
@@ -10,28 +8,16 @@ if (!process.env.BOT_TOKEN) {
   throw Error("Failed to start, BOT_TOKEN is missing");
 }
 
-const bot = new Telegraf<BotContext>(process.env.BOT_TOKEN);
+if (!process.env.DB_URL) {
+  throw Error("Failed to start, DB_URL is missing");
+}
 
-bot.start((ctx) => ctx.reply("Hello World"));
+mongoose
+  .connect(process.env.DB_URL)
+  .then(() => logger.info("Connected to DB"))
+  .catch((err) => {
+    logger.error("Failed to connect to DB", err);
+    throw Error(`Failed to connect to DB - ${err}`);
+  });
 
-bot.on(message("text"), async (ctx) => {
-  ctx.state.user = ctx.message.from;
-
-  // for debug purposes for now :)
-  console.log(ctx.message);
-  console.log(ctx.telegram);
-  console.log(ctx.state);
-
-  // here we generate vacancy text from message somehow
-
-  await MessagePreviewService.sendMessagePreview(ctx /* messageText */);
-});
-
-SubscribeToActionsService.subscribeToButtonActions(bot);
-
-bot.launch();
-console.log("Bot is listening...");
-
-// Enable graceful stop
-process.once("SIGINT", () => bot.stop("SIGINT"));
-process.once("SIGTERM", () => bot.stop("SIGTERM"));
+import "./startBot";
