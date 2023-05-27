@@ -3,20 +3,22 @@ import VacancyModel from "../../schemas/vacancy";
 import logger from "../logger";
 
 export const onVacancyRevoke = async (ctx) => {
+  const { message_id, caption, chat, from } =
+    ctx?.update?.callback_query?.message || {};
+
   try {
-    if (!ctx.update.callback_query.message) {
-      return;
+    if (!message_id || !caption || !chat?.id || !from?.username) {
+      throw Error("cannot retrieve info about message");
     }
-    const { message_id, caption, chat } = ctx.update.callback_query.message;
 
     const vacancy = await VacancyModel.findOne({
       tg_message_id: message_id,
       tg_chat_id: chat.id,
+      "author.username": from.username,
     });
 
     if (!vacancy) {
-      logger.error(`Failed: vacancy from message ${message_id} is not found`);
-      return;
+      throw Error(`vacancy not found`);
     }
 
     const vacancyInQueue = await PublishQueueItemModel.findOne({
@@ -24,8 +26,7 @@ export const onVacancyRevoke = async (ctx) => {
     });
 
     if (!vacancyInQueue) {
-      logger.error(`Failed: vacancy ${vacancy._id} is not in publish queue`);
-      return;
+      throw Error(`Failed: vacancy ${vacancy._id} is not in publish queue`);
     }
 
     vacancyInQueue.removed = true;
@@ -40,6 +41,10 @@ export const onVacancyRevoke = async (ctx) => {
 
     await ctx.editMessageCaption(`[ОТОЗВАНО]\n${caption}`, undefined);
   } catch (err) {
-    logger.error(`Revoke: Failed to revoke vacancy - ${JSON.stringify(err)}`);
+    logger.error(
+      `Revoke: Failed to revoke vacancy ${from?.username}::${
+        chat?.id
+      }::${message_id} - ${(err as Error)?.message || JSON.stringify(err)}`
+    );
   }
 };

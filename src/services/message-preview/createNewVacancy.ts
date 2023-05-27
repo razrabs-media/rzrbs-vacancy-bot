@@ -11,9 +11,17 @@ export const createNewVacancy = async ({
   messageId: number;
   chatId: number;
 }) => {
-  const newVacancy = await VacancyModel.create(vacancy);
+  try {
+    const newVacancy = await VacancyModel.create(vacancy);
 
-  logger.info(
-    `Vacancy from message ${messageId}::${chatId} succesfully created - ${newVacancy._id}`
-  );
+    logger.info(
+      `Vacancy from message ${messageId}::${chatId} succesfully created - ${newVacancy._id}`
+    );
+  } catch (err) {
+    logger.error(
+      `Failed to create vacancy from message ${messageId}::${chatId} - ${
+        (err as Error)?.message || JSON.stringify(err)
+      }`
+    );
+  }
 };

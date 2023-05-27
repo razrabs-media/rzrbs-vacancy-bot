@@ -4,26 +4,21 @@ import logger from "../logger";
 import { updateButtonsUnderMessage } from "./updateButtonsUnderMessage";
 
 export const onPublishVacancy = async (ctx) => {
+  const { message_id, chat } = ctx?.update?.callback_query?.message || {};
+
   try {
-    if (!ctx.update.callback_query.message) {
-      logger.error("Publish: Failed to get vacancy info from message");
-      return;
+    if (!message_id || !chat?.id || !chat?.username) {
+      throw Error("Failed to get vacancy info from message");
     }
-
-    logger.info(ctx.update.callback_query);
-
-    const { message_id, chat } = ctx.update.callback_query.message;
 
     const vacancy = await VacancyModel.findOne({
       tg_message_id: message_id,
-      tg_chat_id: chat.id,
+      tg_chat_id: chat?.id,
+      "author.username": chat?.username,
     });
 
     if (!vacancy) {
-      logger.error(
-        `Publish: Failed to fetch vacancy in DB for message ${message_id}`
-      );
-      return;
+      throw Error("vacancy not found");
     }
 
     const newQueueItem = await PublishQueueItemModel.create({
@@ -33,10 +28,7 @@ export const onPublishVacancy = async (ctx) => {
     });
 
     if (!newQueueItem) {
-      logger.error(
-        `Publish: Failed to add vacancy ${vacancy._id} to publish queue`
-      );
-      return;
+      throw Error(`Failed to add vacancy ${vacancy._id} to publish queue`);
     }
 
     logger.info(
@@ -46,7 +38,11 @@ export const onPublishVacancy = async (ctx) => {
     await updateButtonsUnderMessage(ctx);
   } catch (err) {
     logger.error(
-      `Publish: Failed to add vacancy to publish queue - ${JSON.stringify(err)}`
+      `Publish: Failed to add vacancy ${chat?.username}::${
+        chat?.id
+      }::${message_id} to publish queue - ${
+        (err as Error).message || JSON.stringify(err)
+      }`
     );
   }
 };

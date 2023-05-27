@@ -50,7 +50,13 @@ export const sendMessagePreview = async (
     ),
   ]);
 
+  const { message_id, chat, from } = ctx?.update?.message || {};
+
   try {
+    if (!message_id || !chat?.id || !from?.username) {
+      throw Error("cannot retrieve message_id, chat.id of from.username");
+    }
+
     const response = await ctx.replyWithPhoto(
       "https://picsum.photos/200/300/?random", // TODO: remove it
       {
@@ -59,26 +65,27 @@ export const sendMessagePreview = async (
       }
     );
 
-    if (response.message_id) {
-      await createNewVacancy({
-        vacancy: {
-          ...parsedVacancy,
-          tg_message_id: response.message_id,
-          tg_chat_id: response.chat.id,
-        },
-        messageId: response.message_id,
-        chatId: response.chat.id,
-      });
-    } else {
-      logger.error(
-        `Failed to create vacancy from message - ${ctx.update.message_id}. Preview wasn't sent`
-      );
+    if (!response.message_id) {
+      throw Error("preview message sending was failed");
     }
+
+    await createNewVacancy({
+      vacancy: {
+        ...parsedVacancy,
+        author: {
+          username: from.username,
+        },
+        tg_message_id: response.message_id,
+        tg_chat_id: response.chat.id,
+      },
+      messageId: response.message_id,
+      chatId: response.chat.id,
+    });
   } catch (err) {
     logger.error(
-      `Failed to create vacancy from message - ${ctx.update.chat.id}::${
-        ctx.update.message_id
-      }. ${JSON.stringify(err)}`
+      `Failed to create vacancy from message ${from.username}::${
+        chat?.id
+      }::${message_id} - ${(err as Error).message || JSON.stringify(err)}`
     );
   }
 };
