@@ -11,3 +11,11 @@ export const ActionButtonLabels: Record<BotActions, string> = {
   [BotActions.RevokeVacancy]: "Отозвать вакансию",
   [BotActions.CancelVacancy]: "Отменить",
 };
+
+export enum BotCommands {
+  Template = "template",
+}
+
+export const BotCommandDescription: Record<BotCommands, string> = {
+  [BotCommands.Template]: "Показывает шаблон вакансии",
+};
