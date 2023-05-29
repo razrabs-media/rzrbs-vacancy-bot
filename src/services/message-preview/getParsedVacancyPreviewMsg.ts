@@ -1,3 +1,4 @@
+import { VacancyFieldLabel } from "../../constants/labels";
 import { IVacancyParsed } from "../../types/vacancy";
 
 export const getParsedVacancyPreviewMsg = ({
@@ -16,31 +17,37 @@ export const getParsedVacancyPreviewMsg = ({
     `${title}` +
     `${location ? `\n${location}` : ""}` +
     `${
-      desired_start_date ? `\nDesired start date: ${desired_start_date}` : ""
+      desired_start_date
+        ? `\n${VacancyFieldLabel.DesiredStartDate}: ${desired_start_date}`
+        : ""
     }`;
   const formatOfWork =
-    `**Format of work:** #${format_of_work.title} #${type_of_employment}\n` +
+    `${VacancyFieldLabel.FormatOfWork}: #${format_of_work.title} #${type_of_employment}\n` +
     `${format_of_work.description ? `${format_of_work.description}\n` : ""}`;
   const salaryBlock =
     salary?.amount?.from || salary?.amount?.to
-      ? `**Salary**: ${
+      ? `${VacancyFieldLabel.Salary}: ${
           salary?.amount?.from
-            ? `from ${salary?.amount?.from}${salary?.currency || ""} `
+            ? `от ${salary?.amount?.from}${salary?.currency || ""} `
             : ""
         }${
           salary?.amount?.to
-            ? `to ${salary?.amount?.to}${salary?.currency || ""}`
+            ? `до ${salary?.amount?.to}${salary?.currency || ""}`
             : ""
         }\n`
       : "";
 
   return (
     `${header}\n\n` +
-    `**Company**: ${company.name}\n` +
+    `${VacancyFieldLabel.Company}: ${company.name}\n` +
     `${formatOfWork}` +
     `${salaryBlock}` +
-    `**Contact:** ${contact_info}\n\n` +
-    `${description}\n\n` +
-    `${hiring_process ? hiring_process : ""}`
+    `${VacancyFieldLabel.Contacts}: ${contact_info}\n\n` +
+    `${VacancyFieldLabel.Description}: ${description}\n\n` +
+    `${
+      hiring_process
+        ? `${VacancyFieldLabel.HiringProcess}: ${hiring_process}`
+        : ""
+    }`
   );
 };

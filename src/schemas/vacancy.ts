@@ -6,6 +6,9 @@ export const VacancySchema = new mongoose.Schema<IVacancyModel>(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
+    author: {
+      username: { type: String, required: true },
+    },
     published_at: Date,
     published: { type: Boolean, default: "false", required: true },
     edited: { type: Boolean, default: "false", required: true },
@@ -13,6 +16,8 @@ export const VacancySchema = new mongoose.Schema<IVacancyModel>(
     removed: { type: Boolean, default: "false", required: true },
     tg_message_id: { type: Number, required: true },
     tg_chat_id: { type: Number, required: true },
+    published_tg_message_id: Number,
+    published_tg_chat_id: Number,
     company: {
       name: { type: String, required: true },
     },
@@ -32,7 +37,7 @@ export const VacancySchema = new mongoose.Schema<IVacancyModel>(
       description: String,
     },
     location: String,
-    desired_start_date: Date,
+    desired_start_date: String,
     contact_info: { type: String, required: true },
   },
   {
