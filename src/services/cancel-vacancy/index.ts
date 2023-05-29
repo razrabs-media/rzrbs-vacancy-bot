@@ -3,22 +3,21 @@ import logger from "../logger";
 
 export const onVacancyCancel = async (ctx) => {
   try {
-    const { message_id, chat, from } =
-      ctx?.update?.callback_query?.message || {};
+    const { message_id, chat } = ctx?.update?.callback_query?.message || {};
 
-    if (!message_id || !chat?.id || !from?.username) {
-      throw Error("cannot retrieve message_id, chat.id or from.username");
+    if (!message_id || !chat?.id || !chat?.username) {
+      throw Error("cannot retrieve message_id, chat.id or chat.username");
     }
 
     const vacancy = await Vacancy.findOne({
       tg_message_id: message_id,
       tg_chat_id: chat.id,
-      "author.username": from.username,
+      "author.username": chat.username,
     });
 
     if (!vacancy) {
       throw Error(
-        `Vacancy from ${from.username}::${chat.id}::${message_id} not found`
+        `Vacancy from ${chat.username}::${chat.id}::${message_id} not found`
       );
     }
 

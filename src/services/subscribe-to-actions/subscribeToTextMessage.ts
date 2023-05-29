@@ -8,19 +8,16 @@ export const subscribeToTextMessage = async (ctx) => {
       throw Error("cannot retrieve required message info");
     }
 
-    const [firstLine, ...updatedText] = text.split("\n");
+    const [techInfoLine, disclaimerLine, gapLine, ...updatedInfoText] =
+      text.split("\n");
 
     // edited existing vacancy
-    if (firstLine && firstLine.startsWith(`@${ctx?.botInfo?.username}`)) {
-      const [, chatAndMessageInfoLine] = firstLine.split(
-        `@${ctx?.botInfo?.username} `
-      );
-      const [chatId, messageId] = (chatAndMessageInfoLine || "").split(" > ");
+    if (techInfoLine && techInfoLine.startsWith(`@${ctx?.botInfo?.username}`)) {
+      const [, messageId] = techInfoLine.split(" > ");
 
       await EditVacancyService.onVacancyEdit(ctx, {
-        chatId,
         messageId,
-        updatedText,
+        updatedText: updatedInfoText.join("\n"),
       });
       return;
     }

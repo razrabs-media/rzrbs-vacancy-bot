@@ -1,10 +1,10 @@
 import { Markup } from "telegraf";
 import { ActionButtonLabels, BotActions } from "../../constants/actions";
 import logger from "../logger";
+import { getStructuredEditableVacancyText } from "./getStructuredEditableVacancyText";
 
 export const updateButtonsUnderMessage = async (ctx) => {
-  const { message_id, chat, caption, from } =
-    ctx?.update?.callback_query?.message || {};
+  const { message_id, chat } = ctx?.update?.callback_query?.message || {};
 
   try {
     await ctx?.editMessageReplyMarkup({
@@ -12,7 +12,11 @@ export const updateButtonsUnderMessage = async (ctx) => {
         [
           Markup.button.switchToCurrentChat(
             ActionButtonLabels[BotActions.EditVacancy],
-            `${chat?.id} > ${message_id}\n${caption}`
+            await getStructuredEditableVacancyText({
+              messageId: message_id,
+              chatId: chat?.id,
+              fromUsername: chat?.username,
+            })
           ),
           Markup.button.callback(
             ActionButtonLabels[BotActions.RevokeVacancy],
@@ -23,7 +27,7 @@ export const updateButtonsUnderMessage = async (ctx) => {
     });
   } catch (err) {
     logger.error(
-      `Failed to edit ${from?.username}::${
+      `Failed to edit ${chat?.username}::${
         chat?.id
       }::${message_id} vacancy text - ${
         (err as Error).message || JSON.stringify(err)
