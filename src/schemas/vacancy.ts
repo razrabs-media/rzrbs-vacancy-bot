@@ -37,7 +37,6 @@ export const VacancySchema = new mongoose.Schema<IVacancyModel>(
       description: String,
     },
     location: String,
-    desired_start_date: String,
     contact_info: { type: String, required: true },
   },
   {

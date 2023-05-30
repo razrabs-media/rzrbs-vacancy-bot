@@ -18,7 +18,6 @@ export const sendVacancyTemplateMessage = async (ctx) => {
         `<strong>${VacancyFieldLabel.HiringProcess}</strong>: Описание процесса найма (необязательно)\n` +
         `<strong>${VacancyFieldLabel.FormatOfWork}</strong>: #hybrid or #remote or #onsite. Описание формата работы, если требуется\n` +
         `<strong>${VacancyFieldLabel.TypeOfEmployment}</strong>: #fulltime or #parttime or #contract or #internship\n` +
-        `<strong>${VacancyFieldLabel.DesiredStartDate}</strong>: Дата, с которой требуется сотрудник (необязательно)\n` +
         `<strong>${VacancyFieldLabel.Contacts}</strong>: Любая контактная информация, по которой можно связаться о вакансии (номер телефона, почта, ник в Telegram)\n` +
         `\n` +
         `<strong>${VacancyFieldLabel.Description}</strong>: Всё, что описывает вакансию, обязанности и предложения`,

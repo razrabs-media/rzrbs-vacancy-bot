@@ -7,6 +7,5 @@ export enum VacancyFieldLabel {
   FormatOfWork = "Формат работы",
   TypeOfEmployment = "Тип трудоустройства",
   Location = "Локация",
-  DesiredStartDate = "Желаемая дата начала",
   Contacts = "Контакты",
 }
