@@ -3,14 +3,27 @@ import { message } from "telegraf/filters";
 
 import { BotContext } from "./types/context";
 import { BotService, SubscribeToActionsService, logger } from "./services";
+import { BotCommandDescription, BotCommands } from "./constants/actions";
 
 const bot = new Telegraf<BotContext>(process.env.BOT_TOKEN!);
 
 // catches any bot errors
 bot.catch(BotService.handleErrors);
 
-// TODO: add welcome text here
-bot.start((ctx) => ctx.reply("Hello World"));
+bot.start(async (ctx) => {
+  // TODO: add welcome text here
+  await ctx.reply("Hello World");
+  await ctx.setChatMenuButton({ type: "commands" });
+});
+
+bot.telegram.setMyCommands([
+  {
+    command: BotCommands.Template,
+    description: BotCommandDescription[BotCommands.Template],
+  },
+]);
+
+SubscribeToActionsService.subscribeToCommands(bot);
 
 bot.on(message("text"), SubscribeToActionsService.subscribeToTextMessage);
 

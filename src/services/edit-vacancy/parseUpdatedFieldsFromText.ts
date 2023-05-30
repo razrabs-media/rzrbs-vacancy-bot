@@ -24,7 +24,6 @@ export const parseUpdatedFieldsFromText = (
       formatOfWorkInfo,
       typeOfEmployment,
       location,
-      desiredStartDate,
       contactInfo,
     ] = updatedText?.split("\n") || [];
 
@@ -70,10 +69,6 @@ export const parseUpdatedFieldsFromText = (
         VacancyFieldLabel.TypeOfEmployment
       ) as EmploymentType,
       location: getFieldByLabel(location, VacancyFieldLabel.Location),
-      desired_start_date: getFieldByLabel(
-        desiredStartDate,
-        VacancyFieldLabel.DesiredStartDate
-      ),
       contact_info: getFieldByLabel(contactInfo, VacancyFieldLabel.Contacts),
     };
 

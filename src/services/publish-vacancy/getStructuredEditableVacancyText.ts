@@ -35,7 +35,6 @@ export const getStructuredEditableVacancyText = async ({
       format_of_work,
       type_of_employment,
       location,
-      desired_start_date,
       contact_info,
     } = vacancy;
     const salaryString = salary?.amount
@@ -55,7 +54,6 @@ export const getStructuredEditableVacancyText = async ({
       }\n` +
       `${VacancyFieldLabel.TypeOfEmployment}: ${type_of_employment}\n` +
       `${VacancyFieldLabel.Location}: ${location || ""}\n` +
-      `${VacancyFieldLabel.DesiredStartDate}: ${desired_start_date || ""}\n` +
       `${VacancyFieldLabel.Contacts}: ${contact_info}\n` +
       `${VacancyFieldLabel.Description}: ${description}`
     );

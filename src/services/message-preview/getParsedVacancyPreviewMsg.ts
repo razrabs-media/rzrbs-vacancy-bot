@@ -11,16 +11,8 @@ export const getParsedVacancyPreviewMsg = ({
   contact_info,
   hiring_process,
   location,
-  desired_start_date,
 }: IVacancyParsed): string => {
-  const header =
-    `${title}` +
-    `${location ? `\n${location}` : ""}` +
-    `${
-      desired_start_date
-        ? `\n${VacancyFieldLabel.DesiredStartDate}: ${desired_start_date}`
-        : ""
-    }`;
+  const header = `${title}` + `${location ? `\n${location}` : ""}`;
   const formatOfWork =
     `${VacancyFieldLabel.FormatOfWork}: #${format_of_work.title} #${type_of_employment}\n` +
     `${format_of_work.description ? `${format_of_work.description}\n` : ""}`;

@@ -33,7 +33,6 @@ export interface IVacancyModel extends IVacancyFlags {
   };
   type_of_employment: EmploymentType;
   location?: string;
-  desired_start_date?: string;
   contact_info: string;
 }
 
