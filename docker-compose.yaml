@@ -1,0 +1,29 @@
+version: "3.7"
+
+services:
+  api:
+    build:
+      dockerfile: docker/back.Dockerfile
+      context: ..
+    ports:
+      - "3000:3000"
+    environment:
+      APP_PORT: 3000
+      DB_URL: mongodb://[root:root]host1:27017
+    depends_on:
+      - db
+
+  db:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
