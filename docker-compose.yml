@@ -7,9 +7,7 @@ services:
       context: .
     ports:
       - "3000:3000"
-    env_file:
-      APP_PORT: 3000
-      DB_URL: mongodb://[root:root]host1:27017
+    env_file: .env_docker
     depends_on:
       - db
 
@@ -18,9 +16,7 @@ services:
     restart: always
     ports:
       - "27017:27017"
-    env_file:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
+    env_file: .env_docker
     volumes:
       - dbdata
 
