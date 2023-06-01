@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      dockerfile: ./
+      context: .
+    ports:
+      - "3000:3000"
+    env_file:
+      APP_PORT: 3000
+      DB_URL: mongodb://[root:root]host1:27017
+    depends_on:
+      - db
+
+  db:
+    image: mongo:7.0.0-rc2-jammy
+    restart: always
+    ports:
+      - "27017:27017"
+    env_file:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - dbdata
+
+volumes:
+  dbdata:
