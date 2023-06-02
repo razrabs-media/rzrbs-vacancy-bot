@@ -13,7 +13,7 @@ bot.catch(BotService.handleErrors);
 bot.start(async (ctx) => {
   // TODO: add welcome text here
   await ctx.reply("Hello World");
-  await ctx.setChatMenuButton({ type: "commands" });
+  await ctx.setChatMenuButton({ type: "default" });
 });
 
 bot.telegram.setMyCommands([
