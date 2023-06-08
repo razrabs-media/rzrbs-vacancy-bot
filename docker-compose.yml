@@ -7,7 +7,14 @@ services:
       context: .
     ports:
       - "3000:3000"
-    env_file: .env_docker
+    environment:
+      - APP_PORT=${APP_PORT}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - DB_URL=${DB_URL}
+      - NODE_ENV=${NODE_ENV}
+      - BOT_TOKEN=${BOT_TOKEN}
+      - PUBLISH_INTERVAL=${PUBLISH_INTERVAL}
     depends_on:
       - db
 
@@ -16,7 +23,9 @@ services:
     restart: always
     ports:
       - "27017:27017"
-    env_file: .env
+    environment:
+     - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+     - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - dbdata
 
