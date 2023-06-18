@@ -4,9 +4,13 @@ import { IVacancyParsed } from "../../types/vacancy";
 export const getParsedVacancyPreviewMsg = ({
   title,
   description,
-  company,
-  salary,
-  format_of_work,
+  company_name,
+  salary_amount_from,
+  salary_amount_to,
+  salary_currency,
+  salary_type,
+  format_of_work_description,
+  format_of_work_title,
   type_of_employment,
   contact_info,
   hiring_process,
@@ -14,24 +18,24 @@ export const getParsedVacancyPreviewMsg = ({
 }: IVacancyParsed): string => {
   const header = `${title}` + `${location ? `\n${location}` : ""}`;
   const formatOfWork =
-    `${VacancyFieldLabel.FormatOfWork}: #${format_of_work.title} #${type_of_employment}\n` +
-    `${format_of_work.description ? `${format_of_work.description}\n` : ""}`;
+    `${VacancyFieldLabel.FormatOfWork}: #${format_of_work_title} #${type_of_employment}\n` +
+    `${format_of_work_description ? `${format_of_work_description}\n` : ""}`;
   const salaryBlock =
-    salary?.amount?.from || salary?.amount?.to
+    salary_amount_from || salary_amount_to
       ? `${VacancyFieldLabel.Salary}: ${
-          salary?.amount?.from
-            ? `от ${salary?.amount?.from}${salary?.currency || ""} `
+          salary_amount_from
+            ? `от ${salary_amount_from}${salary_currency || ""} `
             : ""
         }${
-          salary?.amount?.to
-            ? `до ${salary?.amount?.to}${salary?.currency || ""}`
+          salary_amount_to
+            ? `до ${salary_amount_to}${salary_currency || ""}`
             : ""
         }\n`
       : "";
 
   return (
     `${header}\n\n` +
-    `${VacancyFieldLabel.Company}: ${company.name}\n` +
+    `${VacancyFieldLabel.Company}: ${company_name}\n` +
     `${formatOfWork}` +
     `${salaryBlock}` +
     `${VacancyFieldLabel.Contacts}: ${contact_info}\n\n` +

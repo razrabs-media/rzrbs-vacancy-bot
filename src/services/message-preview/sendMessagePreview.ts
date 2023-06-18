@@ -20,17 +20,9 @@ Aut consequatur molestiae aut veniam inventore nam iusto accusantium ut doloremq
 explicabo dicta. Et impedit omnis qui internos aliquam qui facilis perferendis ut vero quia vel 
 doloremque adipisci vel voluptatem amet sit nobis dicta.
   `,
-  published: false,
-  edited: false,
-  revoked: false,
-  removed: false,
-  company: {
-    name: "Company of your dreams LLC",
-  },
-  format_of_work: {
-    title: FormatOfWork.Hybrid,
-    description: "2 days/week from office",
-  },
+  company_name: "Company of your dreams LLC",
+  format_of_work_title: FormatOfWork.Hybrid,
+  format_of_work_description: "2 days/week from office",
   contact_info: "@marylorian",
   type_of_employment: EmploymentType.FullTime,
 };
@@ -72,9 +64,7 @@ export const sendMessagePreview = async (
     await createNewVacancy({
       vacancy: {
         ...parsedVacancy,
-        author: {
-          username: from.username,
-        },
+        author_username: from.username,
         tg_message_id: response.message_id,
         tg_chat_id: response.chat.id,
       },

@@ -10,9 +10,11 @@ export const onVacancyCancel = async (ctx) => {
     }
 
     const vacancy = await Vacancy.findOne({
-      tg_message_id: message_id,
-      tg_chat_id: chat.id,
-      "author.username": chat.username,
+      where: {
+        tg_message_id: message_id,
+        tg_chat_id: chat.id,
+        author_username: chat.username,
+      },
     });
 
     if (!vacancy) {
@@ -21,9 +23,12 @@ export const onVacancyCancel = async (ctx) => {
       );
     }
 
-    vacancy.removed = true;
+    vacancy.set({
+      removed: true,
+    });
+
     await vacancy.save();
-    logger.info(`Vacancy ${vacancy._id} marked as removed`);
+    logger.info(`Vacancy ${vacancy.id} marked as removed`);
 
     // removes buttons
     await ctx.editMessageReplyMarkup(undefined);

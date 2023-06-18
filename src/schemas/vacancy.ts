@@ -1,50 +1,84 @@
-import mongoose from "mongoose";
-import { FormatOfWork, SalaryType } from "../constants/vacancy";
+import { DataTypes } from "sequelize";
+import db from "../connectToDatabase";
+import { EmploymentType, FormatOfWork, SalaryType } from "../constants/vacancy";
 import { IVacancyModel } from "../types/vacancy";
 
-export const VacancySchema = new mongoose.Schema<IVacancyModel>(
+export const VacancyModel = db.define<IVacancyModel>(
+  "Vacancy",
   {
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    author: {
-      username: { type: String, required: true },
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
     },
-    published_at: Date,
-    published: { type: Boolean, default: "false", required: true },
-    edited: { type: Boolean, default: "false", required: true },
-    revoked: { type: Boolean, default: "false", required: true },
-    removed: { type: Boolean, default: "false", required: true },
-    tg_message_id: { type: Number, required: true },
-    tg_chat_id: { type: Number, required: true },
-    published_tg_message_id: Number,
-    published_tg_chat_id: Number,
-    company: {
-      name: { type: String, required: true },
+    title: { type: DataTypes.STRING, validate: { notEmpty: true } },
+    description: {
+      type: DataTypes.STRING(2000),
+      validate: { notEmpty: true, len: [0, 2000] },
     },
-    hiring_process: String,
-    salary: {
-      amount: { from: { type: Number, min: 0 }, to: { type: Number, min: 0 } },
-      currency: String,
-      type: { type: String, enum: [SalaryType.Gross, SalaryType.Net] },
+    published_at: DataTypes.DATE,
+    published: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      validate: { notEmpty: true },
     },
-    format_of_work: {
-      title: {
-        type: String,
-        required: true,
-        enum: [FormatOfWork.Hybrid, FormatOfWork.OnSite, FormatOfWork.Remote],
-      },
-      // in case we want to explain it more - like "hybrid, 2 days a week work from office"
-      description: String,
+    edited: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      validate: { notEmpty: true },
     },
-    location: String,
-    contact_info: { type: String, required: true },
+    revoked: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      validate: { notEmpty: true },
+    },
+    removed: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      validate: { notEmpty: true },
+    },
+    tg_message_id: { type: DataTypes.INTEGER, validate: { notEmpty: true } },
+    tg_chat_id: { type: DataTypes.INTEGER, validate: { notEmpty: true } },
+    published_tg_message_id: DataTypes.INTEGER,
+    published_tg_chat_id: DataTypes.INTEGER,
+    hiring_process: DataTypes.STRING,
+    location: DataTypes.STRING,
+    contact_info: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: { notEmpty: true },
+    },
+    type_of_employment: {
+      type: DataTypes.ENUM(...Object.values(EmploymentType)),
+      validate: { notEmpty: true },
+    },
+
+    /* Salary */
+    salary_amount_from: { type: DataTypes.INTEGER, validate: { min: 0 } },
+    salary_amount_to: { type: DataTypes.INTEGER, validate: { min: 0 } },
+    salary_currency: DataTypes.STRING,
+    salary_type: { type: DataTypes.ENUM(...Object.values(SalaryType)) },
+
+    /* Format of work */
+    format_of_work_title: {
+      type: DataTypes.ENUM(...Object.values(FormatOfWork)),
+      allowNull: false,
+      validate: { notEmpty: true },
+    },
+    // in case we want to explain it more - like "hybrid, 2 days a week work from office"
+    format_of_work_description: DataTypes.STRING,
+
+    company_name: { type: DataTypes.STRING, allowNull: false },
+
+    author_username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: { notEmpty: true },
+    },
   },
   {
-    validateBeforeSave: true,
     timestamps: true,
   }
 );
-
-const VacancyModel = mongoose.model<IVacancyModel>("Vacancy", VacancySchema);
 
 export default VacancyModel;

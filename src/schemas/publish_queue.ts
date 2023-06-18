@@ -1,24 +1,48 @@
-import mongoose from "mongoose";
-import { VacancySchema } from "./vacancy";
+import { DataTypes, Model } from "sequelize";
+import db from "../connectToDatabase";
 import { IPublishQueueItem } from "../types/publish_queue";
 
-export const PublishQueueItem = new mongoose.Schema<IPublishQueueItem>(
+export const PublishQueueItemModel = db.define<
+  Model<
+    IPublishQueueItem,
+    Omit<IPublishQueueItem, "id" | "removed" | "published">
+  >
+>(
+  "PublishQueue",
   {
-    time_to_publish: { type: Date, required: true },
-    vacancy: { type: VacancySchema, required: true },
-    removed: { type: Boolean, default: false, required: true },
-    published: { type: Boolean, default: false, required: true },
-    tg_group_message_link: String,
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    time_to_publish: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      validate: { notEmpty: true },
+    },
+    vacancy_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: { notEmpty: true },
+    },
+    removed: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+      validate: { notEmpty: true },
+    },
+    published: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+      validate: { notEmpty: true },
+    },
+    tg_group_message_link: DataTypes.STRING,
   },
   {
-    validateBeforeSave: true,
     timestamps: true,
+    indexes: [{ unique: true, fields: ["vacancy_id"] }],
   }
-);
-
-const PublishQueueItemModel = mongoose.model<IPublishQueueItem>(
-  "PublishQueue",
-  PublishQueueItem
 );
 
 export default PublishQueueItemModel;
