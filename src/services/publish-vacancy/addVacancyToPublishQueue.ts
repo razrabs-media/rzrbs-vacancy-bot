@@ -3,6 +3,10 @@ import VacancyModel from "../../schemas/vacancy";
 import logger from "../logger";
 import { updateButtonsUnderMessage } from "./updateButtonsUnderMessage";
 
+/**
+ * Adds vacancy to publish queue.
+ * Triggers on publish button click in private chat with Bot
+ */
 export const onPublishVacancy = async (ctx) => {
   const { message_id, chat } = ctx?.update?.callback_query?.message || {};
 

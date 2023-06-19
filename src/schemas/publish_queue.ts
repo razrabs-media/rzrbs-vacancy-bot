@@ -1,13 +1,8 @@
-import { DataTypes, Model } from "sequelize";
+import { DataTypes } from "sequelize";
 import db from "../connectToDatabase";
-import { IPublishQueueItem } from "../types/publish_queue";
+import { IPublishQueueModel } from "../types/publish_queue";
 
-export const PublishQueueItemModel = db.define<
-  Model<
-    IPublishQueueItem,
-    Omit<IPublishQueueItem, "id" | "removed" | "published">
-  >
->(
+export const PublishQueueItemModel = db.define<IPublishQueueModel>(
   "PublishQueue",
   {
     id: {
@@ -37,7 +32,6 @@ export const PublishQueueItemModel = db.define<
       allowNull: false,
       validate: { notEmpty: true },
     },
-    tg_group_message_link: DataTypes.STRING,
   },
   {
     timestamps: true,

@@ -1,1 +1,2 @@
-export { onPublishVacancy } from "./publishVacancy";
+export { onPublishVacancy } from "./addVacancyToPublishQueue";
+export { publishVacancyToChannel } from "./publishVacancyToChannel";

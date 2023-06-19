@@ -14,12 +14,12 @@ export type TVacancyAttributes = {
 
   title: string;
   description: string;
-  published_at?: Date;
+  publishedAt?: Date;
   author_username: string;
   tg_message_id: number;
   tg_chat_id: number;
-  published_tg_message_id?: number;
-  published_tg_chat_id?: number;
+  published_tg_message_id?: string[];
+  published_tg_chat_id?: string[];
   company_name: string;
   hiring_process?: string;
 
