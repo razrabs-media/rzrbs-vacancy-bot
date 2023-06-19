@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import db from "../connectToDatabase";
-import { IContactModel } from "../types/bot_contact";
+import { ChatType, IContactModel } from "../types/bot_contact";
 
 /* Contact to publish vacancies to */
 export const ContactModel = db.define<IContactModel>(
@@ -18,7 +18,7 @@ export const ContactModel = db.define<IContactModel>(
       validate: { notEmpty: true },
     },
     chat_type: {
-      type: DataTypes.ENUM("channel", "group"),
+      type: DataTypes.ENUM(...Object.values(ChatType)),
       allowNull: false,
       validate: { notEmpty: true },
     },
