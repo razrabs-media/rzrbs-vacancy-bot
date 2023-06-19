@@ -25,8 +25,21 @@ const bot = new Telegraf<BotContext>(process.env.BOT_TOKEN!);
 bot.catch(BotService.handleErrors);
 
 bot.start(async (ctx) => {
-  // TODO: add welcome text here
-  await ctx.reply("Hello World");
+  const welcomeText =
+    `Привет! Это бот размещения вакансий в @razrabsjobs.\n` +
+    `Достаточно отправить текст, чтобы я сформировал объявление, ` +
+    `но убедись в наличии необходимых полей, ` +
+    `указанных в шаблоне (/template) — я проверяю каждое сообщение.\n` +
+    `\n` +
+    `Разместить бесплатно можно до ${Number(
+      process.env.MONTH_VACANCY_LIMIT || 1
+    )} ` +
+    `сообщений в месяц. Я считаю по количеству объявлений от тебя и ` +
+    `указананной компании. Для размещения большего ` +
+    `числа вакансий, другому виду сотрудничества или, в случае ` +
+    `возникновения проблем в работе со мной, — напиши админу канала.`;
+
+  await ctx.reply(welcomeText);
   await ctx.setChatMenuButton({ type: "commands" });
 });
 

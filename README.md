@@ -13,4 +13,5 @@
     BOT_TOKEN=<token value>
     DB_URL=<postgres://user:pass@example.com:5432/dbname>
     PUBLISH_INTERVAL=<number of hours> # if undefined or zero publishing by timer won't work
+    MONTH_VACANCY_LIMIT=<integer> # by default, 1
 ```
