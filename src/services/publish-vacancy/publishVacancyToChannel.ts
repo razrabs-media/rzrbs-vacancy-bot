@@ -82,7 +82,10 @@ export const publishVacancyToChannel = async (
       throw Error("vacancy not found");
     }
 
-    for (const contact of contacts) {
+    const whitelistedContacts = contacts.filter(({ chat_id }) =>
+      config.botContactsWhitelist.includes(chat_id)
+    );
+    for (const contact of whitelistedContacts) {
       await sendToContact(vacancy, contact, bot);
     }
 
