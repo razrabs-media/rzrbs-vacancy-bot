@@ -43,27 +43,19 @@ export const parseUpdatedFieldsFromText = (
     const parsedFields: DeepPartial<IVacancyModel> = {
       title: getFieldByLabel(title, VacancyFieldLabel.Title),
       description: getFieldByLabel(updatedText, VacancyFieldLabel.Description),
-      company: {
-        name: getFieldByLabel(companyName, VacancyFieldLabel.Company),
-      },
+      company_name: getFieldByLabel(companyName, VacancyFieldLabel.Company),
       hiring_process: getFieldByLabel(
         hiringProcess,
         VacancyFieldLabel.HiringProcess
       ),
-      salary: {
-        amount: {
-          from: Number(salaryAmountFrom) || undefined,
-          to: Number(salaryAmountTo) || undefined,
-        },
-        currency: salaryCurrency,
-        type: salaryType
-          ? (salaryType.slice(1, salaryType.length - 1) as SalaryType)
-          : undefined,
-      },
-      format_of_work: {
-        title: formatOfWorkTitle as FormatOfWork,
-        description: formatOfWorkDescription,
-      },
+      salary_amount_from: Number(salaryAmountFrom) || undefined,
+      salary_amount_to: Number(salaryAmountTo) || undefined,
+      salary_currency: salaryCurrency,
+      salary_type: salaryType
+        ? (salaryType.slice(1, salaryType.length - 1) as SalaryType)
+        : undefined,
+      format_of_work_title: formatOfWorkTitle as FormatOfWork,
+      format_of_work_description: formatOfWorkDescription,
       type_of_employment: getFieldByLabel(
         typeOfEmployment,
         VacancyFieldLabel.TypeOfEmployment
@@ -75,7 +67,7 @@ export const parseUpdatedFieldsFromText = (
     return parsedFields;
   } catch (err) {
     logger.error(
-      `Failed to parse edited ${vacancy?.author?.username}::${
+      `Failed to parse edited ${vacancy?.author_username}::${
         vacancy?.tg_chat_id
       }::${vacancy?.tg_message_id} vacancy fields - ${
         (err as Error)?.message || JSON.stringify(err)

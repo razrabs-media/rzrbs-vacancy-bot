@@ -12,9 +12,11 @@ export const subscribeToPublishQueueMonitoring = () => {
   );
   return setInterval(async () => {
     try {
-      const publishQueueItems = await PublishQueueItemModel.find({
-        published: false,
-        removed: false,
+      const publishQueueItems = await PublishQueueItemModel.findAll({
+        where: {
+          published: false,
+          removed: false,
+        },
       });
 
       if (!publishQueueItems.length) {

@@ -26,9 +26,11 @@ export const onVacancyEdit = async (
     );
 
     const vacancy = await Vacancies.findOne({
-      tg_chat_id: chat.id,
-      tg_message_id: messageId,
-      "author.username": from.username,
+      where: {
+        tg_chat_id: chat.id,
+        tg_message_id: messageId,
+        author_username: from.username,
+      },
     });
 
     if (!vacancy) {
