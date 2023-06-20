@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import db from "../../connectToDatabase";
 import logger from "../logger";
 
 export const gracefulShutdown = ({
@@ -13,8 +14,7 @@ export const gracefulShutdown = ({
     logger.info("Publish queue monitoring finished");
   }
 
-  mongoose.connection
-    .close()
+  db.close()
     .then(() => {
       logger.info("Database connection closed");
     })

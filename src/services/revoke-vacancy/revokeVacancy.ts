@@ -12,9 +12,11 @@ export const onVacancyRevoke = async (ctx) => {
     }
 
     const vacancy = await VacancyModel.findOne({
-      tg_message_id: message_id,
-      tg_chat_id: chat.id,
-      "author.username": chat.username,
+      where: {
+        tg_message_id: message_id,
+        tg_chat_id: chat.id,
+        author_username: chat.username,
+      },
     });
 
     if (!vacancy) {
@@ -22,22 +24,27 @@ export const onVacancyRevoke = async (ctx) => {
     }
 
     const vacancyInQueue = await PublishQueueItemModel.findOne({
-      "vacancy._id": vacancy._id,
+      where: {
+        vacancy_id: vacancy.id,
+      },
     });
 
     if (!vacancyInQueue) {
-      throw Error(`Failed: vacancy ${vacancy._id} is not in publish queue`);
+      throw Error(`Failed: vacancy ${vacancy.id} is not in publish queue`);
     }
 
-    vacancyInQueue.removed = true;
+    vacancyInQueue.set({
+      removed: true,
+    });
     await vacancyInQueue.save();
-    logger.info(
-      `Revoke: vacancy ${vacancyInQueue._id} removed from publish queue`
-    );
+    logger.info(`Revoke: vacancy ${vacancy.id} removed from publish queue`);
 
-    vacancy.revoked = true;
+    vacancy.set({
+      revoked: true,
+      removed: true,
+    });
     await vacancy.save();
-    logger.info(`Revoke: vacancy ${vacancyInQueue._id} marked as revoked`);
+    logger.info(`Revoke: vacancy ${vacancy.id} marked as revoked`);
 
     await ctx.editMessageCaption(`[ОТОЗВАНО]\n${caption}`, undefined);
   } catch (err) {

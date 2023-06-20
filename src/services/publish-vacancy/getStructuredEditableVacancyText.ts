@@ -17,9 +17,11 @@ export const getStructuredEditableVacancyText = async ({
     }
 
     const vacancy = await VacancyModel.findOne({
-      tg_chat_id: chatId,
-      tg_message_id: messageId,
-      "author.username": fromUsername,
+      where: {
+        tg_chat_id: chatId,
+        tg_message_id: messageId,
+        author_username: fromUsername,
+      },
     });
 
     if (!vacancy) {
@@ -29,28 +31,33 @@ export const getStructuredEditableVacancyText = async ({
     const {
       title,
       description,
-      company,
+      company_name,
       hiring_process,
-      salary,
-      format_of_work,
+      salary_amount_from,
+      salary_amount_to,
+      salary_currency,
+      salary_type,
+      format_of_work_description,
+      format_of_work_title,
       type_of_employment,
       location,
       contact_info,
     } = vacancy;
-    const salaryString = salary?.amount
-      ? `${salary.amount?.from}-${salary.amount?.to} ${salary.currency || ""}${
-          salary.type ? ` (${salary.type})` : ""
-        }`
-      : "";
+    const salaryString =
+      salary_amount_from || salary_amount_to
+        ? `${salary_amount_from}-${salary_amount_to} ${salary_currency || ""}${
+            salary_type ? ` (${salary_type})` : ""
+          }`
+        : "";
 
     return (
       `> ${messageId}\nПожалуйста, не изменяйте информацию выше.\n\n` +
       `${VacancyFieldLabel.Title}: ${title}\n` +
-      `${VacancyFieldLabel.Company}: ${company?.name || ""}\n` +
+      `${VacancyFieldLabel.Company}: ${company_name || ""}\n` +
       `${VacancyFieldLabel.HiringProcess}: ${hiring_process || ""}\n` +
       `${VacancyFieldLabel.Salary}: ${salaryString}\n` +
-      `${VacancyFieldLabel.FormatOfWork}: ${format_of_work.title}. ${
-        format_of_work?.description ? format_of_work?.description : ""
+      `${VacancyFieldLabel.FormatOfWork}: ${format_of_work_title}. ${
+        format_of_work_description || ""
       }\n` +
       `${VacancyFieldLabel.TypeOfEmployment}: ${type_of_employment}\n` +
       `${VacancyFieldLabel.Location}: ${location || ""}\n` +

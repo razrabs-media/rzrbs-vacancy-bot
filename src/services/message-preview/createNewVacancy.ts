@@ -1,5 +1,5 @@
 import VacancyModel from "../../schemas/vacancy";
-import { IVacancy } from "../../types/vacancy";
+import { TVacancyCreationAttributes } from "../../types/vacancy";
 import logger from "../logger";
 
 export const createNewVacancy = async ({
@@ -7,15 +7,21 @@ export const createNewVacancy = async ({
   messageId,
   chatId,
 }: {
-  vacancy: IVacancy;
+  vacancy: TVacancyCreationAttributes;
   messageId: number;
   chatId: number;
 }) => {
   try {
-    const newVacancy = await VacancyModel.create(vacancy);
+    const newVacancy = await VacancyModel.create(vacancy, {
+      isNewRecord: true,
+    });
+
+    if (!newVacancy) {
+      throw Error("creation failed on DB side");
+    }
 
     logger.info(
-      `Vacancy from message ${messageId}::${chatId} succesfully created - ${newVacancy._id}`
+      `Vacancy from message ${messageId}::${chatId} succesfully created - ${newVacancy.id}`
     );
   } catch (err) {
     logger.error(

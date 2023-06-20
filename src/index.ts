@@ -1,23 +1,76 @@
 import dotenv from "dotenv";
-import mongoose from "mongoose";
-import { logger } from "./services";
+import { Telegraf } from "telegraf";
+import { message } from "telegraf/filters";
 
 dotenv.config();
+
+import { BotContext } from "./types/context";
+import { BotService, SubscribeToActionsService, logger } from "./services";
+import { BotCommandDescription, BotCommands } from "./constants/actions";
+import VacancyModel from "./schemas/vacancy";
+import PublishQueueItemModel from "./schemas/publish_queue";
 
 if (!process.env.BOT_TOKEN) {
   throw Error("Failed to start, BOT_TOKEN is missing");
 }
 
-if (!process.env.DB_URL) {
-  throw Error("Failed to start, DB_URL is missing");
-}
+import "./connectToDatabase";
 
-mongoose
-  .connect(process.env.DB_URL)
-  .then(() => logger.info("Connected to DB"))
-  .catch((err) => {
-    logger.error("Failed to connect to DB", err);
-    throw Error(`Failed to connect to DB - ${err}`);
+VacancyModel.sync();
+PublishQueueItemModel.sync();
+
+const bot = new Telegraf<BotContext>(process.env.BOT_TOKEN!);
+
+// catches any bot errors
+bot.catch(BotService.handleErrors);
+
+bot.start(async (ctx) => {
+  const welcomeText =
+    `Привет! Это бот размещения вакансий в @razrabsjobs.\n` +
+    `Достаточно отправить текст, чтобы я сформировал объявление, ` +
+    `но убедись в наличии необходимых полей, ` +
+    `указанных в шаблоне (/template) — я проверяю каждое сообщение.\n` +
+    `\n` +
+    `Разместить бесплатно можно до ${Number(
+      process.env.MONTH_VACANCY_LIMIT || 1
+    )} ` +
+    `сообщений в месяц. Я считаю по количеству объявлений от тебя и ` +
+    `указананной компании. Для размещения большего ` +
+    `числа вакансий, другому виду сотрудничества или, в случае ` +
+    `возникновения проблем в работе со мной, — напиши админу канала.`;
+
+  await ctx.reply(welcomeText);
+  await ctx.setChatMenuButton({ type: "commands" });
+});
+
+bot.telegram.setMyCommands([
+  {
+    command: BotCommands.Template,
+    description: BotCommandDescription[BotCommands.Template],
+  },
+]);
+
+SubscribeToActionsService.subscribeToCommands(bot);
+
+bot.on(message("text"), SubscribeToActionsService.subscribeToTextMessage);
+
+SubscribeToActionsService.subscribeToButtonActions(bot);
+const timerId = SubscribeToActionsService.subscribeToPublishQueueMonitoring();
+
+bot.launch();
+logger.info("Bot is listening...");
+
+// Enable graceful stop
+process.once("SIGINT", () => {
+  bot.stop("SIGINT");
+  BotService.gracefulShutdown({
+    publishQueueTimerId: timerId,
   });
+});
 
-import "./startBot";
+process.once("SIGTERM", () => {
+  bot.stop("SIGTERM");
+  BotService.gracefulShutdown({
+    publishQueueTimerId: timerId,
+  });
+});

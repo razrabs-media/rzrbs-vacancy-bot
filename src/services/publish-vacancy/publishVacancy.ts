@@ -12,9 +12,11 @@ export const onPublishVacancy = async (ctx) => {
     }
 
     const vacancy = await VacancyModel.findOne({
-      tg_message_id: message_id,
-      tg_chat_id: chat?.id,
-      "author.username": chat?.username,
+      where: {
+        tg_message_id: message_id,
+        tg_chat_id: chat?.id,
+        author_username: chat?.username,
+      },
     });
 
     if (!vacancy) {
@@ -22,17 +24,17 @@ export const onPublishVacancy = async (ctx) => {
     }
 
     const newQueueItem = await PublishQueueItemModel.create({
-      vacancy,
+      vacancy_id: vacancy.id,
       // TODO: add custom time
-      time_to_publish: Date.now(),
+      time_to_publish: new Date(),
     });
 
     if (!newQueueItem) {
-      throw Error(`Failed to add vacancy ${vacancy._id} to publish queue`);
+      throw Error(`Failed to add vacancy ${vacancy.id} to publish queue`);
     }
 
     logger.info(
-      `Publish: vacancy ${vacancy._id} successfully added to publish queue`
+      `Publish: vacancy ${vacancy.id} successfully added to publish queue`
     );
 
     await updateButtonsUnderMessage(ctx);
