@@ -15,3 +15,10 @@
     PUBLISH_INTERVAL=<number of hours> # if undefined or zero publishing by timer won't work
     MONTH_VACANCY_LIMIT=<integer> # by default, 1
 ```
+### Getting started with docker-compose
+
+You need docker-compose version 1.29
+
+1. Create `.env` file in project folder
+2. Copy content of `.env.example` to `.env` file
+3. Start docker-compose with `docker-compose up -d`
