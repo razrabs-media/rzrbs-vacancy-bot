@@ -3,8 +3,7 @@ import VacancyModel from "../../schemas/vacancy";
 import logger from "../logger";
 
 export const onVacancyRevoke = async (ctx) => {
-  const { message_id, text, chat } =
-    ctx?.update?.callback_query?.message || {};
+  const { message_id, text, chat } = ctx?.update?.callback_query?.message || {};
 
   try {
     if (!message_id || !text || !chat?.id || !chat?.username) {
