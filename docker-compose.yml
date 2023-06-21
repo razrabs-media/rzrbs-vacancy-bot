@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - "3000:3000"
+    environment:
+      - APP_PORT=${APP_PORT}
+      - DB_URL=${DB_URL}
+      - NODE_ENV=${NODE_ENV}
+      - BOT_TOKEN=${BOT_TOKEN}
+      - PUBLISH_INTERVAL=${PUBLISH_INTERVAL}
+      - MONTH_VACANCY_LIMIT=${MONTH_VACANCY_LIMIT}
