@@ -15,9 +15,7 @@ const sendToContact = async (
   bot: Telegraf<BotContext>
 ) => {
   try {
-    logger.info(
-      `Sending ${vacancy.id} vacancy to ${chatId}...`
-    );
+    logger.info(`Sending ${vacancy.id} vacancy to ${chatId}...`);
 
     const message = await bot.telegram?.sendMessage(
       chatId,
@@ -55,9 +53,7 @@ const sendToContact = async (
     });
 
     await vacancyInstance.save();
-    logger.info(
-      `Success: ${vacancy.id} vacancy sent to ${chatId}`
-    );
+    logger.info(`Success: ${vacancy.id} vacancy sent to ${chatId}`);
   } catch (err) {
     logger.error(
       `Failed to publish ${vacancy.id} vacancy to ${chatId} - ${err}`
@@ -81,7 +77,7 @@ export const publishVacancyToChannels = async (
     }
 
     if (!config.botContactsList.length) {
-      throw Error("contact list is empty")
+      throw Error("contact list is empty");
     }
 
     for (const contactId of config.botContactsList) {

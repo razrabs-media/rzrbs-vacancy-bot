@@ -20,9 +20,7 @@ const buildConfig = (): IConfig => ({
   dbUrl: process.env.DB_URL,
   botToken: process.env.BOT_TOKEN,
 
-  botContactsList: (process.env.BOT_CONTACTS || "")
-    .split(",")
-    .filter(Boolean),
+  botContactsList: (process.env.BOT_CONTACTS || "").split(",").filter(Boolean),
   publishInterval: Number(process.env.PUBLISH_INTERVAL || 0),
   minsBetweenPublishing: Number(process.env.MINUTES_BETWEEN_PUBLISHING || 0),
   monthVacancyLimit: Number(process.env.MONTH_VACANCY_LIMIT || 1),
