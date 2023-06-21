@@ -47,5 +47,5 @@ export const subscribeToPublishQueueMonitoring = (
       );
     }
     // PUBLISH_INTERVAL hours
-  }, 100 * 60 * config.publishInterval);
+  }, 1000 * 60 * 60 * config.publishInterval);
 };
