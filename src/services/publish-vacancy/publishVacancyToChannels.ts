@@ -3,7 +3,7 @@ import { Telegraf } from "telegraf";
 import { BotContext } from "../../types/context";
 import { IVacancy } from "../../types/vacancy";
 import logger from "../logger";
-import { IPublishQueueItem } from "../../types/publish_queue";
+import { IPublishQueueModel } from "../../types/publish_queue";
 import VacancyModel from "../../schemas/vacancy";
 import config from "../../utils/config";
 import { wait } from "../../utils/wait";
@@ -62,7 +62,7 @@ const sendToContact = async (
 };
 
 export const publishVacancyToChannels = async (
-  publishQueueItem: IPublishQueueItem,
+  publishQueueItem: IPublishQueueModel,
   bot: Telegraf<BotContext>
 ) => {
   try {
@@ -83,6 +83,11 @@ export const publishVacancyToChannels = async (
     for (const contactId of config.botContactsList) {
       await sendToContact(vacancy, contactId, bot);
     }
+
+    await publishQueueItem.set({
+      published: true,
+    });
+    await publishQueueItem.save();
 
     // waits MINUTES_BETWEEN_PUBLISHING minutes
     await wait(config.minsBetweenPublishing * 60 * 1000);

@@ -13,6 +13,7 @@
     BOT_TOKEN=<token value>
     BOT_CONTACTS=chatId1,chatId2 # contacts list of Tg chat IDs to publish vacancies to
     DB_URL=<postgres://user:pass@example.com:5432/dbname>
+    DB_SSL_ENABLED=<boolean> # true, by default
     PUBLISH_INTERVAL=<number of hours> # if undefined or zero publishing by timer won't work
     MINUTES_BETWEEN_PUBLISHING=<number of minutes> # time between publishing vacancy of bunch of vacancies from publish queue
     MONTH_VACANCY_LIMIT=<integer> # by default, 1

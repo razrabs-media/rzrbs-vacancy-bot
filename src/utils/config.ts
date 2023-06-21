@@ -4,6 +4,7 @@ export interface IConfig {
   environment?: Environment;
   botToken?: string;
   dbUrl?: string;
+  dbSslEnabled: boolean;
 
   // contacts list of Tg chat IDs to publish vacancies to
   botContactsList: string[];
@@ -18,6 +19,10 @@ export interface IConfig {
 const buildConfig = (): IConfig => ({
   environment: process.env.NODE_ENV as Environment,
   dbUrl: process.env.DB_URL,
+  dbSslEnabled:
+    typeof process.env.DB_SSL_ENABLED !== "undefined"
+      ? process.env.DB_SSL_ENABLED === "true"
+      : true,
   botToken: process.env.BOT_TOKEN,
 
   botContactsList: (process.env.BOT_CONTACTS || "").split(",").filter(Boolean),

@@ -37,11 +37,6 @@ export const subscribeToPublishQueueMonitoring = (
             publishQueueItem,
             bot
           );
-
-          await publishQueueItem.set({
-            published: true,
-          });
-          await publishQueueItem.save();
         }
       }
     } catch (err) {
@@ -52,5 +47,5 @@ export const subscribeToPublishQueueMonitoring = (
       );
     }
     // PUBLISH_INTERVAL hours
-  }, 1000 * 60 * 60 * config.publishInterval);
+  }, 100 * 60 * config.publishInterval);
 };
