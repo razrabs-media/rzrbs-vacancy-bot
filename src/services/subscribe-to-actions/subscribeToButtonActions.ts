@@ -1,13 +1,12 @@
-import { Telegraf } from "telegraf";
-import { BotContext } from "../../types/context";
 import {
   PublishVacancyService,
   RevokeVacancyService,
   CancelVacancyService,
 } from "../index";
 import { BotActions } from "../../constants/actions";
+import bot from "../../launchBot";
 
-export const subscribeToButtonActions = (bot: Telegraf<BotContext>) => {
+export const subscribeToButtonActions = () => {
   bot.action(BotActions.PublishVacancy, PublishVacancyService.onPublishVacancy);
   bot.action(BotActions.RevokeVacancy, RevokeVacancyService.onVacancyRevoke);
   bot.action(BotActions.CancelVacancy, CancelVacancyService.onVacancyCancel);

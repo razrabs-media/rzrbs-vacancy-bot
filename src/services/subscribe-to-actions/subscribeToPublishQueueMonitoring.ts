@@ -1,13 +1,8 @@
-import { Telegraf } from "telegraf";
-
 import { PublishVacancyService, logger } from "../index";
 import PublishQueueItemModel from "../../schemas/publish_queue";
 import config from "../../utils/config";
-import { BotContext } from "../../types/context";
 
-export const subscribeToPublishQueueMonitoring = (
-  bot: Telegraf<BotContext>
-) => {
+export const subscribeToPublishQueueMonitoring = () => {
   if (!config.publishInterval) {
     logger.warn("WARN: Publish queue won't work until PUBLISH_INTERVAL is set");
     return;
@@ -34,8 +29,7 @@ export const subscribeToPublishQueueMonitoring = (
 
         for (const publishQueueItem of publishQueueItems) {
           await PublishVacancyService.publishVacancyToChannels(
-            publishQueueItem,
-            bot
+            publishQueueItem
           );
         }
       }

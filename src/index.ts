@@ -1,26 +1,19 @@
 import dotenv from "dotenv";
-import { Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
 
 dotenv.config();
 
-import { BotContext } from "./types/context";
 import { BotService, SubscribeToActionsService, logger } from "./services";
 import { BotCommandDescription, BotCommands } from "./constants/actions";
 import VacancyModel from "./schemas/vacancy";
 import PublishQueueItemModel from "./schemas/publish_queue";
 import config from "./utils/config";
-
-if (!config.botToken) {
-  throw Error("Failed to start, BOT_TOKEN is missing");
-}
+import bot from "./launchBot";
 
 import "./connectToDatabase";
 
 VacancyModel.sync();
 PublishQueueItemModel.sync();
-
-const bot = new Telegraf<BotContext>(config.botToken);
 
 // catches any bot errors
 bot.catch(BotService.handleErrors);
@@ -49,13 +42,12 @@ bot.telegram.setMyCommands([
   },
 ]);
 
-SubscribeToActionsService.subscribeToCommands(bot);
+SubscribeToActionsService.subscribeToCommands();
 
 bot.on(message("text"), SubscribeToActionsService.subscribeToTextMessage);
 
-SubscribeToActionsService.subscribeToButtonActions(bot);
-const timerId =
-  SubscribeToActionsService.subscribeToPublishQueueMonitoring(bot);
+SubscribeToActionsService.subscribeToButtonActions();
+const timerId = SubscribeToActionsService.subscribeToPublishQueueMonitoring();
 
 bot.launch();
 logger.info("Bot is listening...");
