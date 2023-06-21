@@ -1,10 +1,8 @@
-import { Telegraf } from "telegraf";
 import Vacancies from "../../schemas/vacancy";
 import logger from "../logger";
 import { parseUpdatedFieldsFromText } from "./parseUpdatedFieldsFromText";
 import { updatePrivateVacancyMessage } from "./updatePrivateVacancyMessage";
 import { updatePublicGroupVacancyMessage } from "./updatePublicGroupVacancyMessage";
-import { BotContext } from "../../types/context";
 
 interface IExistingVacancy {
   messageId: number;

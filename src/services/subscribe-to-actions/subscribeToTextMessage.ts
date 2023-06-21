@@ -8,6 +8,7 @@ export const subscribeToTextMessage = async (ctx) => {
       throw Error("cannot retrieve required message info");
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [techInfoLine, disclaimerLine, gapLine, ...updatedInfoText] =
       text.split("\n");
 

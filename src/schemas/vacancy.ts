@@ -1,4 +1,5 @@
 import { DataTypes } from "sequelize";
+
 import db from "../connectToDatabase";
 import { EmploymentType, FormatOfWork, SalaryType } from "../constants/vacancy";
 import { IVacancyModel } from "../types/vacancy";

@@ -1,6 +1,7 @@
 import winston, { format } from "winston";
-import config from "../../utils/config";
+
 import { Environment } from "../../types/common";
+import config from "../../utils/config";
 
 const logger = winston.createLogger({
   level: "info",

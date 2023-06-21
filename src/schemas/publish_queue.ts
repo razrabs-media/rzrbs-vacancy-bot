@@ -1,4 +1,5 @@
 import { DataTypes } from "sequelize";
+
 import db from "../connectToDatabase";
 import { IPublishQueueModel } from "../types/publish_queue";
 

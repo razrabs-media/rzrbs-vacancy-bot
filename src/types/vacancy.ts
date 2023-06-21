@@ -1,4 +1,5 @@
 import { Model, Optional } from "sequelize";
+
 import { EmploymentType, FormatOfWork, SalaryType } from "../constants/vacancy";
 import { ITimestamps } from "./timestamps";
 

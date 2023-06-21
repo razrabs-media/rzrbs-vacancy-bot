@@ -1,3 +1,6 @@
 # Ignore artifacts:
 dist
 coverage
+
+# Ignores file to not to break import arrangement
+src/index.ts
