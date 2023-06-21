@@ -52,7 +52,7 @@ export const onVacancyEdit = async (
     const updatedVacancy = await vacancy.save();
 
     logger.info(
-      `Vacancy updated, updating message in private chat with bot...`
+      `Vacancy ${vacancy.id} updated, updating message in private chat with bot...`
     );
     await updatePrivateVacancyMessage({
       ctx,
@@ -64,9 +64,15 @@ export const onVacancyEdit = async (
 
     // change message in group
     if (vacancy.published) {
-      logger.info(`Vacancy is published, updating vacancy in group channel`);
+      logger.info(
+        `Vacancy ${vacancy.id} is published, updating vacancy in group channel`
+      );
       await updatePublicGroupVacancyMessage({ vacancy: updatedVacancy });
     }
+
+    await vacancy.set({ edited: true });
+    await vacancy.save();
+    logger.info(`Vacancy ${vacancy.id} marked as edited`);
 
     await ctx.deleteMessage();
   } catch (err) {
