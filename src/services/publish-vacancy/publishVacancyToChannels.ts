@@ -1,6 +1,5 @@
 import { Telegraf } from "telegraf";
 
-import { IContact } from "../../types/bot_contact";
 import { BotContext } from "../../types/context";
 import { IVacancy } from "../../types/vacancy";
 import logger from "../logger";
@@ -12,16 +11,16 @@ import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
 
 const sendToContact = async (
   vacancy: IVacancy,
-  { chat_id, chat_title, chat_type }: IContact,
+  chatId: string,
   bot: Telegraf<BotContext>
 ) => {
   try {
     logger.info(
-      `Sending ${vacancy.id} vacancy to ${chat_title}::${chat_type}::${chat_id}...`
+      `Sending ${vacancy.id} vacancy to ${chatId}...`
     );
 
     const message = await bot.telegram?.sendMessage(
-      chat_id,
+      chatId,
       buildMessageFromVacancy(vacancy),
       {
         parse_mode: "HTML",
@@ -57,18 +56,17 @@ const sendToContact = async (
 
     await vacancyInstance.save();
     logger.info(
-      `Success: ${vacancy.id} vacancy sent to ${chat_title}::${chat_type}::${chat_id}`
+      `Success: ${vacancy.id} vacancy sent to ${chatId}`
     );
   } catch (err) {
     logger.error(
-      `Failed to publish ${vacancy.id} vacancy to ${chat_title}::${chat_type}::${chat_id} - ${err}`
+      `Failed to publish ${vacancy.id} vacancy to ${chatId} - ${err}`
     );
   }
 };
 
-export const publishVacancyToChannel = async (
+export const publishVacancyToChannels = async (
   publishQueueItem: IPublishQueueItem,
-  contacts: IContact[],
   bot: Telegraf<BotContext>
 ) => {
   try {
@@ -82,11 +80,12 @@ export const publishVacancyToChannel = async (
       throw Error("vacancy not found");
     }
 
-    const whitelistedContacts = contacts.filter(({ chat_id }) =>
-      config.botContactsWhitelist.includes(chat_id)
-    );
-    for (const contact of whitelistedContacts) {
-      await sendToContact(vacancy, contact, bot);
+    if (!config.botContactsList.length) {
+      throw Error("contact list is empty")
+    }
+
+    for (const contactId of config.botContactsList) {
+      await sendToContact(vacancy, contactId, bot);
     }
 
     // waits MINUTES_BETWEEN_PUBLISHING minutes

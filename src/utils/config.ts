@@ -5,8 +5,8 @@ export interface IConfig {
   botToken?: string;
   dbUrl?: string;
 
-  // whitelist of Tg chat IDs to publish vacancies to
-  botContactsWhitelist: string[];
+  // contacts list of Tg chat IDs to publish vacancies to
+  botContactsList: string[];
   // number of hours, if undefined or zero publishing by timer won't work
   publishInterval: number;
   // time (in minutes) between publishing vacancy of bunch of vacancies from publish queue
@@ -20,7 +20,7 @@ const buildConfig = (): IConfig => ({
   dbUrl: process.env.DB_URL,
   botToken: process.env.BOT_TOKEN,
 
-  botContactsWhitelist: (process.env.BOT_CONTACTS_WHITELIST || "")
+  botContactsList: (process.env.BOT_CONTACTS || "")
     .split(",")
     .filter(Boolean),
   publishInterval: Number(process.env.PUBLISH_INTERVAL || 0),

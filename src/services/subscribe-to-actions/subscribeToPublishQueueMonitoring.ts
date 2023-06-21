@@ -3,7 +3,6 @@ import { Telegraf } from "telegraf";
 import { PublishVacancyService, logger } from "../index";
 import PublishQueueItemModel from "../../schemas/publish_queue";
 import config from "../../utils/config";
-import ContactModel from "../../schemas/contact";
 import { BotContext } from "../../types/context";
 
 export const subscribeToPublishQueueMonitoring = (
@@ -33,16 +32,9 @@ export const subscribeToPublishQueueMonitoring = (
           `Publish queue - ${publishQueueItems.length} vacancies are waiting to be published`
         );
 
-        const contactsToMessage = await ContactModel.findAll({
-          where: {
-            removed: false,
-          },
-        });
-
         for (const publishQueueItem of publishQueueItems) {
-          await PublishVacancyService.publishVacancyToChannel(
+          await PublishVacancyService.publishVacancyToChannels(
             publishQueueItem,
-            contactsToMessage,
             bot
           );
 

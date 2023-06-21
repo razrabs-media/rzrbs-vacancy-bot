@@ -9,8 +9,6 @@ import { BotService, SubscribeToActionsService, logger } from "./services";
 import { BotCommandDescription, BotCommands } from "./constants/actions";
 import VacancyModel from "./schemas/vacancy";
 import PublishQueueItemModel from "./schemas/publish_queue";
-import ContactModel from "./schemas/contact";
-import { ChatType } from "./types/bot_contact";
 import config from "./utils/config";
 
 if (!config.botToken) {
@@ -21,7 +19,6 @@ import "./connectToDatabase";
 
 VacancyModel.sync();
 PublishQueueItemModel.sync();
-ContactModel.sync();
 
 const bot = new Telegraf<BotContext>(config.botToken);
 
@@ -55,16 +52,6 @@ bot.telegram.setMyCommands([
 SubscribeToActionsService.subscribeToCommands(bot);
 
 bot.on(message("text"), SubscribeToActionsService.subscribeToTextMessage);
-
-bot.on("channel_post", async (ctx) => {
-  const { id, title, type } = ctx?.update?.channel_post?.chat || {};
-
-  await BotService.addToContacts({
-    id: id.toString(),
-    title,
-    type: type as ChatType,
-  });
-});
 
 SubscribeToActionsService.subscribeToButtonActions(bot);
 const timerId =
