@@ -7,7 +7,15 @@ if (!config.dbUrl) {
 }
 
 const sequelize = new Sequelize(config.dbUrl, {
+  dialect: "postgres",
+  protocol: "postgres",
   logging: (str) => logger.debug(`DB >>> ${str}`),
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
 });
 
 sequelize
