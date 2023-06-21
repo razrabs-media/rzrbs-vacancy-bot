@@ -6,7 +6,15 @@ if (!process.env.DB_URL) {
 }
 
 const sequelize = new Sequelize(process.env.DB_URL, {
+  dialect: "postgres",
+  protocol: "postgres",
   logging: (str) => logger.debug(`DB >>> ${str}`),
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
 });
 
 sequelize
