@@ -1,7 +1,7 @@
-import { VacancyFieldLabel } from "../../constants/labels";
-import { IVacancyParsed } from "../../types/vacancy";
+import { VacancyFieldLabel } from "../constants/labels";
+import { IVacancyParsed } from "../types/vacancy";
 
-export const getParsedVacancyPreviewMsg = ({
+export const buildMessageFromVacancy = ({
   title,
   description,
   company_name,
@@ -30,7 +30,7 @@ export const getParsedVacancyPreviewMsg = ({
           salary_amount_to
             ? `до ${salary_amount_to}${salary_currency || ""}`
             : ""
-        }\n`
+        }${salary_type ? ` (${salary_type})` : ""}\n`
       : "";
 
   return (

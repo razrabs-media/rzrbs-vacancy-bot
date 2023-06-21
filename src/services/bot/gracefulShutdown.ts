@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import db from "../../connectToDatabase";
 import logger from "../logger";
 
@@ -20,7 +19,7 @@ export const gracefulShutdown = ({
     })
     .catch(() => {
       logger.error("Failed DB connection closing, trying again");
-      return mongoose.connection.close();
+      return db.close();
     })
     .finally(() => {
       logger.info("Done");

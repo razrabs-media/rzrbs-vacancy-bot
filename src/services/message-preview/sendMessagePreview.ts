@@ -2,7 +2,7 @@ import { Markup } from "telegraf";
 import { ActionButtonLabels, BotActions } from "../../constants/actions";
 import { IVacancyParsed } from "../../types/vacancy";
 import { EmploymentType, FormatOfWork } from "../../constants/vacancy";
-import { getParsedVacancyPreviewMsg } from "./getParsedVacancyPreviewMsg";
+import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
 import { createNewVacancy } from "./createNewVacancy";
 import logger from "../logger";
 
@@ -52,7 +52,7 @@ export const sendMessagePreview = async (
     const response = await ctx.replyWithPhoto(
       "https://picsum.photos/200/300/?random", // TODO: remove it
       {
-        caption: getParsedVacancyPreviewMsg(parsedVacancy),
+        caption: buildMessageFromVacancy(parsedVacancy),
         ...replyMarkupButtons,
       }
     );

@@ -9,8 +9,9 @@ import { BotService, SubscribeToActionsService, logger } from "./services";
 import { BotCommandDescription, BotCommands } from "./constants/actions";
 import VacancyModel from "./schemas/vacancy";
 import PublishQueueItemModel from "./schemas/publish_queue";
+import config from "./utils/config";
 
-if (!process.env.BOT_TOKEN) {
+if (!config.botToken) {
   throw Error("Failed to start, BOT_TOKEN is missing");
 }
 
@@ -19,7 +20,7 @@ import "./connectToDatabase";
 VacancyModel.sync();
 PublishQueueItemModel.sync();
 
-const bot = new Telegraf<BotContext>(process.env.BOT_TOKEN!);
+const bot = new Telegraf<BotContext>(config.botToken);
 
 // catches any bot errors
 bot.catch(BotService.handleErrors);
@@ -31,9 +32,7 @@ bot.start(async (ctx) => {
     `но убедись в наличии необходимых полей, ` +
     `указанных в шаблоне (/template) — я проверяю каждое сообщение.\n` +
     `\n` +
-    `Разместить бесплатно можно до ${Number(
-      process.env.MONTH_VACANCY_LIMIT || 1
-    )} ` +
+    `Разместить бесплатно можно до ${config.monthVacancyLimit} ` +
     `сообщений в месяц. Я считаю по количеству объявлений от тебя и ` +
     `указананной компании. Для размещения большего ` +
     `числа вакансий, другому виду сотрудничества или, в случае ` +
@@ -55,7 +54,8 @@ SubscribeToActionsService.subscribeToCommands(bot);
 bot.on(message("text"), SubscribeToActionsService.subscribeToTextMessage);
 
 SubscribeToActionsService.subscribeToButtonActions(bot);
-const timerId = SubscribeToActionsService.subscribeToPublishQueueMonitoring();
+const timerId =
+  SubscribeToActionsService.subscribeToPublishQueueMonitoring(bot);
 
 bot.launch();
 logger.info("Bot is listening...");

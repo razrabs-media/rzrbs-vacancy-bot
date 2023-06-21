@@ -1,4 +1,4 @@
-import { IVacancy } from "./vacancy";
+import { Model } from "sequelize";
 
 export interface IPublishQueueItem {
   time_to_publish: Date;
@@ -6,5 +6,13 @@ export interface IPublishQueueItem {
   vacancy_id: number;
   removed: boolean;
   published: boolean;
-  tg_group_message_link?: string;
 }
+
+// interface is not the same with IPublishQueueItem
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IPublishQueueItemCreationAttributes
+  extends Omit<IPublishQueueItem, "id" | "removed" | "published"> {}
+
+export interface IPublishQueueModel
+  extends Model<IPublishQueueItem, IPublishQueueItemCreationAttributes>,
+    IPublishQueueItem {}

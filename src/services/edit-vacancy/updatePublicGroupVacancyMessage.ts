@@ -1,5 +1,5 @@
 import { IVacancy } from "../../types/vacancy";
-import { getParsedVacancyPreviewMsg } from "../message-preview/getParsedVacancyPreviewMsg";
+import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
 
 // change message in group
 // TODO: https://github.com/openworld-community/rzrbs-vacancy-bot/issues/13
@@ -13,6 +13,6 @@ export const updatePublicGroupVacancyMessage = async ({
   await ctx.telegram.editMessageCaption(
     vacancy.published_tg_chat_id,
     vacancy.published_tg_message_id,
-    getParsedVacancyPreviewMsg(vacancy)
+    buildMessageFromVacancy(vacancy)
   );
 };

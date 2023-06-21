@@ -1,6 +1,6 @@
 import { Markup } from "telegraf";
 import { IVacancy } from "../../types/vacancy";
-import { getParsedVacancyPreviewMsg } from "../message-preview/getParsedVacancyPreviewMsg";
+import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
 import { ActionButtonLabels, BotActions } from "../../constants/actions";
 import { getStructuredEditableVacancyText } from "../publish-vacancy/getStructuredEditableVacancyText";
 import logger from "../logger";
@@ -38,7 +38,7 @@ export const updatePrivateVacancyMessage = async ({
       chatId,
       messageId,
       undefined,
-      getParsedVacancyPreviewMsg(vacancy),
+      buildMessageFromVacancy(vacancy),
       updatedInlineMarkup
     );
 

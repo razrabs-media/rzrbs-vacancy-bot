@@ -1,14 +1,20 @@
-import { logger } from "../index";
-import PublishQueueItemModel from "../../schemas/publish_queue";
+import { Telegraf } from "telegraf";
 
-export const subscribeToPublishQueueMonitoring = () => {
-  if (!process.env.PUBLISH_INTERVAL) {
+import { PublishVacancyService, logger } from "../index";
+import PublishQueueItemModel from "../../schemas/publish_queue";
+import config from "../../utils/config";
+import { BotContext } from "../../types/context";
+
+export const subscribeToPublishQueueMonitoring = (
+  bot: Telegraf<BotContext>
+) => {
+  if (!config.publishInterval) {
     logger.warn("WARN: Publish queue won't work until PUBLISH_INTERVAL is set");
     return;
   }
 
   logger.info(
-    `Subscribed to check publish queue each ${process.env.PUBLISH_INTERVAL} hours`
+    `Subscribed to check publish queue each ${config.publishInterval} hours`
   );
   return setInterval(async () => {
     try {
@@ -25,8 +31,13 @@ export const subscribeToPublishQueueMonitoring = () => {
         logger.info(
           `Publish queue - ${publishQueueItems.length} vacancies are waiting to be published`
         );
-        // TODO: add publish logic
-        // https://github.com/openworld-community/rzrbs-vacancy-bot/issues/13
+
+        for (const publishQueueItem of publishQueueItems) {
+          await PublishVacancyService.publishVacancyToChannels(
+            publishQueueItem,
+            bot
+          );
+        }
       }
     } catch (err) {
       logger.error(
@@ -36,5 +47,5 @@ export const subscribeToPublishQueueMonitoring = () => {
       );
     }
     // PUBLISH_INTERVAL hours
-  }, 1000 * 60 * 60 * Number(process.env.PUBLISH_INTERVAL));
+  }, 1000 * 60 * 60 * config.publishInterval);
 };

@@ -16,7 +16,9 @@ export const VacancyModel = db.define<IVacancyModel>(
       type: DataTypes.STRING(2000),
       validate: { notEmpty: true, len: [0, 2000] },
     },
-    published_at: DataTypes.DATE,
+    published_tg_message_id: DataTypes.ARRAY(DataTypes.STRING),
+    published_tg_chat_id: DataTypes.ARRAY(DataTypes.STRING),
+    publishedAt: DataTypes.DATE,
     published: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -39,8 +41,6 @@ export const VacancyModel = db.define<IVacancyModel>(
     },
     tg_message_id: { type: DataTypes.INTEGER, validate: { notEmpty: true } },
     tg_chat_id: { type: DataTypes.INTEGER, validate: { notEmpty: true } },
-    published_tg_message_id: DataTypes.INTEGER,
-    published_tg_chat_id: DataTypes.INTEGER,
     hiring_process: DataTypes.STRING,
     location: DataTypes.STRING,
     contact_info: {
