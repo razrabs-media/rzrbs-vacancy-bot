@@ -1,5 +1,5 @@
 import { Markup } from "telegraf";
-import { IVacancy } from "../../types/vacancy";
+import { IVacancyModel } from "../../types/vacancy";
 import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
 import { ActionButtonLabels, BotActions } from "../../constants/actions";
 import { getStructuredEditableVacancyText } from "../publish-vacancy/getStructuredEditableVacancyText";
@@ -16,7 +16,7 @@ export const updatePrivateVacancyMessage = async ({
   chatId: number;
   messageId: number;
   fromUsername: string;
-  vacancy: IVacancy;
+  vacancy: IVacancyModel;
 }) => {
   try {
     const updatedInlineMarkup = Markup.inlineKeyboard([
@@ -34,7 +34,7 @@ export const updatePrivateVacancyMessage = async ({
       ),
     ]);
 
-    await ctx.telegram.editMessageCaption(
+    await ctx.telegram.editMessageText(
       chatId,
       messageId,
       undefined,

@@ -49,10 +49,9 @@ export const sendMessagePreview = async (
       throw Error("cannot retrieve message_id, chat.id of from.username");
     }
 
-    const response = await ctx.replyWithPhoto(
-      "https://picsum.photos/200/300/?random", // TODO: remove it
+    const response = await ctx.sendMessage(
+      buildMessageFromVacancy(parsedVacancy),
       {
-        caption: buildMessageFromVacancy(parsedVacancy),
         ...replyMarkupButtons,
       }
     );

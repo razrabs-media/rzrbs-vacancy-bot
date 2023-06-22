@@ -8,12 +8,9 @@ import VacancyModel from "../../schemas/vacancy";
 import config from "../../utils/config";
 import { wait } from "../../utils/wait";
 import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
+import bot from "../../launchBot";
 
-const sendToContact = async (
-  vacancy: IVacancy,
-  chatId: string,
-  bot: Telegraf<BotContext>
-) => {
+const sendToContact = async (vacancy: IVacancy, chatId: string) => {
   try {
     logger.info(`Sending ${vacancy.id} vacancy to ${chatId}...`);
 
@@ -62,8 +59,7 @@ const sendToContact = async (
 };
 
 export const publishVacancyToChannels = async (
-  publishQueueItem: IPublishQueueModel,
-  bot: Telegraf<BotContext>
+  publishQueueItem: IPublishQueueModel
 ) => {
   try {
     const vacancy = await VacancyModel.findOne({
@@ -81,7 +77,7 @@ export const publishVacancyToChannels = async (
     }
 
     for (const contactId of config.botContactsList) {
-      await sendToContact(vacancy, contactId, bot);
+      await sendToContact(vacancy, contactId);
     }
 
     await publishQueueItem.set({

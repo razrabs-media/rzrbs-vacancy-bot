@@ -1,8 +1,7 @@
-import { Telegraf } from "telegraf";
-import { BotContext } from "../../types/context";
 import { BotService } from "..";
 import { BotCommands } from "../../constants/actions";
+import bot from "../../launchBot";
 
-export const subscribeToCommands = (bot: Telegraf<BotContext>) => {
+export const subscribeToCommands = () => {
   bot.command(BotCommands.Template, BotService.sendVacancyTemplateMessage);
 };

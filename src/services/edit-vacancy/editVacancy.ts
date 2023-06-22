@@ -1,9 +1,10 @@
+import { Telegraf } from "telegraf";
 import Vacancies from "../../schemas/vacancy";
-import { IVacancy } from "../../types/vacancy";
 import logger from "../logger";
 import { parseUpdatedFieldsFromText } from "./parseUpdatedFieldsFromText";
 import { updatePrivateVacancyMessage } from "./updatePrivateVacancyMessage";
 import { updatePublicGroupVacancyMessage } from "./updatePublicGroupVacancyMessage";
+import { BotContext } from "../../types/context";
 
 interface IExistingVacancy {
   messageId: number;
@@ -15,6 +16,7 @@ export const onVacancyEdit = async (
   { messageId, updatedText }: IExistingVacancy
 ) => {
   const { from, chat } = ctx?.update?.message || {};
+  let vacancyTitle = "";
 
   try {
     if (!messageId || !chat?.id || !from?.username) {
@@ -36,6 +38,7 @@ export const onVacancyEdit = async (
     if (!vacancy) {
       throw Error(`Vacancy not found`);
     }
+    vacancyTitle = vacancy.title;
 
     const updatedVacancyFields = parseUpdatedFieldsFromText(
       vacancy,
@@ -46,10 +49,10 @@ export const onVacancyEdit = async (
     for (const key in updatedVacancyFields) {
       vacancy[key] = updatedVacancyFields[key];
     }
-    const updatedVacancy = (await vacancy.save()) as IVacancy;
+    const updatedVacancy = await vacancy.save();
 
     logger.info(
-      `Vacancy updated, updating message in private chat with bot...`
+      `Vacancy ${vacancy.id} updated, updating message in private chat with bot...`
     );
     await updatePrivateVacancyMessage({
       ctx,
@@ -61,16 +64,22 @@ export const onVacancyEdit = async (
 
     // change message in group
     if (vacancy.published) {
-      logger.info(`Vacancy is published, updating vacancy in group channel`);
-      await updatePublicGroupVacancyMessage({ ctx, vacancy: updatedVacancy });
+      logger.info(
+        `Vacancy ${vacancy.id} is published, updating vacancy in group channel`
+      );
+      await updatePublicGroupVacancyMessage({ vacancy: updatedVacancy });
     }
+
+    await vacancy.set({ edited: true });
+    await vacancy.save();
+    logger.info(`Vacancy ${vacancy.id} marked as edited`);
 
     await ctx.deleteMessage();
   } catch (err) {
     const errMessage = (err as Error)?.message || JSON.stringify(err);
 
     await ctx.reply(
-      `Не удалось отредактировать вакансию, попробуйте еще раз - ${errMessage}`
+      `Не удалось отредактировать вакансию "${vacancyTitle}", попробуйте еще раз - ${errMessage}`
     );
     await ctx.deleteMessage();
 
