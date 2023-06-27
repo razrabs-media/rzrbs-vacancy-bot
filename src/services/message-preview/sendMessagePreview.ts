@@ -1,10 +1,11 @@
 import { Markup } from "telegraf";
+
 import { ActionButtonLabels, BotActions } from "../../constants/actions";
-import { IVacancyParsed } from "../../types/vacancy";
 import { EmploymentType, FormatOfWork } from "../../constants/vacancy";
+import { IVacancyParsed } from "../../types/vacancy";
 import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
-import { createNewVacancy } from "./createNewVacancy";
 import logger from "../logger";
+import { createNewVacancy } from "./createNewVacancy";
 
 const MOCK_VACANCY: IVacancyParsed = {
   title: "Mock vacancy title",

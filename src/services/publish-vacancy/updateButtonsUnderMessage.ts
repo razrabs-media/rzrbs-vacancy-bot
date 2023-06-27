@@ -1,4 +1,5 @@
 import { Markup } from "telegraf";
+
 import { ActionButtonLabels, BotActions } from "../../constants/actions";
 import logger from "../logger";
 import { getStructuredEditableVacancyText } from "./getStructuredEditableVacancyText";

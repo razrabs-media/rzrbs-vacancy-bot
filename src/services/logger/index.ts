@@ -1,6 +1,7 @@
 import winston, { format } from "winston";
-import config from "../../utils/config";
+
 import { Environment } from "../../types/common";
+import config from "../../utils/config";
 
 const logger = winston.createLogger({
   level: "info",
@@ -15,18 +16,18 @@ const logger = winston.createLogger({
     )
   ),
   transports: [
-    //
     // - Write all logs with importance level of `error` or less to `error.log`
     // - Write all logs with importance level of `info` or less to `combined.log`
-    //
-    new winston.transports.File({ filename: "debug.log", level: "debug" }),
     new winston.transports.File({ filename: "error.log", level: "error" }),
     new winston.transports.File({ filename: "combined.log" }),
+    new winston.transports.Console(),
   ],
 });
 
 if (config.environment !== Environment.Prod) {
-  logger.add(new winston.transports.Console());
+  logger.add(
+    new winston.transports.File({ filename: "debug.log", level: "debug" })
+  );
 }
 
 logger.info.bind(logger);

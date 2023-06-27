@@ -1,10 +1,10 @@
-import {
-  PublishVacancyService,
-  RevokeVacancyService,
-  CancelVacancyService,
-} from "../index";
 import { BotActions } from "../../constants/actions";
 import bot from "../../launchBot";
+import {
+  CancelVacancyService,
+  PublishVacancyService,
+  RevokeVacancyService,
+} from "../index";
 
 export const subscribeToButtonActions = () => {
   bot.action(BotActions.PublishVacancy, PublishVacancyService.onPublishVacancy);

@@ -1,4 +1,5 @@
 import { Sequelize } from "sequelize";
+
 import logger from "./services/logger";
 import config from "./utils/config";
 

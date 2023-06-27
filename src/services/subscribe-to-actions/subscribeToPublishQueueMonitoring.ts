@@ -1,6 +1,6 @@
-import { PublishVacancyService, logger } from "../index";
 import PublishQueueItemModel from "../../schemas/publish_queue";
 import config from "../../utils/config";
+import { PublishVacancyService, logger } from "../index";
 
 export const subscribeToPublishQueueMonitoring = () => {
   if (!config.publishInterval) {

@@ -1,14 +1,11 @@
-import { Telegraf } from "telegraf";
-
-import { BotContext } from "../../types/context";
-import { IVacancy } from "../../types/vacancy";
-import logger from "../logger";
-import { IPublishQueueModel } from "../../types/publish_queue";
+import bot from "../../launchBot";
 import VacancyModel from "../../schemas/vacancy";
+import { IPublishQueueModel } from "../../types/publish_queue";
+import { IVacancy } from "../../types/vacancy";
+import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
 import config from "../../utils/config";
 import { wait } from "../../utils/wait";
-import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
-import bot from "../../launchBot";
+import logger from "../logger";
 
 const sendToContact = async (vacancy: IVacancy, chatId: string) => {
   try {

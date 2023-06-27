@@ -1,7 +1,7 @@
+import bot from "../../launchBot";
 import { IVacancyModel } from "../../types/vacancy";
 import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
 import logger from "../logger";
-import bot from "../../launchBot";
 
 export const updatePublicGroupVacancyMessage = async ({
   vacancy,

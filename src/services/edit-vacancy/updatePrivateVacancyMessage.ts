@@ -1,9 +1,11 @@
-import { Markup } from "telegraf";
+import { Markup, Telegraf } from "telegraf";
+
+import { ActionButtonLabels, BotActions } from "../../constants/actions";
+import { BotContext } from "../../types/context";
 import { IVacancyModel } from "../../types/vacancy";
 import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
-import { ActionButtonLabels, BotActions } from "../../constants/actions";
-import { getStructuredEditableVacancyText } from "../publish-vacancy/getStructuredEditableVacancyText";
 import logger from "../logger";
+import { getStructuredEditableVacancyText } from "../publish-vacancy/getStructuredEditableVacancyText";
 
 export const updatePrivateVacancyMessage = async ({
   ctx,
@@ -12,7 +14,7 @@ export const updatePrivateVacancyMessage = async ({
   fromUsername,
   vacancy,
 }: {
-  ctx: any;
+  ctx: Telegraf<BotContext>;
   chatId: number;
   messageId: number;
   fromUsername: string;
