@@ -1,7 +1,6 @@
 import { Model } from "sequelize";
 
 export interface IPublishQueueItem {
-  time_to_publish: Date;
   id: number;
   vacancy_id: number;
   removed: boolean;

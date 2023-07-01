@@ -1,10 +1,11 @@
 import db from "../../connectToDatabase";
+import { clearDailyPublishInterval } from "../../utils/dailyPublishInterval";
 import logger from "../logger";
 
 export const gracefulShutdown = ({
   publishQueueTimerId,
 }: {
-  publishQueueTimerId: NodeJS.Timer | undefined;
+  publishQueueTimerId: NodeJS.Timer | number | undefined;
 }) => {
   logger.info("Shutdown...");
 
@@ -12,6 +13,9 @@ export const gracefulShutdown = ({
     clearInterval(publishQueueTimerId);
     logger.info("Publish queue monitoring finished");
   }
+
+  clearDailyPublishInterval();
+  logger.info("Publish queue daily publish timer cleared");
 
   db.close()
     .then(() => {

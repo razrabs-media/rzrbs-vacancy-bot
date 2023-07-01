@@ -1,7 +1,7 @@
 import PublishQueueItemModel from "../../schemas/publish_queue";
 import VacancyModel from "../../schemas/vacancy";
 import logger from "../logger";
-import { updateButtonsUnderMessage } from "./updateButtonsUnderMessage";
+import { updateButtonsUnderMessage } from "./utils/updateButtonsUnderMessage";
 
 /**
  * Adds vacancy to publish queue.
@@ -29,8 +29,6 @@ export const onPublishVacancy = async (ctx) => {
 
     const newQueueItem = await PublishQueueItemModel.create({
       vacancy_id: vacancy.id,
-      // TODO: add custom time
-      time_to_publish: new Date(),
     });
 
     if (!newQueueItem) {
