@@ -42,9 +42,14 @@ export const countPublishIntervalForVacanciesPool =
 
         const [from, to] = schedule[weekDay];
         let hourPointer = from;
+        let dailyVacanciesAmount = 0;
 
-        while (hourPointer <= to) {
+        while (
+          hourPointer <= to &&
+          dailyVacanciesAmount <= config.publishConfig.dailyVacancyLimit
+        ) {
           availableVacanciesToPublish++;
+          dailyVacanciesAmount++;
           hourPointer += currentIntervalHours;
         }
       }
