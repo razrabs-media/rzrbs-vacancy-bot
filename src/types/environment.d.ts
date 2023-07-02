@@ -11,7 +11,6 @@ declare global {
       BOT_CONTACTS?: string;
       MIN_PUBLISH_INTERVAL?: string;
       PUBLISH_INTERVAL?: string;
-      MONTH_VACANCY_LIMIT?: string;
       USER_MONTH_VACANCY_LIMIT?: string;
       DAILY_VACANCY_LIMIT?: string;
       PUBLISH_CONFIG?: string;

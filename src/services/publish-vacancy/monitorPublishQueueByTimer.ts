@@ -25,7 +25,10 @@ export const monitorPublishQueueByTimer = async (
     }
   }
 
-  if (params?.initialExecution || currentHour === from) {
+  const shouldStartAnalysisWithInitialExec =
+    params?.initialExecution && currentHour >= from && currentHour <= to;
+
+  if (shouldStartAnalysisWithInitialExec || currentHour === from) {
     logger.info(`Publish Queue: analysis by timer...`);
     const publishInterval = await countPublishIntervalForVacanciesPool();
 
@@ -41,6 +44,11 @@ export const monitorPublishQueueByTimer = async (
         publishNextVacancyFromQueue,
         getTimePeriodInMilliseconds(publishInterval, TimePeriod.Hours)
       )
+    );
+  } else if (!shouldStartAnalysisWithInitialExec) {
+    logger.info(
+      `Publish Queue: analysis wasnt't started with initial execution of monitoring, ` +
+        `because now is outside of working hours`
     );
   }
 };

@@ -1,3 +1,4 @@
+import { vacancyLimitExceededMessageText } from "../../constants/messages";
 import PublishQueueItemModel from "../../schemas/publish_queue";
 import VacancyModel from "../../schemas/vacancy";
 import config from "../../utils/config";
@@ -32,10 +33,8 @@ export const onPublishVacancy = async (ctx) => {
     const isPublishingAllowed = await isPublishingAllowedForUser(chat.username);
 
     if (isPublishingAllowed) {
-      ctx.sendMessage(
-        `Извините, вы можете публиковать только ${config.publishConfig.userMonthVacancyLimit} в месяц. ` +
-          `Вакансия не была добавлена в очередь на публикацию`
-      );
+      await ctx.sendMessage(vacancyLimitExceededMessageText);
+
       logger.warn(
         `User ${chat.username} tried to exceed user monthly limit ${config.publishConfig.userMonthVacancyLimit}`
       );

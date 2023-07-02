@@ -26,3 +26,7 @@ export const vacancyTemplateHTMLMessageText =
   `<strong>${VacancyFieldLabel.Contacts}</strong>: Любая контактная информация, по которой можно связаться о вакансии (номер телефона, почта, ник в Telegram)\n` +
   `\n` +
   `<strong>${VacancyFieldLabel.Description}</strong>: Всё, что описывает вакансию, обязанности и предложения`;
+
+export const vacancyLimitExceededMessageText =
+  `Извините, вы можете публиковать только ${config.publishConfig.userMonthVacancyLimit} вакансии в месяц. ` +
+  `Вакансия не была добавлена в очередь на публикацию`;
