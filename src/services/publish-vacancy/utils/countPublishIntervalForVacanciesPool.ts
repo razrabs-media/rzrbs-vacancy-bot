@@ -20,7 +20,9 @@ export const countPublishIntervalForVacanciesPool =
     const publishQueueItemsLength = await getPublishQueueLength();
 
     if (!publishQueueItemsLength) {
-      return publishInterval;
+      return publishInterval > minPublishInterval
+        ? publishInterval
+        : minPublishInterval;
     }
 
     const twoWeeksDays = getTwoWeeksDaysArray();

@@ -1,16 +1,17 @@
 import { TimePeriod } from "../../constants/common";
 import config from "../../utils/config";
-import { setDailyPublishInterval } from "../../utils/dailyPublishInterval";
 import { getTimePeriodInMilliseconds } from "../../utils/getTimePeriodInMilliseconds";
 import { getTodayWeekDay } from "../../utils/getTodayWeekDay";
+import { setDailyPublishInterval } from "../../utils/publishInterval";
+import { getCurrentHours } from "../../utils/time";
 import logger from "../logger";
 import { publishNextVacancyFromQueue } from "./publishNextVacancyFromQueue";
 import { countPublishIntervalForVacanciesPool } from "./utils/countPublishIntervalForVacanciesPool";
 
-export const monitorPublishQueueByTimer = async (
-  params: { initialExecution?: boolean } | undefined
-) => {
-  const currentHour = new Date().getHours();
+export const monitorPublishQueueByTimer = async (params?: {
+  initialExecution?: boolean;
+}) => {
+  const currentHour = getCurrentHours();
   const currentWeekDay = getTodayWeekDay();
   const [from, to] = config.publishConfig.schedule[currentWeekDay] || [];
 
@@ -26,7 +27,7 @@ export const monitorPublishQueueByTimer = async (
   }
 
   const shouldStartAnalysisWithInitialExec =
-    params?.initialExecution && currentHour >= from && currentHour <= to;
+    params?.initialExecution && currentHour >= from && currentHour < to;
 
   if (shouldStartAnalysisWithInitialExec || currentHour === from) {
     logger.info(`Publish Queue: analysis by timer...`);
@@ -45,7 +46,7 @@ export const monitorPublishQueueByTimer = async (
         getTimePeriodInMilliseconds(publishInterval, TimePeriod.Hours)
       )
     );
-  } else if (!shouldStartAnalysisWithInitialExec) {
+  } else if (params?.initialExecution && !shouldStartAnalysisWithInitialExec) {
     logger.info(
       `Publish Queue: analysis wasnt't started with initial execution of monitoring, ` +
         `because now is outside of working hours`

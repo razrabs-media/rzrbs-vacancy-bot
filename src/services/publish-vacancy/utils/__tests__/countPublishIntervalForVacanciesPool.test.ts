@@ -52,6 +52,14 @@ describe("countPublishIntervalForVacanciesPool", () => {
     expect(await countPublishIntervalForVacanciesPool()).toBe(1);
   });
 
+  it("should return config.minPublishInterval if config.publishInterval is less than minPublishInterval", async () => {
+    (getPublishQueueLength as jest.Mock).mockResolvedValueOnce(0);
+    config.publishConfig.publishInterval = 1;
+    config.publishConfig.minPublishInterval = 10;
+
+    expect(await countPublishIntervalForVacanciesPool()).toBe(10);
+  });
+
   describe("util/getTwoWeeksDaysArray", () => {
     it("should return array with 14 week days name including today - %s", () => {
       (getTodayWeekDay as jest.Mock).mockReturnValueOnce(WeekDay.Saturday);

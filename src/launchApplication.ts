@@ -31,7 +31,7 @@ SubscribeToActionsService.subscribeToCommands();
 bot.on(message("text"), SubscribeToActionsService.subscribeToTextMessage);
 
 SubscribeToActionsService.subscribeToButtonActions();
-const timerId = SubscribeToActionsService.subscribeToPublishQueueMonitoring();
+SubscribeToActionsService.subscribeToPublishQueueMonitoring();
 
 bot.launch();
 logger.info("Bot is listening...");
@@ -39,14 +39,10 @@ logger.info("Bot is listening...");
 // Enable graceful stop
 process.once("SIGINT", () => {
   bot.stop("SIGINT");
-  BotService.gracefulShutdown({
-    publishQueueTimerId: timerId,
-  });
+  BotService.gracefulShutdown();
 });
 
 process.once("SIGTERM", () => {
   bot.stop("SIGTERM");
-  BotService.gracefulShutdown({
-    publishQueueTimerId: timerId,
-  });
+  BotService.gracefulShutdown();
 });
