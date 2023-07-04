@@ -4,6 +4,18 @@ export const getTimePeriodInMilliseconds = (
   timePeriod: number,
   periodType: TimePeriod
 ): number => {
+  if (typeof timePeriod !== "number" || Number.isNaN(timePeriod)) {
+    throw TypeError("getTimePeriodInMilliseconds: time value is not a number");
+  }
+
+  if (timePeriod < 0) {
+    throw Error("getTimePeriodInMilliseconds: time value is less than zero");
+  }
+
+  if (timePeriod === 0) {
+    return 0;
+  }
+
   let result = timePeriod * 60 * 1000;
 
   if (periodType === TimePeriod.Minutes) {

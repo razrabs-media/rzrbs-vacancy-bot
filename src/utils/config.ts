@@ -42,7 +42,7 @@ const buildConfig = (): IConfig => ({
   botToken: process.env.BOT_TOKEN,
   botContactsList: (process.env.BOT_CONTACTS || "").split(",").filter(Boolean),
   publishConfig: {
-    schedule: JSON.parse(process.env.PUBLISH_CONFIG || ""),
+    schedule: JSON.parse(process.env.PUBLISH_CONFIG || "{}"),
     dailyVacancyLimit: Number(process.env.DAILY_VACANCY_LIMIT || 2),
     minPublishInterval: Number(process.env.MIN_PUBLISH_INTERVAL || 2),
     publishInterval: Number(process.env.PUBLISH_INTERVAL || 5),
