@@ -5,7 +5,8 @@
   "main": "index.ts",
   "scripts": {
     "build": "tsc",
-    "start": "nodemon src/index.ts",
+    "start": "ts-node src/index.ts",
+    "dev": "nodemon src/index.ts",
     "test": "jest",
     "lint": "eslint . --ext .ts",
     "prettier": "prettier --write .",
@@ -27,6 +28,7 @@
   },
   "dependencies": {
     "dotenv": "^16.0.3",
+    "openai": "^3.3.0",
     "pg": "^8.11.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.32.0",

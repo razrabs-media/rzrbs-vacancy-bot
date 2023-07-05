@@ -15,6 +15,8 @@ declare global {
       USER_MONTH_VACANCY_LIMIT?: string | number;
       DAILY_VACANCY_LIMIT?: string | number;
       PUBLISH_CONFIG?: string;
+      OPENAI_ORGANIZATION_ID: string;
+      OPENAI_API_KEY: string;
     }
   }
 }

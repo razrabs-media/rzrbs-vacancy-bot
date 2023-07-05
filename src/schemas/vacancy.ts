@@ -70,6 +70,7 @@ export const VacancyModel = db.define<IVacancyModel>(
     format_of_work_description: DataTypes.STRING,
 
     company_name: { type: DataTypes.STRING, allowNull: false },
+    company_description: DataTypes.STRING,
 
     author_username: {
       type: DataTypes.STRING,
