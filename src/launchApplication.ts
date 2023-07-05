@@ -7,6 +7,11 @@ import bot from "./launchBot";
 import PublishQueueItemModel from "./schemas/publish_queue";
 import VacancyModel from "./schemas/vacancy";
 import { BotService, SubscribeToActionsService, logger } from "./services";
+import config from "./utils/config";
+
+if (!config.botConsultantUsername) {
+  logger.warn("Variable BOT_CONSULTANT_USERNAME is missing");
+}
 
 VacancyModel.sync();
 PublishQueueItemModel.sync();

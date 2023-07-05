@@ -25,6 +25,7 @@ describe("utils/config", () => {
         dbUrl: "postgres://test-path:5432/mydb",
         dbSslEnabled: false,
         botContactsList: ["chat1", "chat2", "chat3"],
+        botConsultantUsername: "test_username",
         publishConfig: {
           dailyVacancyLimit: 10,
           minPublishInterval: 10,
@@ -55,6 +56,7 @@ describe("utils/config", () => {
       delete process.env.DAILY_VACANCY_LIMIT;
       delete process.env.PUBLISH_CONFIG;
       delete process.env.DB_SSL_ENABLED;
+      delete process.env.BOT_CONSULTANT_USERNAME;
 
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const config = require("../config").default;
@@ -65,6 +67,7 @@ describe("utils/config", () => {
         dbUrl: "postgres://test-path:5432/mydb",
         dbSslEnabled: true,
         botContactsList: [],
+        botConsultantUsername: "",
         publishConfig: {
           dailyVacancyLimit: 2,
           minPublishInterval: 2,

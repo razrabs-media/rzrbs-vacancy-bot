@@ -13,6 +13,7 @@
     APP_PORT=3000
     BOT_TOKEN=<token value>
     BOT_CONTACTS=chatId1,chatId2 # contacts list of Tg chat IDs to publish vacancies to
+    BOT_CONSULTANT_USERNAME=<username to show bot users for questions>
     DB_URL=<postgres://user:pass@example.com:5432/dbname>
     DB_SSL_ENABLED=<boolean> # true, by default
 

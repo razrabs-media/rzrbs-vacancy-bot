@@ -9,6 +9,7 @@ declare global {
       DB_SSL_ENABLED?: string;
       BOT_TOKEN?: string;
       BOT_CONTACTS?: string;
+      BOT_CONSULTANT_USERNAME?: string;
       MIN_PUBLISH_INTERVAL?: string | number;
       PUBLISH_INTERVAL?: string | number;
       USER_MONTH_VACANCY_LIMIT?: string | number;

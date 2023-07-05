@@ -27,6 +27,4 @@ export const vacancyTemplateHTMLMessageText =
   `\n` +
   `<strong>${VacancyFieldLabel.Description}</strong>: Всё, что описывает вакансию, обязанности и предложения`;
 
-export const vacancyLimitExceededMessageText =
-  `Извините, вы можете публиковать только ${config.publishConfig.userMonthVacancyLimit} вакансии в месяц. ` +
-  `Вакансия не была добавлена в очередь на публикацию`;
+export const vacancyLimitExceededMessageText = `Достигнут лимит бесплатных публикаций в этом месяце. Свяжись с @${config.botConsultantUsername} чтобы разместить больше`;

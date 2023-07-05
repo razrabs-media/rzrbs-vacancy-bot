@@ -9,6 +9,8 @@ export interface IConfig {
 
   /** contacts list of Tg chat IDs to publish vacancies to */
   botContactsList: string[];
+  /** username to show bot users for questions */
+  botConsultantUsername: string;
   publishConfig: {
     /**
      * daily config of vacancy publishing in format `week day => 10h - 18h`
@@ -40,6 +42,7 @@ const buildConfig = (): IConfig => ({
       ? process.env.DB_SSL_ENABLED === "true"
       : true,
   botToken: process.env.BOT_TOKEN,
+  botConsultantUsername: process.env.BOT_CONSULTANT_USERNAME || "",
   botContactsList: (process.env.BOT_CONTACTS || "").split(",").filter(Boolean),
   publishConfig: {
     schedule: JSON.parse(process.env.PUBLISH_CONFIG || "{}"),
