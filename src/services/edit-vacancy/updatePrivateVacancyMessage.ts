@@ -5,7 +5,7 @@ import { BotContext } from "../../types/context";
 import { IVacancyModel } from "../../types/vacancy";
 import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
 import logger from "../logger";
-import { getStructuredEditableVacancyText } from "../publish-vacancy/getStructuredEditableVacancyText";
+import { getStructuredEditableVacancyText } from "../publish-vacancy/utils/getStructuredEditableVacancyText";
 
 export const updatePrivateVacancyMessage = async ({
   ctx,

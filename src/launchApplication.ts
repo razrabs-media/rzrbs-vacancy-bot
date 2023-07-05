@@ -2,11 +2,16 @@ import { message } from "telegraf/filters";
 
 import "./connectToDatabase";
 import { BotCommandDescription, BotCommands } from "./constants/actions";
+import { welcomeMessageText } from "./constants/messages";
 import bot from "./launchBot";
 import PublishQueueItemModel from "./schemas/publish_queue";
 import VacancyModel from "./schemas/vacancy";
 import { BotService, SubscribeToActionsService, logger } from "./services";
 import config from "./utils/config";
+
+if (!config.botConsultantUsername) {
+  logger.warn("Variable BOT_CONSULTANT_USERNAME is missing");
+}
 
 VacancyModel.sync();
 PublishQueueItemModel.sync();
@@ -15,19 +20,7 @@ PublishQueueItemModel.sync();
 bot.catch(BotService.handleErrors);
 
 bot.start(async (ctx) => {
-  const welcomeText =
-    `Привет! Это бот размещения вакансий в @razrabsjobs.\n` +
-    `Достаточно отправить текст, чтобы я сформировал объявление, ` +
-    `но убедись в наличии необходимых полей, ` +
-    `указанных в шаблоне (/template) — я проверяю каждое сообщение.\n` +
-    `\n` +
-    `Разместить бесплатно можно до ${config.monthVacancyLimit} ` +
-    `сообщений в месяц. Я считаю по количеству объявлений от тебя и ` +
-    `указананной компании. Для размещения большего ` +
-    `числа вакансий, другому виду сотрудничества или, в случае ` +
-    `возникновения проблем в работе со мной, — напиши админу канала.`;
-
-  await ctx.reply(welcomeText);
+  await ctx.reply(welcomeMessageText);
   await ctx.setChatMenuButton({ type: "commands" });
 });
 
@@ -43,7 +36,7 @@ SubscribeToActionsService.subscribeToCommands();
 bot.on(message("text"), SubscribeToActionsService.subscribeToTextMessage);
 
 SubscribeToActionsService.subscribeToButtonActions();
-const timerId = SubscribeToActionsService.subscribeToPublishQueueMonitoring();
+SubscribeToActionsService.subscribeToPublishQueueMonitoring();
 
 bot.launch();
 logger.info("Bot is listening...");
@@ -51,14 +44,10 @@ logger.info("Bot is listening...");
 // Enable graceful stop
 process.once("SIGINT", () => {
   bot.stop("SIGINT");
-  BotService.gracefulShutdown({
-    publishQueueTimerId: timerId,
-  });
+  BotService.gracefulShutdown();
 });
 
 process.once("SIGTERM", () => {
   bot.stop("SIGTERM");
-  BotService.gracefulShutdown({
-    publishQueueTimerId: timerId,
-  });
+  BotService.gracefulShutdown();
 });

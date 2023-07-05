@@ -1,45 +1,41 @@
-import PublishQueueItemModel from "../../schemas/publish_queue";
+import { TimePeriod } from "../../constants/common";
 import config from "../../utils/config";
+import { getTimePeriodInMilliseconds } from "../../utils/getTimePeriodInMilliseconds";
+import { setPublishQueueMonitoringInterval } from "../../utils/publishInterval";
+import { getCurrentMinutes } from "../../utils/time";
+import { wait } from "../../utils/wait";
 import { PublishVacancyService, logger } from "../index";
 
-export const subscribeToPublishQueueMonitoring = () => {
-  if (!config.publishInterval) {
-    logger.warn("WARN: Publish queue won't work until PUBLISH_INTERVAL is set");
-    return;
+export const subscribeToPublishQueueMonitoring = async () => {
+  if (!config.publishConfig.publishInterval) {
+    throw Error(
+      "ERROR: Publish queue won't work until PUBLISH_INTERVAL is set"
+    );
   }
 
-  logger.info(
-    `Subscribed to check publish queue each ${config.publishInterval} hours`
+  // corner case to wait for round hour to start publishing
+  const currentMinutes = getCurrentMinutes();
+  if (currentMinutes > 0) {
+    logger.info(
+      `Waiting ${
+        60 - currentMinutes
+      }mins before starting to monitor publish queue`
+    );
+
+    await wait(
+      getTimePeriodInMilliseconds(60 - currentMinutes, TimePeriod.Minutes)
+    );
+  }
+
+  logger.info(`Subscribed to check publish queue by timer`);
+
+  // initial execution
+  PublishVacancyService.monitorPublishQueueByTimer({ initialExecution: true });
+
+  setPublishQueueMonitoringInterval(
+    setInterval(
+      PublishVacancyService.monitorPublishQueueByTimer,
+      getTimePeriodInMilliseconds(1, TimePeriod.Hours)
+    )
   );
-  return setInterval(async () => {
-    try {
-      const publishQueueItems = await PublishQueueItemModel.findAll({
-        where: {
-          published: false,
-          removed: false,
-        },
-      });
-
-      if (!publishQueueItems.length) {
-        logger.info(`Publish queue is empty`);
-      } else {
-        logger.info(
-          `Publish queue - ${publishQueueItems.length} vacancies are waiting to be published`
-        );
-
-        for (const publishQueueItem of publishQueueItems) {
-          await PublishVacancyService.publishVacancyToChannels(
-            publishQueueItem
-          );
-        }
-      }
-    } catch (err) {
-      logger.error(
-        `Failed to fetch publish queue items - ${
-          (err as Error).message || JSON.stringify(err)
-        }`
-      );
-    }
-    // PUBLISH_INTERVAL hours
-  }, 1000 * 60 * 60 * config.publishInterval);
 };

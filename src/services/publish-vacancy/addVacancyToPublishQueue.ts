@@ -1,7 +1,10 @@
+import { vacancyLimitExceededMessageText } from "../../constants/messages";
 import PublishQueueItemModel from "../../schemas/publish_queue";
 import VacancyModel from "../../schemas/vacancy";
+import config from "../../utils/config";
 import logger from "../logger";
-import { updateButtonsUnderMessage } from "./updateButtonsUnderMessage";
+import { isPublishingAllowedForUser } from "./utils/isPublishingAllowedForUser";
+import { updateButtonsUnderMessage } from "./utils/updateButtonsUnderMessage";
 
 /**
  * Adds vacancy to publish queue.
@@ -18,8 +21,8 @@ export const onPublishVacancy = async (ctx) => {
     const vacancy = await VacancyModel.findOne({
       where: {
         tg_message_id: message_id,
-        tg_chat_id: chat?.id,
-        author_username: chat?.username,
+        tg_chat_id: chat.id,
+        author_username: chat.username,
       },
     });
 
@@ -27,10 +30,22 @@ export const onPublishVacancy = async (ctx) => {
       throw Error("vacancy not found");
     }
 
+    const isPublishingAllowed = await isPublishingAllowedForUser(chat.username);
+
+    if (isPublishingAllowed) {
+      await ctx.sendMessage(vacancyLimitExceededMessageText);
+
+      logger.warn(
+        `User ${chat.username} tried to exceed user monthly limit ${config.publishConfig.userMonthVacancyLimit}`
+      );
+      logger.info(
+        `Publish: vacancy ${vacancy.id} was not allowed for publishing by user limit`
+      );
+      return;
+    }
+
     const newQueueItem = await PublishQueueItemModel.create({
       vacancy_id: vacancy.id,
-      // TODO: add custom time
-      time_to_publish: new Date(),
     });
 
     if (!newQueueItem) {

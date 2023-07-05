@@ -1,6 +1,6 @@
-import { VacancyFieldLabel } from "../../constants/labels";
-import VacancyModel from "../../schemas/vacancy";
-import logger from "../logger";
+import { VacancyFieldLabel } from "../../../constants/labels";
+import VacancyModel from "../../../schemas/vacancy";
+import logger from "../../logger";
 
 export const getStructuredEditableVacancyText = async ({
   messageId,

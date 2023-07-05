@@ -11,11 +11,6 @@ export const PublishQueueItemModel = db.define<IPublishQueueModel>(
       autoIncrement: true,
       primaryKey: true,
     },
-    time_to_publish: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      validate: { notEmpty: true },
-    },
     vacancy_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
