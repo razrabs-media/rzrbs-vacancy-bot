@@ -5,7 +5,7 @@ import { BotContext } from "../../types/context";
 import { IVacancyModel } from "../../types/vacancy";
 import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
 import logger from "../logger";
-import { getStructuredEditableVacancyText } from "../publish-vacancy/utils/getStructuredEditableVacancyText";
+import { getVacancyEditButton } from "./getVacancyEditButton";
 
 export const updatePrivateVacancyMessage = async ({
   ctx,
@@ -22,14 +22,12 @@ export const updatePrivateVacancyMessage = async ({
 }) => {
   try {
     const updatedInlineMarkup = Markup.inlineKeyboard([
-      Markup.button.switchToCurrentChat(
-        ActionButtonLabels[BotActions.EditVacancy],
-        await getStructuredEditableVacancyText({
-          messageId,
-          chatId,
-          fromUsername,
-        })
-      ),
+      await getVacancyEditButton({
+        messageId,
+        chatId,
+        fromUsername,
+        text: buildMessageFromVacancy(vacancy),
+      }),
       Markup.button.callback(
         ActionButtonLabels[BotActions.RevokeVacancy],
         BotActions.RevokeVacancy

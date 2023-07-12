@@ -1,6 +1,6 @@
 import Vacancies from "../../schemas/vacancy";
+import { parseUpdatedVacancyWithAI } from "../ai/parseUpdatedVacancyWithAI";
 import logger from "../logger";
-import { parseUpdatedFieldsFromText } from "./parseUpdatedFieldsFromText";
 import { updatePrivateVacancyMessage } from "./updatePrivateVacancyMessage";
 import { updatePublicGroupVacancyMessage } from "./updatePublicGroupVacancyMessage";
 
@@ -38,10 +38,10 @@ export const onVacancyEdit = async (
     }
     vacancyTitle = vacancy.title;
 
-    const updatedVacancyFields = parseUpdatedFieldsFromText(
-      vacancy,
-      updatedText
-    );
+    const updatedVacancyFields = await parseUpdatedVacancyWithAI(updatedText);
+
+    // TODO: add some validation here
+    // https://github.com/openworld-community/rzrbs-vacancy-bot/issues/24
 
     logger.info(`Edited fields parsed, updating vacancy in DB...`);
     for (const key in updatedVacancyFields) {

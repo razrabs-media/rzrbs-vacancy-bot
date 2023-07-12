@@ -2,6 +2,12 @@ import config from "../utils/config";
 import { BotCommands } from "./actions";
 import { VacancyFieldLabel } from "./labels";
 
+export enum MessageEntityType {
+  TextLink = "text_link",
+  Mention = "mention",
+  Email = "email",
+}
+
 export const welcomeMessageText =
   `Привет! Это бот размещения вакансий в @razrabsjobs.\n` +
   `Достаточно отправить текст, чтобы я сформировал объявление, ` +

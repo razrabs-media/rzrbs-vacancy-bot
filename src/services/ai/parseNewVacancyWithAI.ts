@@ -1,56 +1,11 @@
-import {
-  EmploymentType,
-  FormatOfWork,
-  SalaryType,
-} from "../../constants/vacancy";
-import openai from "../ai";
+import { Maybe } from "../../types/mixins";
+import { IVacancyParsed } from "../../types/vacancy";
+import openai from "./openai";
+import { IParsedVacancyByAI } from "./types";
 
-interface IParsedVacancyByAI {
-  company: {
-    name: string;
-    description: string;
-  };
-  format_of_work_title: FormatOfWork;
-  format_of_work_description: {
-    description: string;
-  };
-  employment_details: {
-    type: string;
-  };
-  vacancy_title: {
-    title: string;
-  };
-  contact_info: {
-    telegram?: string;
-    email?: string;
-  };
-  hiring_process: {
-    description?: string;
-  };
-  salary: {
-    min: number;
-    max: number;
-    currency: string;
-    taxes: SalaryType;
-    bonus?: unknown;
-  };
-  hashtags: string[];
-  type_of_employment: EmploymentType;
-  description: string[];
-  //   forbidden_location: {
-  //     city: string;
-  //     country: string;
-  //   }[];
-  location: {
-    address: string;
-    city: string;
-    country: string;
-    restrictions: string;
-  }[];
-}
-
-export const parseVacancyWithAI = async (messageText: string) => {
-  console.log({ messageText });
+export const parseNewVacancyWithAI = async (
+  messageText: string
+): Promise<Maybe<IVacancyParsed>> => {
   const { data } = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: [
@@ -64,10 +19,6 @@ export const parseVacancyWithAI = async (messageText: string) => {
               Fields:
               - company (dict of company name and description)
               - location (array of information about office address, city or country or special restrictions to work from some country, city)
-            ${
-              /*`//   - location (array of dicts of full address, city, country if present)
-      //   - forbidden_location (array of dicts of city, country which are restricted or partially restricted or forbidden if present)`*/ ""
-            }
               - vacancy_title (dict of job title)
               - employment_details (dict of employment type as employee by local laws or as individual entrepreneur or as b2b if present)
               - format_of_work_title (hybrid or remote or on-site (if value is not in english translate into english), modify to lowercase)
@@ -85,29 +36,16 @@ export const parseVacancyWithAI = async (messageText: string) => {
     temperature: 0,
   });
   const parsedVacancy = data.choices[0].message
-    ? (JSON.parse(
-        data.choices[0].message.content || "{}"
-      ) as IParsedVacancyByAI)
+    ? JSON.parse(data.choices[0].message.content || "{}")
     : undefined;
 
-  console.log({
-    response: data,
-    choises: data.choices.map(({ message }) => message),
-    parsedVacancy,
-    location: parsedVacancy?.location,
-    // forbidden_location: parsedVacancy?.forbidden_location,
-    salary: parsedVacancy?.salary,
-    bonus: parsedVacancy?.salary?.bonus,
-  });
-
-  if (!parsedVacancy) {
+  if (!parsedVacancy || !Object.keys(parsedVacancy).length) {
     return undefined;
   }
 
   const {
     vacancy_title,
     location,
-    // forbidden_location,
     salary,
     description,
     company,
@@ -118,10 +56,10 @@ export const parseVacancyWithAI = async (messageText: string) => {
     hiring_process,
     hashtags,
     employment_details,
-  } = parsedVacancy;
+  } = parsedVacancy as IParsedVacancyByAI;
 
   return {
-    title: vacancy_title.title,
+    title: vacancy_title?.title,
     location: location
       ?.map(({ country, city, restrictions, address }) =>
         [
@@ -134,26 +72,22 @@ export const parseVacancyWithAI = async (messageText: string) => {
         ].filter(Boolean)
       )
       .join(", "),
-    //     .join(", ") +
-    //   `\nОграничения по локации: ${forbidden_location?.map(
-    //     ({ country, city }) => `${country ? `${country}, ` : ""}${city}`
-    //   )}`,
     salary_amount_from: salary?.min,
     salary_amount_to: salary?.max,
-    salary_currency: salary.currency,
-    salary_type: salary.taxes,
+    salary_currency: salary?.currency,
+    salary_type: salary?.taxes,
     description:
       description?.join("\n") ||
       "" + `\n${hashtags?.map((w) => `#${w}`).join(" ")}`,
-    company_name: company.name,
-    company_description: company.description,
+    company_name: company?.name,
+    company_description: company?.description,
     type_of_employment: type_of_employment,
-    contact_info: [contact_info.telegram, contact_info.email]
+    contact_info: [contact_info?.telegram, contact_info?.email]
       .filter(Boolean)
       .join(", "),
     format_of_work_title: format_of_work_title,
     format_of_work_description:
-      format_of_work_description.description || employment_details.type,
+      format_of_work_description?.description || employment_details?.type,
     hiring_process: hiring_process?.description,
   };
 };

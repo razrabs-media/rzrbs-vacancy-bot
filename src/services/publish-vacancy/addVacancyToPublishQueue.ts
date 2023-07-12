@@ -31,8 +31,7 @@ export const onPublishVacancy = async (ctx) => {
     }
 
     const isPublishingAllowed = await isPublishingAllowedForUser(chat.username);
-
-    if (isPublishingAllowed) {
+    if (!isPublishingAllowed) {
       await ctx.sendMessage(vacancyLimitExceededMessageText);
 
       logger.warn(

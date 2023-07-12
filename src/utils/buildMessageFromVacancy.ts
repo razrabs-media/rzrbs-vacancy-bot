@@ -1,4 +1,5 @@
 import { VacancyFieldLabel } from "../constants/labels";
+import { MessageEntityType } from "../constants/messages";
 import { IVacancyParsed } from "../types/vacancy";
 import { IParsedMessageEntity } from "./parseMessageEntities";
 
@@ -61,12 +62,16 @@ export const buildMessageFromVacancy = (
         ? `${VacancyFieldLabel.HiringProcess}: ${hiring_process}\n\n`
         : ""
     }` +
-    `${company_description ? `${company_description}\n\n` : ""}` +
+    `${
+      company_description
+        ? `${VacancyFieldLabel.CompanyDescription}: ${company_description}\n\n`
+        : ""
+    }` +
     `${VacancyFieldLabel.Description}: ${description}`;
 
   if (parsedEntities?.length) {
     parsedEntities.forEach(({ word, value, entity_type }) => {
-      if (entity_type === "text_link") {
+      if (entity_type === MessageEntityType.TextLink) {
         result = result.replace(word, `<a href="${value}">${word}</a>`);
       }
     });

@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "ts-node src/index.ts",
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon --signal SIGTERM src/index.ts",
     "test": "jest",
     "lint": "eslint . --ext .ts",
     "prettier": "prettier --write .",

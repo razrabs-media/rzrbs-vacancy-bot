@@ -1,8 +1,8 @@
 import { parseMessageEntities } from "../../utils/parseMessageEntities";
+import { parseNewVacancyWithAI } from "../ai/parseNewVacancyWithAI";
 import { onVacancyEdit } from "../edit-vacancy";
-import { logger } from "../index";
-import { sendMessagePreview } from "../message-preview";
-import { parseVacancyWithAI } from "./parseVacancyWithAI";
+import logger from "../logger";
+import { sendMessagePreview } from "./sendMessagePreview";
 
 export const processIncomingMessage = async (ctx) => {
   const { message_id, from, text, chat, entities } = ctx?.update?.message || {};
@@ -27,7 +27,7 @@ export const processIncomingMessage = async (ctx) => {
       return;
     }
 
-    const parsedMessage = await parseVacancyWithAI(text);
+    const parsedMessage = await parseNewVacancyWithAI(text);
 
     if (!parsedMessage) {
       throw Error("failed to parse vacancy with AI");

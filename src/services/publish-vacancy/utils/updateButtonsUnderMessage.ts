@@ -1,24 +1,22 @@
 import { Markup } from "telegraf";
 
 import { ActionButtonLabels, BotActions } from "../../../constants/actions";
+import { getVacancyEditButton } from "../../edit-vacancy/getVacancyEditButton";
 import logger from "../../logger";
-import { getStructuredEditableVacancyText } from "./getStructuredEditableVacancyText";
 
 export const updateButtonsUnderMessage = async (ctx) => {
-  const { message_id, chat } = ctx?.update?.callback_query?.message || {};
+  const { message_id, chat, text } = ctx?.update?.callback_query?.message || {};
 
   try {
     await ctx?.editMessageReplyMarkup({
       inline_keyboard: [
         [
-          Markup.button.switchToCurrentChat(
-            ActionButtonLabels[BotActions.EditVacancy],
-            await getStructuredEditableVacancyText({
-              messageId: message_id,
-              chatId: chat?.id,
-              fromUsername: chat?.username,
-            })
-          ),
+          await getVacancyEditButton({
+            messageId: message_id,
+            chatId: chat?.id,
+            fromUsername: chat?.username,
+            text,
+          }),
           Markup.button.callback(
             ActionButtonLabels[BotActions.RevokeVacancy],
             BotActions.RevokeVacancy

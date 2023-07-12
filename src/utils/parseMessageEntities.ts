@@ -1,8 +1,4 @@
-enum MessageEntityType {
-  TextLink = "text_link",
-  Mention = "mention",
-  Email = "email",
-}
+import { MessageEntityType } from "../constants/messages";
 
 interface IMessageEntity {
   offset: number;
