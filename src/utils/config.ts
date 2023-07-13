@@ -45,8 +45,8 @@ const buildConfig = (): IConfig => ({
       : true,
   botToken: process.env.BOT_TOKEN,
   botConsultantUsername: process.env.BOT_CONSULTANT_USERNAME || "",
-  aiOrganizationId: process.env.OPENAI_ORGANIZATION_ID,
-  aiApiKey: process.env.OPENAI_API_KEY,
+  aiOrganizationId: process.env.OPENAI_ORGANIZATION_ID || "",
+  aiApiKey: process.env.OPENAI_API_KEY || "",
   botContactsList: (process.env.BOT_CONTACTS || "").split(",").filter(Boolean),
   publishConfig: {
     schedule: JSON.parse(process.env.PUBLISH_CONFIG || "{}"),
