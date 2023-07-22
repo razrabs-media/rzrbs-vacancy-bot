@@ -1,4 +1,5 @@
 import { Markup } from "telegraf";
+import { InlineKeyboardButton } from "telegraf/typings/core/types/typegram";
 
 import { ActionButtonLabels, BotActions } from "../../../constants/actions";
 import { getVacancyEditButton } from "../../edit-vacancy/getVacancyEditButton";
@@ -21,7 +22,7 @@ export const updateButtonsUnderMessage = async (ctx) => {
             ActionButtonLabels[BotActions.RevokeVacancy],
             BotActions.RevokeVacancy
           ),
-        ],
+        ].filter(Boolean) as InlineKeyboardButton[],
       ],
     });
   } catch (err) {

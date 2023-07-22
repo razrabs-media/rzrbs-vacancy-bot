@@ -2,7 +2,7 @@ import { VacancyFieldLabel } from "../../constants/labels";
 import { Maybe } from "../../types/mixins";
 import { IVacancyParsed } from "../../types/vacancy";
 import openai from "./openai";
-import { IParsedVacancyByAI } from "./types";
+import { IParsedEditedVacancyByAI } from "./types";
 
 export const parseUpdatedVacancyWithAI = async (
   messageText: string
@@ -18,10 +18,10 @@ export const parseUpdatedVacancyWithAI = async (
               Input: ${messageText}
               
               Fields:
+              - vacancy_title (text from the first line, probably alike of job title)
               - company_name (text after "${VacancyFieldLabel.Company}") 
               - company_description (text describing company, from text after "${VacancyFieldLabel.CompanyDescription}" but before "${VacancyFieldLabel.Description}"
               - location (text after "${VacancyFieldLabel.Location}", extract information about office address, city or country or special restrictions to work from some country, city)
-              - vacancy_title (text from the first line, probably alike of job title)
               - format_of_work_title (from text after "${VacancyFieldLabel.FormatOfWork}", hybrid or remote or onsite (if value is not in english translate into english), modify to lowercase)
               - format_of_work_description (from text after "${VacancyFieldLabel.FormatOfWork}" and after hastags)
               - contact_info (text after "${VacancyFieldLabel.Contacts}")
@@ -49,7 +49,8 @@ export const parseUpdatedVacancyWithAI = async (
     location,
     salary,
     description,
-    company,
+    company_name,
+    company_description,
     contact_info,
     type_of_employment,
     format_of_work_title,
@@ -57,35 +58,21 @@ export const parseUpdatedVacancyWithAI = async (
     hiring_process,
     hashtags,
     employment_details,
-  } = parsedVacancy as IParsedVacancyByAI;
+  } = parsedVacancy as IParsedEditedVacancyByAI;
 
   return {
-    title: vacancy_title.title,
-    location: location
-      ?.map(({ country, city, restrictions, address }) =>
-        [
-          country,
-          city,
-          address,
-          restrictions
-            ? `\nОграничения по локации: ${restrictions}`
-            : undefined,
-        ].filter(Boolean)
-      )
-      .join(", "),
+    title: vacancy_title,
+    location,
     salary_amount_from: salary?.min,
     salary_amount_to: salary?.max,
     salary_currency: salary?.currency,
     salary_type: salary?.taxes,
     description:
-      description?.join("\n") ||
-      "" + `\n${hashtags?.map((w) => `#${w}`).join(" ")}`,
-    company_name: company?.name,
-    company_description: company?.description,
+      description || "" + `\n${hashtags?.map((w) => `#${w}`).join(" ")}`,
+    company_name,
+    company_description,
     type_of_employment: type_of_employment,
-    contact_info: [contact_info?.telegram, contact_info?.email]
-      .filter(Boolean)
-      .join(", "),
+    contact_info,
     format_of_work_title: format_of_work_title,
     format_of_work_description:
       format_of_work_description?.description || employment_details?.type,

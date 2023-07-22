@@ -1,4 +1,5 @@
 import { Markup, Telegraf } from "telegraf";
+import { InlineKeyboardButton } from "telegraf/typings/core/types/typegram";
 
 import { ActionButtonLabels, BotActions } from "../../constants/actions";
 import { BotContext } from "../../types/context";
@@ -21,18 +22,20 @@ export const updatePrivateVacancyMessage = async ({
   vacancy: IVacancyModel;
 }) => {
   try {
-    const updatedInlineMarkup = Markup.inlineKeyboard([
-      await getVacancyEditButton({
-        messageId,
-        chatId,
-        fromUsername,
-        text: buildMessageFromVacancy(vacancy),
-      }),
-      Markup.button.callback(
-        ActionButtonLabels[BotActions.RevokeVacancy],
-        BotActions.RevokeVacancy
-      ),
-    ]);
+    const updatedInlineMarkup = Markup.inlineKeyboard(
+      [
+        await getVacancyEditButton({
+          messageId,
+          chatId,
+          fromUsername,
+          text: buildMessageFromVacancy(vacancy),
+        }),
+        Markup.button.callback(
+          ActionButtonLabels[BotActions.RevokeVacancy],
+          BotActions.RevokeVacancy
+        ),
+      ].filter(Boolean) as InlineKeyboardButton[]
+    );
 
     await ctx.telegram.editMessageText(
       chatId,

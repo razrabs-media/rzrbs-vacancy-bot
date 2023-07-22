@@ -36,14 +36,23 @@ export interface IParsedVacancyByAI {
   hashtags: string[];
   type_of_employment: EmploymentType;
   description: string[];
-  //   forbidden_location: {
-  //     city: string;
-  //     country: string;
-  //   }[];
   location: {
     address: string;
     city: string;
     country: string;
     restrictions: string;
   }[];
+}
+
+export interface IParsedEditedVacancyByAI
+  extends Omit<
+    IParsedVacancyByAI,
+    "location" | "description" | "contact_info" | "company" | "vacancy_title"
+  > {
+  location: string;
+  description: string;
+  contact_info: string;
+  company_name: string;
+  company_description: string;
+  vacancy_title: string;
 }
