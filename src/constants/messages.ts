@@ -34,3 +34,10 @@ export const vacancyTemplateHTMLMessageText =
   `<strong>${VacancyFieldLabel.Description}</strong>: Всё, что описывает вакансию, обязанности и предложения`;
 
 export const vacancyLimitExceededMessageText = `Достигнут лимит бесплатных публикаций в этом месяце. Свяжись с @${config.botConsultantUsername} чтобы разместить больше`;
+
+export const getMissingRequiredFieldsMessage = (
+  fieldLabels: VacancyFieldLabel[]
+) =>
+  `Не указаны: ${fieldLabels.join(", ")}. ` +
+  `Соискатели часто обращают на эти поля свое внимание, пожалуйста, заполни их. ` +
+  `Для ознакомления с правилами публикации и форматом вакансии воспользуйся командой /help`;

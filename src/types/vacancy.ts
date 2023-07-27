@@ -29,10 +29,12 @@ export type TVacancyAttributes = {
   salary_amount_to?: number;
   salary_currency?: string;
   salary_type?: SalaryType;
+  salary_negotiable?: boolean;
 
   format_of_work_title?: FormatOfWork;
   format_of_work_description?: string;
 
+  work_experience?: string;
   type_of_employment: EmploymentType;
   location?: string;
   contact_info: string;

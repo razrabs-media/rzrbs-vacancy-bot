@@ -33,7 +33,6 @@ export interface IParsedVacancyByAI {
     taxes: SalaryType;
     bonus?: unknown;
   };
-  hashtags: string[];
   type_of_employment: EmploymentType;
   description: string[];
   location: {
@@ -42,6 +41,8 @@ export interface IParsedVacancyByAI {
     country: string;
     restrictions: string;
   }[];
+  salary_negotiable?: boolean;
+  work_experience?: string;
 }
 
 export interface IParsedEditedVacancyByAI
