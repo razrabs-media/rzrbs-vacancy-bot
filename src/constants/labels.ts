@@ -9,4 +9,7 @@ export enum VacancyFieldLabel {
   TypeOfEmployment = "Тип трудоустройства",
   Location = "Локация",
   Contacts = "Контакты",
+  WorkExperience = "Опыт работы",
 }
+
+export const NEGOTIABLE_SALARY = "по договоренности";

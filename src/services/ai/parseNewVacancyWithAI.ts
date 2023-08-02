@@ -26,9 +26,10 @@ export const parseNewVacancyWithAI = async (
               - contact_info (dict of mobile and landline phone numbers if present, or telegram nickname (add @ before it) or email address or full site url)
               - hiring_process (dict of description of hiring process, if present)
               - salary (dict of salary or wage for job done as range of numbers from 0 to positive infinity (as dict of max and min) and currency and taxes (net or gross), note that "до вычета" is equal to gross and "чистыми" is equal to net)
+              - salary_negotiable (set true if find "по договоренности" or "по результатам собеседования" instead of salary numbers)
               - type_of_employment (fulltime or parttime or contract or internship)
-              - hashtags (array of hashtags (words started from #) if present)
-              - description (array of the rest of the information about skills, offers, job information, benefits, bonuses as a text with all newline symbols saved)
+              - work_experience (text with information about required work experience for the job)
+              - description (array of the rest of the information about skills, offers, job information, benefits, bonuses as a text with all newline symbols saved, please sanitize any emoji and hashtags)
               
               Valid JSON Output, omit fields that are not present, return empty response if required fields are not presented`,
       },
@@ -54,8 +55,9 @@ export const parseNewVacancyWithAI = async (
     format_of_work_title,
     format_of_work_description,
     hiring_process,
-    hashtags,
+    salary_negotiable,
     employment_details,
+    work_experience,
   } = parsedVacancy as IParsedVacancyByAI;
 
   return {
@@ -76,9 +78,8 @@ export const parseNewVacancyWithAI = async (
     salary_amount_to: salary?.max,
     salary_currency: salary?.currency,
     salary_type: salary?.taxes,
-    description:
-      description?.join("\n") ||
-      "" + `\n${hashtags?.map((w) => `#${w}`).join(" ")}`,
+    salary_negotiable,
+    description: description?.join("\n"),
     company_name: company?.name,
     company_description: company?.description,
     type_of_employment: type_of_employment,
@@ -89,5 +90,6 @@ export const parseNewVacancyWithAI = async (
     format_of_work_description:
       format_of_work_description?.description || employment_details?.type,
     hiring_process: hiring_process?.description,
+    work_experience,
   };
 };

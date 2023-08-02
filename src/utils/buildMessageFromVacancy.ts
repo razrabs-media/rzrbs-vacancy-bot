@@ -1,4 +1,4 @@
-import { VacancyFieldLabel } from "../constants/labels";
+import { NEGOTIABLE_SALARY, VacancyFieldLabel } from "../constants/labels";
 import { MessageEntityType } from "../constants/messages";
 import { IVacancyParsed } from "../types/vacancy";
 import { IParsedMessageEntity } from "./parseMessageEntities";
@@ -8,19 +8,30 @@ const getSalaryInfo = ({
   salary_amount_to,
   salary_currency,
   salary_type,
+  salary_negotiable,
 }: Pick<
   IVacancyParsed,
-  "salary_amount_from" | "salary_amount_to" | "salary_currency" | "salary_type"
->): string =>
-  salary_amount_from || salary_amount_to
-    ? `${VacancyFieldLabel.Salary}: ${
-        salary_amount_from
-          ? `от ${salary_amount_from}${salary_currency || ""} `
-          : ""
-      }${
-        salary_amount_to ? `до ${salary_amount_to}${salary_currency || ""}` : ""
-      }${salary_type ? ` (${salary_type})` : ""}\n`
-    : "";
+  | "salary_amount_from"
+  | "salary_amount_to"
+  | "salary_currency"
+  | "salary_type"
+  | "salary_negotiable"
+>): string => {
+  if (salary_amount_from || salary_amount_to) {
+    return `${VacancyFieldLabel.Salary}: ${
+      salary_amount_from
+        ? `от ${salary_amount_from}${salary_currency || ""} `
+        : ""
+    }${
+      salary_amount_to ? `до ${salary_amount_to}${salary_currency || ""}` : ""
+    }${salary_type ? ` (${salary_type})` : ""}\n`;
+  }
+
+  if (salary_negotiable)
+    return `${VacancyFieldLabel.Salary}: ${NEGOTIABLE_SALARY}\n`;
+
+  return "";
+};
 
 export const buildMessageFromVacancy = (
   {
@@ -32,12 +43,14 @@ export const buildMessageFromVacancy = (
     salary_amount_to,
     salary_currency,
     salary_type,
+    salary_negotiable,
     format_of_work_description,
     format_of_work_title,
     type_of_employment,
     contact_info,
     hiring_process,
     location,
+    work_experience,
   }: IVacancyParsed,
   parsedEntities?: IParsedMessageEntity[]
 ): string => {
@@ -55,7 +68,13 @@ export const buildMessageFromVacancy = (
       salary_amount_to,
       salary_currency,
       salary_type,
+      salary_negotiable,
     })}` +
+    `${
+      work_experience
+        ? `${VacancyFieldLabel.WorkExperience}: ${work_experience}\n`
+        : ""
+    }` +
     `${VacancyFieldLabel.Contacts}: ${contact_info}\n` +
     `${
       hiring_process

@@ -33,4 +33,25 @@ export const vacancyTemplateHTMLMessageText =
   `\n` +
   `<strong>${VacancyFieldLabel.Description}</strong>: Всё, что описывает вакансию, обязанности и предложения`;
 
-export const vacancyLimitExceededMessageText = `Достигнут лимит бесплатных публикаций в этом месяце. Свяжись с @${config.botConsultantUsername} чтобы разместить больше`;
+export const vacancyLimitExceededMessageText =
+  `Достигнут лимит бесплатных публикаций в этом месяце. ` +
+  `Свяжись с @${config.botConsultantUsername} чтобы разместить больше`;
+
+export const getMissingRequiredFieldsMessage = (
+  fieldLabels: VacancyFieldLabel[]
+) =>
+  `Не указаны: ${fieldLabels.join(", ")}. ` +
+  `Соискатели часто обращают на эти поля свое внимание, пожалуйста, заполни их. ` +
+  `Для ознакомления с правилами публикации и форматом вакансии воспользуйся командой /help`;
+
+export const parsedVacancyToReviewMessage =
+  "Вакансия сформирована. " +
+  "В случае некорректной обработки текста, попробуй снова или свяжись с администратором после нескольких попыток";
+
+export const validationFailedMessage =
+  "Текст не прошел проверку, пожалуйста, убедись, " +
+  "что в сообщении указаны основные поля. Для ознакомления с правилами публикации " +
+  "вызови команду /help, либо свяжись с администратором для решения возникшей проблемы";
+
+export const systemErrorMessage =
+  "Что-то пошло не так, я плохо себя чувствую! Позови администратора!";
