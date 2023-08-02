@@ -16,13 +16,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openworld-community/rzrbs-vacancy-bot.git"
+    "url": "git+https://github.com/razrabs-media/rzrbs-vacancy-bot.git"
   },
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/openworld-community/rzrbs-vacancy-bot/issues"
+    "url": "https://github.com/razrabs-media/rzrbs-vacancy-bot/issues"
   },
-  "homepage": "https://github.com/openworld-community/rzrbs-vacancy-bot#readme",
+  "homepage": "https://github.com/razrabs-media/rzrbs-vacancy-bot#readme",
   "lint-staged": {
     "*.ts": "eslint . --ext .ts"
   },
