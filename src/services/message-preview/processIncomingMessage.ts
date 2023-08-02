@@ -2,12 +2,12 @@ import {
   getMissingRequiredFieldsMessage,
   parsedVacancyToReviewMessage,
 } from "../../constants/messages";
+import { isRequiredVacancyFieldsFilled } from "../../utils/isRequiredVacancyFieldsFilled";
 import { parseMessageEntities } from "../../utils/parseMessageEntities";
 import { onVacancyEdit } from "../edit-vacancy";
 import logger from "../logger";
 import { constructPreviewMessage } from "./constructPreviewMessage";
 import { createNewVacancy } from "./createNewVacancy";
-import { isRequiredVacancyFieldsFilled } from "./isRequiredVacancyFieldsFilled";
 import { parseMessageToVacancy } from "./parseMessageToVacancy";
 
 const getEditedMessageInfo = (

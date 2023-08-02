@@ -2,11 +2,11 @@ import {
   getMissingRequiredFieldsMessage,
   systemErrorMessage,
 } from "../../constants/messages";
+import { isRequiredVacancyFieldsFilled } from "../../utils/isRequiredVacancyFieldsFilled";
 import { parseMessageEntities } from "../../utils/parseMessageEntities";
 import logger from "../logger";
 import { constructPreviewMessage } from "./constructPreviewMessage";
 import { editNewVacancy } from "./editNewVacancy";
-import { isRequiredVacancyFieldsFilled } from "./isRequiredVacancyFieldsFilled";
 import { parseMessageToVacancy } from "./parseMessageToVacancy";
 
 export const onRetryParsing = async (ctx) => {

@@ -1,4 +1,6 @@
+import { getMissingRequiredFieldsMessage } from "../../constants/messages";
 import Vacancies from "../../schemas/vacancy";
+import { isRequiredVacancyFieldsFilled } from "../../utils/isRequiredVacancyFieldsFilled";
 import { parseUpdatedVacancyWithAI } from "../ai/parseUpdatedVacancyWithAI";
 import logger from "../logger";
 import { updatePrivateVacancyMessage } from "./updatePrivateVacancyMessage";
@@ -40,8 +42,17 @@ export const onVacancyEdit = async (
 
     const updatedVacancyFields = await parseUpdatedVacancyWithAI(updatedText);
 
-    // TODO: add some validation here
-    // https://github.com/openworld-community/rzrbs-vacancy-bot/issues/24
+    if (!updatedVacancyFields) {
+      throw Error("failed to parse by AI");
+    }
+
+    const { isRequiredFieldsFilled, missingFields } =
+      isRequiredVacancyFieldsFilled(updatedVacancyFields);
+
+    if (!isRequiredFieldsFilled) {
+      await ctx.sendMessage(getMissingRequiredFieldsMessage(missingFields));
+      throw Error(`missing fields - ${missingFields.join(", ")}`);
+    }
 
     logger.info(`Edited fields parsed, updating vacancy in DB...`);
     for (const key in updatedVacancyFields) {

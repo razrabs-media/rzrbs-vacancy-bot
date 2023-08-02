@@ -1,5 +1,5 @@
-import { VacancyFieldLabel } from "../../constants/labels";
-import { IVacancyParsed } from "../../types/vacancy";
+import { VacancyFieldLabel } from "../constants/labels";
+import { IVacancyParsed } from "../types/vacancy";
 
 export const isRequiredVacancyFieldsFilled = (
   parsedVacancy: IVacancyParsed
