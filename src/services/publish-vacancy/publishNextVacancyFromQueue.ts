@@ -18,7 +18,8 @@ export const publishNextVacancyFromQueue = async () => {
       logger.info("Publish Queue: working day finished");
     }
 
-    if (await isVacancyPublishingAllowedToday()) {
+    const isPublishingAllowed = await isVacancyPublishingAllowedToday();
+    if (!isPublishingAllowed) {
       logger.info(
         `Publish Next Vacancy: canceled, because daily limit reached ${config.publishConfig.dailyVacancyLimit}`
       );

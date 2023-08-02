@@ -1,6 +1,8 @@
+import { getMissingRequiredFieldsMessage } from "../../constants/messages";
 import Vacancies from "../../schemas/vacancy";
+import { isRequiredVacancyFieldsFilled } from "../../utils/isRequiredVacancyFieldsFilled";
+import { parseUpdatedVacancyWithAI } from "../ai/parseUpdatedVacancyWithAI";
 import logger from "../logger";
-import { parseUpdatedFieldsFromText } from "./parseUpdatedFieldsFromText";
 import { updatePrivateVacancyMessage } from "./updatePrivateVacancyMessage";
 import { updatePublicGroupVacancyMessage } from "./updatePublicGroupVacancyMessage";
 
@@ -38,10 +40,19 @@ export const onVacancyEdit = async (
     }
     vacancyTitle = vacancy.title;
 
-    const updatedVacancyFields = parseUpdatedFieldsFromText(
-      vacancy,
-      updatedText
-    );
+    const updatedVacancyFields = await parseUpdatedVacancyWithAI(updatedText);
+
+    if (!updatedVacancyFields) {
+      throw Error("failed to parse by AI");
+    }
+
+    const { isRequiredFieldsFilled, missingFields } =
+      isRequiredVacancyFieldsFilled(updatedVacancyFields);
+
+    if (!isRequiredFieldsFilled) {
+      await ctx.sendMessage(getMissingRequiredFieldsMessage(missingFields));
+      throw Error(`missing fields - ${missingFields.join(", ")}`);
+    }
 
     logger.info(`Edited fields parsed, updating vacancy in DB...`);
     for (const key in updatedVacancyFields) {

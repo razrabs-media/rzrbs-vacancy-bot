@@ -42,7 +42,7 @@ export const VacancyModel = db.define<IVacancyModel>(
     },
     tg_message_id: { type: DataTypes.INTEGER, validate: { notEmpty: true } },
     tg_chat_id: { type: DataTypes.INTEGER, validate: { notEmpty: true } },
-    hiring_process: DataTypes.STRING,
+    hiring_process: DataTypes.STRING(500),
     location: DataTypes.STRING,
     contact_info: {
       type: DataTypes.STRING,
@@ -59,6 +59,7 @@ export const VacancyModel = db.define<IVacancyModel>(
     salary_amount_to: { type: DataTypes.INTEGER, validate: { min: 0 } },
     salary_currency: DataTypes.STRING,
     salary_type: { type: DataTypes.ENUM(...Object.values(SalaryType)) },
+    salary_negotiable: { type: DataTypes.BOOLEAN, defaultValue: false },
 
     /* Format of work */
     format_of_work_title: {
@@ -68,8 +69,14 @@ export const VacancyModel = db.define<IVacancyModel>(
     },
     // in case we want to explain it more - like "hybrid, 2 days a week work from office"
     format_of_work_description: DataTypes.STRING,
+    work_experience: {
+      type: DataTypes.STRING(500),
+      allowNull: false,
+      validate: { notEmpty: true },
+    },
 
     company_name: { type: DataTypes.STRING, allowNull: false },
+    company_description: DataTypes.STRING,
 
     author_username: {
       type: DataTypes.STRING,

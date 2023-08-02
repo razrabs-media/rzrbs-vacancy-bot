@@ -3,6 +3,7 @@ export enum BotActions {
   RevokeVacancy = "revoke",
   PublishVacancy = "publish",
   CancelVacancy = "cancel",
+  RetryParsing = "retry_parsing",
 }
 
 export const ActionButtonLabels: Record<BotActions, string> = {
@@ -10,6 +11,7 @@ export const ActionButtonLabels: Record<BotActions, string> = {
   [BotActions.PublishVacancy]: "Опубликовать",
   [BotActions.RevokeVacancy]: "Отозвать вакансию",
   [BotActions.CancelVacancy]: "Отменить",
+  [BotActions.RetryParsing]: "Попробовать еще раз",
 };
 
 export enum BotCommands {

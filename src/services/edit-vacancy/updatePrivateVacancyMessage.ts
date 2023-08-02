@@ -1,11 +1,12 @@
 import { Markup, Telegraf } from "telegraf";
+import { InlineKeyboardButton } from "telegraf/typings/core/types/typegram";
 
 import { ActionButtonLabels, BotActions } from "../../constants/actions";
 import { BotContext } from "../../types/context";
 import { IVacancyModel } from "../../types/vacancy";
 import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
 import logger from "../logger";
-import { getStructuredEditableVacancyText } from "../publish-vacancy/utils/getStructuredEditableVacancyText";
+import { getVacancyEditButton } from "./getVacancyEditButton";
 
 export const updatePrivateVacancyMessage = async ({
   ctx,
@@ -21,20 +22,20 @@ export const updatePrivateVacancyMessage = async ({
   vacancy: IVacancyModel;
 }) => {
   try {
-    const updatedInlineMarkup = Markup.inlineKeyboard([
-      Markup.button.switchToCurrentChat(
-        ActionButtonLabels[BotActions.EditVacancy],
-        await getStructuredEditableVacancyText({
+    const updatedInlineMarkup = Markup.inlineKeyboard(
+      [
+        await getVacancyEditButton({
           messageId,
           chatId,
           fromUsername,
-        })
-      ),
-      Markup.button.callback(
-        ActionButtonLabels[BotActions.RevokeVacancy],
-        BotActions.RevokeVacancy
-      ),
-    ]);
+          text: buildMessageFromVacancy(vacancy),
+        }),
+        Markup.button.callback(
+          ActionButtonLabels[BotActions.RevokeVacancy],
+          BotActions.RevokeVacancy
+        ),
+      ].filter(Boolean) as InlineKeyboardButton[]
+    );
 
     await ctx.telegram.editMessageText(
       chatId,

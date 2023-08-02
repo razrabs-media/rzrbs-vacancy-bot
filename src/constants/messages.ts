@@ -2,6 +2,12 @@ import config from "../utils/config";
 import { BotCommands } from "./actions";
 import { VacancyFieldLabel } from "./labels";
 
+export enum MessageEntityType {
+  TextLink = "text_link",
+  Mention = "mention",
+  Email = "email",
+}
+
 export const welcomeMessageText =
   `Привет! Это бот размещения вакансий в @razrabsjobs.\n` +
   `Достаточно отправить текст, чтобы я сформировал объявление, ` +
@@ -26,8 +32,6 @@ export const vacancyTemplateHTMLMessageText =
   `<strong>${VacancyFieldLabel.Contacts}</strong>: Любая контактная информация, по которой можно связаться о вакансии (номер телефона, почта, ник в Telegram)\n` +
   `\n` +
   `<strong>${VacancyFieldLabel.Description}</strong>: Всё, что описывает вакансию, обязанности и предложения`;
-
-export const vacancyLimitExceededMessageText = `Достигнут лимит бесплатных публикаций в этом месяце. Свяжись с @${config.botConsultantUsername} чтобы разместить больше`;
 
 export const helpMessageText =
   `Привет! Я готов помочь тебе опубликовать вакансию в нашем канале. ` +
@@ -66,3 +70,26 @@ export const helpMessageText =
   `У меня есть ограничение в ${config.publishConfig.userMonthVacancyLimit} бесплатных ` +
   `размещений в месяц от одного человека и компании. Если ты хочешь разместить больше вакансий ` +
   `от себя или компании, обратись к @${config.botConsultantUsername}.`;
+
+export const vacancyLimitExceededMessageText =
+  `Достигнут лимит бесплатных публикаций в этом месяце. ` +
+  `Свяжись с @${config.botConsultantUsername} чтобы разместить больше`;
+
+export const getMissingRequiredFieldsMessage = (
+  fieldLabels: VacancyFieldLabel[]
+) =>
+  `Не указаны: ${fieldLabels.join(", ")}. ` +
+  `Соискатели часто обращают на эти поля свое внимание, пожалуйста, заполни их. ` +
+  `Для ознакомления с правилами публикации и форматом вакансии воспользуйся командой /help`;
+
+export const parsedVacancyToReviewMessage =
+  "Вакансия сформирована. " +
+  "В случае некорректной обработки текста, попробуй снова или свяжись с администратором после нескольких попыток";
+
+export const validationFailedMessage =
+  "Текст не прошел проверку, пожалуйста, убедись, " +
+  "что в сообщении указаны основные поля. Для ознакомления с правилами публикации " +
+  "вызови команду /help, либо свяжись с администратором для решения возникшей проблемы";
+
+export const systemErrorMessage =
+  "Что-то пошло не так, я плохо себя чувствую! Позови администратора!";

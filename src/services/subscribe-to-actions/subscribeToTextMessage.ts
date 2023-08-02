@@ -1,38 +1,8 @@
-import { EditVacancyService, MessagePreviewService, logger } from "../index";
+import { message } from "telegraf/filters";
 
-export const subscribeToTextMessage = async (ctx) => {
-  const { message_id, from, text, chat } = ctx?.update?.message || {};
+import bot from "../../launchBot";
+import { processIncomingMessage } from "../message-preview/processIncomingMessage";
 
-  try {
-    if (!message_id || !from?.username || !chat?.id) {
-      throw Error("cannot retrieve required message info");
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [techInfoLine, disclaimerLine, gapLine, ...updatedInfoText] =
-      text.split("\n");
-
-    // edited existing vacancy
-    if (techInfoLine && techInfoLine.startsWith(`@${ctx?.botInfo?.username}`)) {
-      const [, messageId] = techInfoLine.split(" > ");
-
-      await EditVacancyService.onVacancyEdit(ctx, {
-        messageId,
-        updatedText: updatedInfoText.join("\n"),
-      });
-      return;
-    }
-
-    // here we generate vacancy text from message somehow
-
-    await MessagePreviewService.sendMessagePreview(
-      ctx /* , parsedVacancyObject: IVacancyParsed */
-    );
-  } catch (err) {
-    logger.error(
-      `Failed to process incoming message ${from?.username}::${
-        chat?.id
-      }::${message_id} - ${(err as Error)?.message || JSON.stringify(err)}`
-    );
-  }
+export const subscribeToTextMessage = () => {
+  bot.on(message("text"), processIncomingMessage);
 };

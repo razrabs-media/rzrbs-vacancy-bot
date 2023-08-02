@@ -15,6 +15,8 @@ describe("utils/config", () => {
         '{ "mon": [10,18], "tue": [10,18], "wed": [10,18], "thu": [10,18], "fri": [10,18], "sat": [17, 18] }';
       process.env.DB_URL = "postgres://test-path:5432/mydb";
       process.env.DB_SSL_ENABLED = "false";
+      process.env.OPENAI_API_KEY = "test-api-key";
+      process.env.OPENAI_ORGANIZATION_ID = "test-org";
 
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const config = require("../config").default;
@@ -26,6 +28,8 @@ describe("utils/config", () => {
         dbSslEnabled: false,
         botContactsList: ["chat1", "chat2", "chat3"],
         botConsultantUsername: "test_username",
+        aiApiKey: "test-api-key",
+        aiOrganizationId: "test-org",
         publishConfig: {
           dailyVacancyLimit: 10,
           minPublishInterval: 10,
@@ -49,6 +53,8 @@ describe("utils/config", () => {
       process.env.NODE_ENV = Environment.Test;
       process.env.BOT_TOKEN = "test-token:123";
       process.env.DB_URL = "postgres://test-path:5432/mydb";
+      process.env.OPENAI_API_KEY = "test-api-key";
+      process.env.OPENAI_ORGANIZATION_ID = "test-org";
       delete process.env.BOT_CONTACTS;
       delete process.env.MIN_PUBLISH_INTERVAL;
       delete process.env.PUBLISH_INTERVAL;
@@ -65,6 +71,8 @@ describe("utils/config", () => {
         environment: Environment.Test,
         botToken: "test-token:123",
         dbUrl: "postgres://test-path:5432/mydb",
+        aiApiKey: "test-api-key",
+        aiOrganizationId: "test-org",
         dbSslEnabled: true,
         botContactsList: [],
         botConsultantUsername: "",

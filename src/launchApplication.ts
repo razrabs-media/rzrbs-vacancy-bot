@@ -1,5 +1,3 @@
-import { message } from "telegraf/filters";
-
 import "./connectToDatabase";
 import { BotCommandDescription, BotCommands } from "./constants/actions";
 import { welcomeMessageText } from "./constants/messages";
@@ -8,6 +6,10 @@ import PublishQueueItemModel from "./schemas/publish_queue";
 import VacancyModel from "./schemas/vacancy";
 import { BotService, SubscribeToActionsService, logger } from "./services";
 import config from "./utils/config";
+
+if (!config.aiApiKey || !config.aiOrganizationId) {
+  throw Error("You must provide OPENAI_ORGANIZATION_ID and OPENAI_API_KEY");
+}
 
 if (!config.botConsultantUsername) {
   logger.warn("Variable BOT_CONSULTANT_USERNAME is missing");
@@ -36,9 +38,7 @@ bot.telegram.setMyCommands([
 ]);
 
 SubscribeToActionsService.subscribeToCommands();
-
-bot.on(message("text"), SubscribeToActionsService.subscribeToTextMessage);
-
+SubscribeToActionsService.subscribeToTextMessage();
 SubscribeToActionsService.subscribeToButtonActions();
 SubscribeToActionsService.subscribeToPublishQueueMonitoring();
 

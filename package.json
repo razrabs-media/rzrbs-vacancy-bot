@@ -5,7 +5,8 @@
   "main": "index.ts",
   "scripts": {
     "build": "tsc",
-    "start": "nodemon src/index.ts",
+    "start": "ts-node src/index.ts",
+    "dev": "nodemon --signal SIGTERM src/index.ts",
     "test": "jest",
     "lint": "eslint . --ext .ts",
     "prettier": "prettier --write .",
@@ -15,18 +16,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openworld-community/rzrbs-vacancy-bot.git"
+    "url": "git+https://github.com/razrabs-media/rzrbs-vacancy-bot.git"
   },
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/openworld-community/rzrbs-vacancy-bot/issues"
+    "url": "https://github.com/razrabs-media/rzrbs-vacancy-bot/issues"
   },
-  "homepage": "https://github.com/openworld-community/rzrbs-vacancy-bot#readme",
+  "homepage": "https://github.com/razrabs-media/rzrbs-vacancy-bot#readme",
   "lint-staged": {
     "*.ts": "eslint . --ext .ts"
   },
   "dependencies": {
     "dotenv": "^16.0.3",
+    "openai": "^3.3.0",
     "pg": "^8.11.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.32.0",

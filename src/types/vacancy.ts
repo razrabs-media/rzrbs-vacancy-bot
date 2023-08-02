@@ -22,16 +22,19 @@ export type TVacancyAttributes = {
   published_tg_message_id?: string[];
   published_tg_chat_id?: string[];
   company_name: string;
+  company_description?: string;
   hiring_process?: string;
 
   salary_amount_from?: number;
   salary_amount_to?: number;
   salary_currency?: string;
   salary_type?: SalaryType;
+  salary_negotiable?: boolean;
 
   format_of_work_title?: FormatOfWork;
   format_of_work_description?: string;
 
+  work_experience?: string;
   type_of_employment: EmploymentType;
   location?: string;
   contact_info: string;
