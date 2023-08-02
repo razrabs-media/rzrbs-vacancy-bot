@@ -1,1 +1,1 @@
-export { sendMessagePreview } from "./sendMessagePreview";
+export { onRetryParsing } from "./retryVacancyParsing";
