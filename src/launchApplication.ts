@@ -31,6 +31,10 @@ bot.telegram.setMyCommands([
     command: BotCommands.Template,
     description: BotCommandDescription[BotCommands.Template],
   },
+  {
+    command: BotCommands.Help,
+    description: BotCommandDescription[BotCommands.Help],
+  },
 ]);
 
 SubscribeToActionsService.subscribeToCommands();

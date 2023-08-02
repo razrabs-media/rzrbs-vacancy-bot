@@ -16,8 +16,10 @@ export const ActionButtonLabels: Record<BotActions, string> = {
 
 export enum BotCommands {
   Template = "template",
+  Help = "help",
 }
 
 export const BotCommandDescription: Record<BotCommands, string> = {
   [BotCommands.Template]: "Показывает шаблон вакансии",
+  [BotCommands.Help]: "Как работать с ботом",
 };
