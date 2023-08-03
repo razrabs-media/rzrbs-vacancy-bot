@@ -2,8 +2,8 @@ import { vacancyLimitExceededMessageText } from "../../constants/messages";
 import PublishQueueItemModel from "../../schemas/publish_queue";
 import VacancyModel from "../../schemas/vacancy";
 import config from "../../utils/config";
+import { isPublishingAllowedForUser } from "../../utils/isPublishingAllowedForUser";
 import logger from "../logger";
-import { isPublishingAllowedForUser } from "./utils/isPublishingAllowedForUser";
 import { updateButtonsUnderMessage } from "./utils/updateButtonsUnderMessage";
 
 /**

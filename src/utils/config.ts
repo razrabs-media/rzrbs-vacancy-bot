@@ -33,6 +33,8 @@ export interface IConfig {
     dailyVacancyLimit: number;
     /** number of vacancies one user allowed to publish in one month, by default 1 */
     userMonthVacancyLimit: number;
+    /** */
+    companyMonthVacancyLimit: number;
   };
 }
 
@@ -54,6 +56,9 @@ const buildConfig = (): IConfig => ({
     minPublishInterval: Number(process.env.MIN_PUBLISH_INTERVAL || 2),
     publishInterval: Number(process.env.PUBLISH_INTERVAL || 5),
     userMonthVacancyLimit: Number(process.env.USER_MONTH_VACANCY_LIMIT || 1),
+    companyMonthVacancyLimit: Number(
+      process.env.COMPANY_MONTH_VACANCY_LIMIT || 10
+    ),
   },
 });
 

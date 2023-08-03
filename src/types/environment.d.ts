@@ -13,6 +13,7 @@ declare global {
       MIN_PUBLISH_INTERVAL?: string | number;
       PUBLISH_INTERVAL?: string | number;
       USER_MONTH_VACANCY_LIMIT?: string | number;
+      COMPANY_MONTH_VACANCY_LIMIT?: string | number;
       DAILY_VACANCY_LIMIT?: string | number;
       PUBLISH_CONFIG?: string;
       OPENAI_ORGANIZATION_ID: string;

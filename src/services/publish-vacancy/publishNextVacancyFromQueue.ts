@@ -1,11 +1,11 @@
 import PublishQueueItemModel from "../../schemas/publish_queue";
 import config from "../../utils/config";
 import { getTodayWeekDay } from "../../utils/getTodayWeekDay";
+import { isVacancyPublishingAllowedToday } from "../../utils/isVacancyPublishingAllowedToday";
 import { clearDailyPublishInterval } from "../../utils/publishInterval";
 import { getCurrentHours } from "../../utils/time";
 import logger from "../logger";
 import { publishVacancyToChannels } from "./publishVacancyToChannels";
-import { isVacancyPublishingAllowedToday } from "./utils/isVacancyPublishingAllowedToday";
 
 export const publishNextVacancyFromQueue = async () => {
   try {
