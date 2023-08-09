@@ -11,6 +11,7 @@ export const sendVacancyToContact = async (
   try {
     logger.info(`Sending ${vacancy.id} vacancy to ${chatId}...`);
 
+    // FIXME: add parsed entitles, store them in DB?
     const message = await bot.telegram?.sendMessage(
       chatId,
       buildMessageFromVacancy(vacancy),

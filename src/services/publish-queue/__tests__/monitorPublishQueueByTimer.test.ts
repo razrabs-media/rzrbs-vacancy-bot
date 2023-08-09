@@ -3,14 +3,14 @@ import config, { IConfig } from "../../../utils/config";
 import * as GetTodayWeekDayModule from "../../../utils/getTodayWeekDay";
 import * as GetCurrentHoursModule from "../../../utils/time";
 import logger from "../../logger";
-import { monitorPublishQueueByTimer } from "../monitorPublishQueueByTimer";
-import { publishNextVacancyFromQueue } from "../publishNextVacancyFromQueue";
+import { monitorPublishQueueByTimer } from "../../publish-queue/monitorPublishQueueByTimer";
+import { publishNextVacancyFromQueue } from "../../publish-queue/publishNextVacancyFromQueue";
 
 jest.mock("../../logger");
 jest.mock("../publishNextVacancyFromQueue", () => ({
   publishNextVacancyFromQueue: jest.fn().mockResolvedValue(true),
 }));
-jest.mock("../utils/countPublishIntervalForVacanciesPool", () => ({
+jest.mock("../../publish-queue/countPublishIntervalForVacanciesPool", () => ({
   countPublishIntervalForVacanciesPool: jest.fn().mockResolvedValue(2),
 }));
 

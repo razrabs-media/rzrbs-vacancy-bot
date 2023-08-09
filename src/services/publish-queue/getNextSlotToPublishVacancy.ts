@@ -1,5 +1,5 @@
-import { TimePeriod } from "../../../constants/common";
-import { getTimePeriodInMilliseconds } from "../../../utils/getTimePeriodInMilliseconds";
+import { TimePeriod } from "../../constants/common";
+import { getTimePeriodInMilliseconds } from "../../utils/getTimePeriodInMilliseconds";
 
 interface IGetNextHourToPublish {
   from: number;

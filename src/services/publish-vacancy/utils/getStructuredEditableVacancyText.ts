@@ -1,3 +1,4 @@
+import { EDIT_MESSAGE_DISCLAIMER_TEXT } from "../../../constants/labels";
 import VacancyModel from "../../../schemas/vacancy";
 import { buildMessageFromVacancy } from "../../../utils/buildMessageFromVacancy";
 import logger from "../../logger";
@@ -37,8 +38,11 @@ export const getStructuredEditableVacancyText = async ({
       throw Error("vacancy not found");
     }
 
+    // FIXME: add entitles, store them in DB?
     return (
-      `> ${messageId}\nПожалуйста, не изменяйте информацию выше.\n\n` +
+      `> ${messageId}\n` +
+      `${EDIT_MESSAGE_DISCLAIMER_TEXT}\n` +
+      `\n` +
       `${buildMessageFromVacancy(vacancy)}`
     );
   } catch (err) {

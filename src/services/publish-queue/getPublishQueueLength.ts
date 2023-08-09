@@ -1,5 +1,5 @@
-import PublishQueueItemModel from "../../../schemas/publish_queue";
-import logger from "../../logger";
+import PublishQueueItemModel from "../../schemas/publish_queue";
+import logger from "../logger";
 
 export const getPublishQueueLength = async (): Promise<number> => {
   try {

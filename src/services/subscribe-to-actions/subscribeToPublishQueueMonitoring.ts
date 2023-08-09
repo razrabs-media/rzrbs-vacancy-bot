@@ -4,7 +4,7 @@ import { getTimePeriodInMilliseconds } from "../../utils/getTimePeriodInMillisec
 import { setPublishQueueMonitoringInterval } from "../../utils/publishInterval";
 import { getCurrentMinutes } from "../../utils/time";
 import { wait } from "../../utils/wait";
-import { PublishVacancyService, logger } from "../index";
+import { PublishQueueService, logger } from "../index";
 
 export const subscribeToPublishQueueMonitoring = async () => {
   if (!config.publishConfig.publishInterval) {
@@ -30,11 +30,11 @@ export const subscribeToPublishQueueMonitoring = async () => {
   logger.info(`Subscribed to check publish queue by timer`);
 
   // initial execution
-  PublishVacancyService.monitorPublishQueueByTimer({ initialExecution: true });
+  PublishQueueService.monitorPublishQueueByTimer({ initialExecution: true });
 
   setPublishQueueMonitoringInterval(
     setInterval(
-      PublishVacancyService.monitorPublishQueueByTimer,
+      PublishQueueService.monitorPublishQueueByTimer,
       getTimePeriodInMilliseconds(1, TimePeriod.Hours)
     )
   );

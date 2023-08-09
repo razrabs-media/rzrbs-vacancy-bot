@@ -2,14 +2,17 @@ import {
   companyLimitExceededMessage,
   getMissingRequiredFieldsMessage,
   parsedVacancyToReviewMessage,
+  publishQueueIsFullMessage,
   textProcessingMessage,
   userLimitExceededMessage,
 } from "../../constants/messages";
+import { isPublishingAllowedDuringTwoWeeks } from "../../utils/isPublishingAllowedDuringTwoWeeks";
 import { isPublishingAllowedForCompany } from "../../utils/isPublishingAllowedForCompany";
 import { isPublishingAllowedForUser } from "../../utils/isPublishingAllowedForUser";
 import { isRequiredVacancyFieldsFilled } from "../../utils/isRequiredVacancyFieldsFilled";
 import { parseMessageEntities } from "../../utils/parseMessageEntities";
 import logger from "../logger";
+import PublishQueueError from "../publish-queue/PublishQueueError";
 import { constructPreviewMessage } from "./constructPreviewMessage";
 import { createNewVacancy } from "./createNewVacancy";
 import { parseMessageToVacancy } from "./parseMessageToVacancy";
@@ -43,7 +46,7 @@ export const processNewVacancyMessage = async (ctx) => {
     throw Error(`missing fields - ${missingFields.join(", ")}`);
   }
 
-  // check user's limits
+  // checks user's limits
   const isPublishingAllowedForCurrentUser = isPublishingAllowedForUser(
     from.username
   );
@@ -52,7 +55,7 @@ export const processNewVacancyMessage = async (ctx) => {
     throw Error(`@${from.username} user's publishing limit exceeded`);
   }
 
-  // check company's limits
+  // checks company's limits
   const isPublishingAllowedForCurrentCompany = isPublishingAllowedForCompany(
     from.username,
     parsedMessage.company_name
@@ -64,7 +67,13 @@ export const processNewVacancyMessage = async (ctx) => {
     );
   }
 
-  // check the queue??
+  // checks if vacancy can be published in two weeks period
+  const isPublishingAllowedInTwoWeeksPeriod =
+    await isPublishingAllowedDuringTwoWeeks();
+  if (!isPublishingAllowedInTwoWeeksPeriod) {
+    await ctx.sendMessage(publishQueueIsFullMessage);
+    throw new PublishQueueError("publish queue is full");
+  }
 
   const { previewMessageText, messageOptions } =
     constructPreviewMessage(

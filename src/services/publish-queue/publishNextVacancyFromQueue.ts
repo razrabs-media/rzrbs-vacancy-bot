@@ -5,7 +5,7 @@ import { isVacancyPublishingAllowedToday } from "../../utils/isVacancyPublishing
 import { clearDailyPublishInterval } from "../../utils/publishInterval";
 import { getCurrentHours } from "../../utils/time";
 import logger from "../logger";
-import { publishVacancyToChannels } from "./publishVacancyToChannels";
+import { publishVacancyToChannels } from "../publish-vacancy/publishVacancyToChannels";
 
 export const publishNextVacancyFromQueue = async () => {
   try {

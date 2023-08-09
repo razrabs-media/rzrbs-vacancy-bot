@@ -5,8 +5,8 @@ import { getTodayWeekDay } from "../../utils/getTodayWeekDay";
 import { setDailyPublishInterval } from "../../utils/publishInterval";
 import { getCurrentHours } from "../../utils/time";
 import logger from "../logger";
+import { countPublishIntervalForVacanciesPool } from "./countPublishIntervalForVacanciesPool";
 import { publishNextVacancyFromQueue } from "./publishNextVacancyFromQueue";
-import { countPublishIntervalForVacanciesPool } from "./utils/countPublishIntervalForVacanciesPool";
 
 export const monitorPublishQueueByTimer = async (params?: {
   initialExecution?: boolean;

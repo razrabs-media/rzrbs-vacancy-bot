@@ -2,7 +2,7 @@ import config from "../../../utils/config";
 import * as GetCurrentHoursModule from "../../../utils/time";
 import * as WaitModule from "../../../utils/wait";
 import logger from "../../logger";
-import * as MonitorPublishQueueByTimerModule from "../../publish-vacancy/monitorPublishQueueByTimer";
+import * as MonitorPublishQueueByTimerModule from "../../publish-queue/monitorPublishQueueByTimer";
 import { subscribeToPublishQueueMonitoring } from "../subscribeToPublishQueueMonitoring";
 
 jest.mock("../../logger");

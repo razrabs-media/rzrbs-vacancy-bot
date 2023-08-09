@@ -1,9 +1,17 @@
-import { vacancyLimitExceededMessageText } from "../../constants/messages";
+import {
+  publishQueueIsFullMessage,
+  vacancyLimitExceededMessageText,
+} from "../../constants/messages";
 import PublishQueueItemModel from "../../schemas/publish_queue";
 import VacancyModel from "../../schemas/vacancy";
+import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
 import config from "../../utils/config";
+import { getVacancyWillBePublishedText } from "../../utils/getVacancyWillBePublishedText";
 import { isPublishingAllowedForUser } from "../../utils/isPublishingAllowedForUser";
+import { parseMessageEntities } from "../../utils/parseMessageEntities";
 import logger from "../logger";
+import { PUBLISH_QUEUE_ERROR } from "../publish-queue/PublishQueueError";
+import { countNextAvailableTimeslotToPublish } from "../publish-queue/countNextAvailableTimeslotToPublish";
 import { updateButtonsUnderMessage } from "./utils/updateButtonsUnderMessage";
 
 /**
@@ -11,7 +19,8 @@ import { updateButtonsUnderMessage } from "./utils/updateButtonsUnderMessage";
  * Triggers on publish button click in private chat with Bot
  */
 export const onPublishVacancy = async (ctx) => {
-  const { message_id, chat } = ctx?.update?.callback_query?.message || {};
+  const { message_id, chat, text, entities } =
+    ctx?.update?.callback_query?.message || {};
 
   try {
     if (!message_id || !chat?.id || !chat?.username) {
@@ -55,14 +64,31 @@ export const onPublishVacancy = async (ctx) => {
       `Publish: vacancy ${vacancy.id} successfully added to publish queue`
     );
 
+    const nextTimeslotToPublish = await countNextAvailableTimeslotToPublish();
+    const vacancyMessageText = buildMessageFromVacancy(
+      vacancy,
+      parseMessageEntities(text, entities)
+    );
+
+    await ctx.editMessageText(
+      `${vacancyMessageText}\n` +
+        `<hr />\n` +
+        `${getVacancyWillBePublishedText(nextTimeslotToPublish)}`,
+      { parse_mode: "HTML" }
+    );
+
     await updateButtonsUnderMessage(ctx);
   } catch (err) {
+    const { name, message } = (err as Error) || {};
+
+    if (name === PUBLISH_QUEUE_ERROR) {
+      await ctx.sendMessage(publishQueueIsFullMessage);
+    }
+
     logger.error(
       `Publish: Failed to add vacancy ${chat?.username}::${
         chat?.id
-      }::${message_id} to publish queue - ${
-        (err as Error).message || JSON.stringify(err)
-      }`
+      }::${message_id} to publish queue - ${message || JSON.stringify(err)}`
     );
   }
 };

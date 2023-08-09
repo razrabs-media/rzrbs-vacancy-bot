@@ -1,18 +1,9 @@
-import { WEEK, WeekDay } from "../../../constants/common";
-import config from "../../../utils/config";
-import { getTodayWeekDay } from "../../../utils/getTodayWeekDay";
-import logger from "../../logger";
+import config from "../../utils/config";
+import { getTwoWeeksDaysArray } from "../../utils/getTwoWeeksDaysArray";
+import logger from "../logger";
 import { getPublishQueueLength } from "./getPublishQueueLength";
 
-export const getTwoWeeksDaysArray = (): WeekDay[] => {
-  const currentWeekDayIndex = WEEK.indexOf(getTodayWeekDay());
-  return [
-    ...WEEK.slice(currentWeekDayIndex),
-    ...WEEK,
-    ...WEEK.slice(0, currentWeekDayIndex),
-  ];
-};
-
+// TODO: optimise
 export const countPublishIntervalForVacanciesPool =
   async (): Promise<number> => {
     const { publishInterval, minPublishInterval, schedule } =
