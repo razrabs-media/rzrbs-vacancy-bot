@@ -1,29 +1,11 @@
 import config from "../../utils/config";
+import { getRoundDate } from "../../utils/getRoundDate";
 import { getTodayWeekDay } from "../../utils/getTodayWeekDay";
 import { getTwoWeeksDaysArray } from "../../utils/getTwoWeeksDaysArray";
 import { getCurrentHours } from "../../utils/time";
 import PublishQueueError from "./PublishQueueError";
 import { countPublishIntervalForVacanciesPool } from "./countPublishIntervalForVacanciesPool";
 import { getPublishQueueLength } from "./getPublishQueueLength";
-
-const getNextPublishDate = ({
-  hour,
-  daysToAdd,
-}: {
-  hour: number;
-  daysToAdd?: number;
-}): Date => {
-  const date = new Date();
-
-  if (daysToAdd) {
-    date.setDate(date.getDate() + daysToAdd);
-  }
-  date.setHours(hour);
-  date.setMinutes(0);
-  date.setMilliseconds(0);
-
-  return date;
-};
 
 const getNearestAvailableHour = (
   currentHour: number,
@@ -48,7 +30,7 @@ export const countNextAvailableTimeslotToPublish = async (): Promise<Date> => {
   const currentHour = getCurrentHours();
 
   if (!publishQueueLength) {
-    return getNextPublishDate({
+    return getRoundDate({
       hour: getNearestAvailableHour(
         currentHour,
         publishSchedule[todayWeekDay],
@@ -84,7 +66,7 @@ export const countNextAvailableTimeslotToPublish = async (): Promise<Date> => {
     );
 
     if (vacanciesAvailableToPublish < publishQueueLength) {
-      return getNextPublishDate({
+      return getRoundDate({
         hour: nearestAvailableHour + publishQueueLength * publishInterval,
       });
     } else {
@@ -112,7 +94,7 @@ export const countNextAvailableTimeslotToPublish = async (): Promise<Date> => {
         publishSchedule[weekDay],
         publishInterval
       );
-      return getNextPublishDate({
+      return getRoundDate({
         hour: nearestAvailableHour,
         daysToAdd: daysToWait + 1,
       });
