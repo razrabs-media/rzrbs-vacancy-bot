@@ -78,7 +78,7 @@ export const countNextAvailableTimeslotToPublish = async (): Promise<Date> => {
   let daysToWait = 0;
 
   for (const weekDay of twoWeeksDays) {
-    if (publishSchedule[weekDay]) {
+    if (!publishSchedule[weekDay]) {
       daysToWait++;
       continue;
     }

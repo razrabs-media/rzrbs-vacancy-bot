@@ -1,5 +1,6 @@
 import {
   publishQueueIsFullMessage,
+  systemErrorMessage,
   vacancyLimitExceededMessageText,
 } from "../../constants/messages";
 import PublishQueueItemModel from "../../schemas/publish_queue";
@@ -13,6 +14,54 @@ import logger from "../logger";
 import { PUBLISH_QUEUE_ERROR } from "../publish-queue/PublishQueueError";
 import { countNextAvailableTimeslotToPublish } from "../publish-queue/countNextAvailableTimeslotToPublish";
 import { updateButtonsUnderMessage } from "./utils/updateButtonsUnderMessage";
+
+const removeFailedVacancyFromQueue = async (ctx) => {
+  const { message_id, chat } = ctx?.update?.callback_query?.message || {};
+
+  try {
+    if (!message_id || !chat?.id || !chat?.username) {
+      return;
+    }
+
+    const vacancy = await VacancyModel.findOne({
+      where: {
+        tg_message_id: message_id,
+        tg_chat_id: chat.id,
+        author_username: chat.username,
+      },
+    });
+
+    if (!vacancy) {
+      return;
+    }
+
+    const queueItem = await PublishQueueItemModel.findOne({
+      where: {
+        vacancy_id: vacancy.id,
+        removed: false,
+        published: false,
+      },
+    });
+
+    if (!queueItem) {
+      return;
+    }
+
+    await queueItem.destroy();
+
+    logger.info(
+      `Vacancy ${vacancy.id} removed from publish queue because of an error`
+    );
+  } catch (err) {
+    logger.error(
+      `Publish Rollback: Failed to remove vacancy ${chat?.username}::${
+        chat?.id
+      }::${message_id} from publish queue - ${
+        (err as Error)?.message || JSON.stringify(err)
+      }`
+    );
+  }
+};
 
 /**
  * Adds vacancy to publish queue.
@@ -72,7 +121,7 @@ export const onPublishVacancy = async (ctx) => {
 
     await ctx.editMessageText(
       `${vacancyMessageText}\n` +
-        `<hr />\n` +
+        `___________________\n` +
         `${getVacancyWillBePublishedText(nextTimeslotToPublish)}`,
       { parse_mode: "HTML" }
     );
@@ -84,6 +133,9 @@ export const onPublishVacancy = async (ctx) => {
     if (name === PUBLISH_QUEUE_ERROR) {
       await ctx.sendMessage(publishQueueIsFullMessage);
     }
+
+    await removeFailedVacancyFromQueue(ctx);
+    await ctx.sendMessage(systemErrorMessage);
 
     logger.error(
       `Publish: Failed to add vacancy ${chat?.username}::${
