@@ -7,4 +7,5 @@ export const getVacancyWillBePublishedText = (date: Date): string =>
     day: "numeric",
     hour: "numeric",
     minute: "numeric",
+    timeZone: "Europe/Moscow",
   })}`;
