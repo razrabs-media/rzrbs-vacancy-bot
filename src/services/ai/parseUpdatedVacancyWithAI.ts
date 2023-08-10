@@ -29,7 +29,6 @@ export const parseUpdatedVacancyWithAI = async (
               - salary (from text after "${VacancyFieldLabel.Salary}", dict of salary or wage for job done as range of numbers from 0 to positive infinity (as dict of max and min) and currency and taxes (net or gross), note that "до вычета" is equal to gross and "чистыми" is equal to net)
               - salary_negotiable (set true if find "по договоренности" or "по результатам собеседования" instead of salary numbers)
               - type_of_employment (from text after "${VacancyFieldLabel.FormatOfWork}", one of the following - fulltime or parttime or contract or internship)
-              - work_experience (text with information about required work experience for the job)
               - description (text strictly after "${VacancyFieldLabel.Description}:", with all newline symbols saved, please sanitize any emoji and hashtags)
               
               Valid JSON Output, omit fields that are not present, return empty response if required fields are not presented`,
@@ -58,7 +57,6 @@ export const parseUpdatedVacancyWithAI = async (
     format_of_work_description,
     hiring_process,
     salary_negotiable,
-    work_experience,
     employment_details,
   } = parsedVacancy as IParsedEditedVacancyByAI;
 
@@ -79,6 +77,5 @@ export const parseUpdatedVacancyWithAI = async (
       format_of_work_description?.description || employment_details?.type,
     hiring_process: hiring_process?.description,
     salary_negotiable,
-    work_experience,
   };
 };

@@ -4,8 +4,9 @@ export const getVacancyWillBePublishedText = (date: Date): string =>
   `${VACANCY_WILL_BE_PUBLISHED}: ${date.toLocaleDateString("ru-RU", {
     year: "numeric",
     month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
     timeZone: "Europe/Moscow",
   })}`;

@@ -34,7 +34,6 @@ export type TVacancyAttributes = {
   format_of_work_title?: FormatOfWork;
   format_of_work_description?: string;
 
-  work_experience?: string;
   type_of_employment: EmploymentType;
   location?: string;
   contact_info: string;

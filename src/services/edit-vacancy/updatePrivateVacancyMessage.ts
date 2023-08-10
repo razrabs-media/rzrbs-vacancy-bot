@@ -3,6 +3,7 @@ import { InlineKeyboardButton } from "telegraf/typings/core/types/typegram";
 
 import { ActionButtonLabels, BotActions } from "../../constants/actions";
 import { BotContext } from "../../types/context";
+import { TelegramMessageParams } from "../../types/telegram";
 import { IVacancyModel } from "../../types/vacancy";
 import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
 import logger from "../logger";
@@ -16,11 +17,8 @@ export const updatePrivateVacancyMessage = async ({
   vacancy,
 }: {
   ctx: Telegraf<BotContext>;
-  chatId: number;
-  messageId: number;
-  fromUsername: string;
   vacancy: IVacancyModel;
-}) => {
+} & TelegramMessageParams) => {
   try {
     const updatedInlineMarkup = Markup.inlineKeyboard(
       [

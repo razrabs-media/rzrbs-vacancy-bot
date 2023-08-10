@@ -17,7 +17,6 @@ export const isRequiredVacancyFieldsFilled = (
     company_name,
     contact_info,
     hiring_process,
-    work_experience,
   } = parsedVacancy;
 
   if (!title) missingFields.push(VacancyFieldLabel.Title);
@@ -26,7 +25,6 @@ export const isRequiredVacancyFieldsFilled = (
   if (!hiring_process) missingFields.push(VacancyFieldLabel.HiringProcess);
   if (!salary_amount_from && !salary_amount_to && !salary_negotiable)
     missingFields.push(VacancyFieldLabel.Salary);
-  if (!work_experience) missingFields.push(VacancyFieldLabel.WorkExperience);
 
-  return { isRequiredFieldsFilled: !!missingFields.length, missingFields };
+  return { isRequiredFieldsFilled: !missingFields.length, missingFields };
 };

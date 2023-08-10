@@ -42,7 +42,6 @@ export interface IParsedVacancyByAI {
     restrictions: string;
   }[];
   salary_negotiable?: boolean;
-  work_experience?: string;
 }
 
 export interface IParsedEditedVacancyByAI

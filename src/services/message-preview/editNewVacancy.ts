@@ -1,4 +1,5 @@
 import VacancyModel from "../../schemas/vacancy";
+import { TelegramMessageParams } from "../../types/telegram";
 import { TVacancyCreationAttributes } from "../../types/vacancy";
 import logger from "../logger";
 import { createNewVacancy } from "./createNewVacancy";
@@ -10,10 +11,7 @@ export const editNewVacancy = async ({
   fromUsername,
 }: {
   vacancy: TVacancyCreationAttributes;
-  messageId: number;
-  chatId: number;
-  fromUsername: string;
-}) => {
+} & TelegramMessageParams) => {
   try {
     if (!chatId || !messageId || !fromUsername) {
       throw Error(`cannot retrieve required info`);

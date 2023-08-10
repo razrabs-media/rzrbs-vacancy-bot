@@ -77,7 +77,7 @@ export const processNewVacancyMessage = async (ctx) => {
 
   const { previewMessageText, messageOptions } =
     constructPreviewMessage(
-      ctx,
+      { messageId: message_id, chatId: chat.id, fromUsername: from.username },
       parsedMessage,
       parseMessageEntities(text, entities)
     ) || {};

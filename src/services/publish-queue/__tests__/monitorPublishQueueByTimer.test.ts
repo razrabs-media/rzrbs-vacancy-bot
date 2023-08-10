@@ -3,8 +3,8 @@ import config, { IConfig } from "../../../utils/config";
 import * as GetTodayWeekDayModule from "../../../utils/getTodayWeekDay";
 import * as GetCurrentHoursModule from "../../../utils/time";
 import logger from "../../logger";
-import { monitorPublishQueueByTimer } from "../../publish-queue/monitorPublishQueueByTimer";
-import { publishNextVacancyFromQueue } from "../../publish-queue/publishNextVacancyFromQueue";
+import { monitorPublishQueueByTimer } from "../monitorPublishQueueByTimer";
+import { publishNextVacancyFromQueue } from "../publishNextVacancyFromQueue";
 
 jest.mock("../../logger");
 jest.mock("../publishNextVacancyFromQueue", () => ({

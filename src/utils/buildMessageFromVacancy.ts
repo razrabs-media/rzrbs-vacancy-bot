@@ -50,7 +50,6 @@ export const buildMessageFromVacancy = (
     contact_info,
     hiring_process,
     location,
-    work_experience,
   }: IVacancyParsed,
   parsedEntities?: IParsedMessageEntity[]
 ): string => {
@@ -70,11 +69,6 @@ export const buildMessageFromVacancy = (
       salary_type,
       salary_negotiable,
     })}` +
-    `${
-      work_experience
-        ? `${VacancyFieldLabel.WorkExperience}: ${work_experience}\n`
-        : ""
-    }` +
     `${VacancyFieldLabel.Contacts}: ${contact_info}\n` +
     `${
       hiring_process

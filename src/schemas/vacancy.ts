@@ -69,11 +69,6 @@ export const VacancyModel = db.define<IVacancyModel>(
     },
     // in case we want to explain it more - like "hybrid, 2 days a week work from office"
     format_of_work_description: DataTypes.STRING,
-    work_experience: {
-      type: DataTypes.STRING(500),
-      allowNull: false,
-      validate: { notEmpty: true },
-    },
 
     company_name: { type: DataTypes.STRING, allowNull: false },
     company_description: DataTypes.STRING,

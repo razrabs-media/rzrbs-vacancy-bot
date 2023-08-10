@@ -2,13 +2,14 @@ import { Markup } from "telegraf";
 import { InlineKeyboardMarkup } from "telegraf/typings/core/types/typegram";
 
 import { ActionButtonLabels, BotActions } from "../../constants/actions";
+import { TelegramMessageParams } from "../../types/telegram";
 import { IVacancyParsed } from "../../types/vacancy";
 import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
 import { IParsedMessageEntity } from "../../utils/parseMessageEntities";
 import logger from "../logger";
 
 export const constructPreviewMessage = (
-  ctx,
+  { chatId, messageId, fromUsername }: TelegramMessageParams,
   parsedVacancy: IVacancyParsed,
   parsedEntities: IParsedMessageEntity[]
 ):
@@ -20,10 +21,8 @@ export const constructPreviewMessage = (
       };
     }
   | undefined => {
-  const { message_id, chat, from } = ctx?.update?.message || {};
-
   try {
-    if (!message_id || !chat?.id || !from?.username) {
+    if (!messageId || !chatId || !fromUsername) {
       throw Error("cannot retrieve message_id, chat.id of from.username");
     }
 
@@ -38,12 +37,12 @@ export const constructPreviewMessage = (
       ),
       Markup.button.callback(
         ActionButtonLabels[BotActions.RetryParsing],
-        `${BotActions.RetryParsing}-${message_id}`
+        `${BotActions.RetryParsing}-${messageId}`
       ),
     ]);
 
     logger.info(
-      `Successfully constructed vacancy preview message for - ${from.username}::${chat?.id}::${message_id}`
+      `Successfully constructed vacancy preview message for - ${fromUsername}::${chatId}::${messageId}`
     );
 
     return {
@@ -58,9 +57,9 @@ export const constructPreviewMessage = (
     };
   } catch (err) {
     logger.error(
-      `Failed to create vacancy from message ${from.username}::${
-        chat?.id
-      }::${message_id} - ${(err as Error).message || JSON.stringify(err)}`
+      `Failed to create vacancy from message ${fromUsername}::${chatId}::${messageId} - ${
+        (err as Error).message || JSON.stringify(err)
+      }`
     );
   }
 };

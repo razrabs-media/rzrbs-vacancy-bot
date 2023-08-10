@@ -1,5 +1,6 @@
 import { EDIT_MESSAGE_DISCLAIMER_TEXT } from "../../../constants/labels";
 import VacancyModel from "../../../schemas/vacancy";
+import { TelegramMessageParams } from "../../../types/telegram";
 import { buildMessageFromVacancy } from "../../../utils/buildMessageFromVacancy";
 import logger from "../../logger";
 
@@ -8,12 +9,7 @@ export const getStructuredEditableVacancyText = async ({
   chatId,
   fromUsername,
   text,
-}: {
-  messageId: number;
-  chatId: number;
-  fromUsername: string;
-  text?: string;
-}): Promise<string> => {
+}: TelegramMessageParams): Promise<string> => {
   try {
     if (!chatId || !messageId || !fromUsername || !text) {
       throw Error(

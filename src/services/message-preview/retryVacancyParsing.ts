@@ -1,5 +1,6 @@
 import {
   getMissingRequiredFieldsMessage,
+  parsedVacancyToReviewMessage,
   systemErrorMessage,
 } from "../../constants/messages";
 import { isRequiredVacancyFieldsFilled } from "../../utils/isRequiredVacancyFieldsFilled";
@@ -13,8 +14,11 @@ export const onRetryParsing = async (ctx) => {
   const [, messageIdToParse] = ctx?.match || [];
   const { message_id, chat, reply_to_message } =
     ctx?.update?.callback_query?.message || {};
-  const { sourceMessageId, sourceText, sourceEntities } =
-    reply_to_message || {};
+  const {
+    message_id: sourceMessageId,
+    text: sourceText,
+    entities: sourceEntities,
+  } = reply_to_message || {};
 
   try {
     if (!reply_to_message || !sourceText) {
@@ -30,7 +34,7 @@ export const onRetryParsing = async (ctx) => {
       );
     }
 
-    if (messageIdToParse !== sourceMessageId) {
+    if (Number(messageIdToParse) !== sourceMessageId) {
       await ctx.sendMessage(systemErrorMessage);
       throw Error(
         `messageIdToParse is wrong, check reply regexp. messageIdToParse=${messageIdToParse}`
@@ -49,7 +53,11 @@ export const onRetryParsing = async (ctx) => {
 
     const { previewMessageText, messageOptions } =
       constructPreviewMessage(
-        ctx,
+        {
+          messageId: sourceMessageId,
+          chatId: chat.id,
+          fromUsername: chat?.username,
+        },
         parsedVacancy,
         parseMessageEntities(sourceText, sourceEntities)
       ) || {};
@@ -78,11 +86,14 @@ export const onRetryParsing = async (ctx) => {
       chatId: response.chat.id,
       fromUsername: chat?.username,
     });
+
+    await ctx.sendMessage(parsedVacancyToReviewMessage);
   } catch (err) {
     logger.error(
       `Failed to re-parse vacancy ${messageIdToParse}::${chat?.username} - ${
         (err as Error).message || JSON.stringify(err)
       }`
     );
+    await ctx.sendMessage(systemErrorMessage);
   }
 };
