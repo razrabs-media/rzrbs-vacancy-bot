@@ -11,7 +11,7 @@ import { isPublishingAllowedForCompany } from "../../utils/isPublishingAllowedFo
 import { isPublishingAllowedForUser } from "../../utils/isPublishingAllowedForUser";
 import { isRequiredVacancyFieldsFilled } from "../../utils/isRequiredVacancyFieldsFilled";
 import { parseMessageEntities } from "../../utils/parseMessageEntities";
-import logger from "../logger";
+import { handleLogging } from "../logger";
 import PublishQueueError from "../publish-queue/PublishQueueError";
 import { constructPreviewMessage } from "./constructPreviewMessage";
 import { createNewVacancy } from "./createNewVacancy";
@@ -33,6 +33,13 @@ import { parseMessageToVacancy } from "./parseMessageToVacancy";
  */
 export const processNewVacancyMessage = async (ctx) => {
   const { message_id, from, text, chat, entities } = ctx?.update?.message || {};
+  const { logInfo } = handleLogging("processNewVacancyMessage", {
+    fromUsername: from?.username,
+    chatId: chat?.id,
+    messageId: message_id,
+  });
+
+  logInfo(`Started processing incoming message`);
 
   await ctx.sendMessage(textProcessingMessage);
 
@@ -89,9 +96,7 @@ export const processNewVacancyMessage = async (ctx) => {
     reply_to_message_id: message_id,
   });
 
-  logger.info(
-    `Successfully sent vacancy preview message for - ${from.username}::${chat?.id}::${message_id}`
-  );
+  logInfo(`Successfully sent vacancy preview message`);
 
   if (!response.message_id) {
     throw Error("preview message sending was failed");

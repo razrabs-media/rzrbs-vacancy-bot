@@ -1,3 +1,4 @@
+import { SEPARATOR } from "../../constants/labels";
 import {
   publishQueueIsFullMessage,
   systemErrorMessage,
@@ -10,13 +11,18 @@ import config from "../../utils/config";
 import { getVacancyWillBePublishedText } from "../../utils/getVacancyWillBePublishedText";
 import { isPublishingAllowedForUser } from "../../utils/isPublishingAllowedForUser";
 import { parseMessageEntities } from "../../utils/parseMessageEntities";
-import logger from "../logger";
+import { handleLogging } from "../logger";
 import { PUBLISH_QUEUE_ERROR } from "../publish-queue/PublishQueueError";
 import { countNextAvailableTimeslotToPublish } from "../publish-queue/countNextAvailableTimeslotToPublish";
 import { updateButtonsUnderMessage } from "./utils/updateButtonsUnderMessage";
 
 const removeFailedVacancyFromQueue = async (ctx) => {
   const { message_id, chat } = ctx?.update?.callback_query?.message || {};
+  const { logInfo, logError } = handleLogging(
+    "Publish Rollback::removeFailedVacancyFromQueue",
+    { fromUsername: chat?.username, chatId: chat?.id, messageId: message_id },
+    "Failed to remove vacancy"
+  );
 
   try {
     if (!message_id || !chat?.id || !chat?.username) {
@@ -49,17 +55,11 @@ const removeFailedVacancyFromQueue = async (ctx) => {
 
     await queueItem.destroy();
 
-    logger.info(
+    logInfo(
       `Vacancy ${vacancy.id} removed from publish queue because of an error`
     );
   } catch (err) {
-    logger.error(
-      `Publish Rollback: Failed to remove vacancy ${chat?.username}::${
-        chat?.id
-      }::${message_id} from publish queue - ${
-        (err as Error)?.message || JSON.stringify(err)
-      }`
-    );
+    logError(err);
   }
 };
 
@@ -70,6 +70,11 @@ const removeFailedVacancyFromQueue = async (ctx) => {
 export const onPublishVacancy = async (ctx) => {
   const { message_id, chat, text, entities } =
     ctx?.update?.callback_query?.message || {};
+  const { logInfo, logWarn, logError } = handleLogging(
+    "onPublishVacancy",
+    { fromUsername: chat?.username, chatId: chat?.id, messageId: message_id },
+    "Failed to add vacancy"
+  );
 
   try {
     if (!message_id || !chat?.id || !chat?.username) {
@@ -92,11 +97,11 @@ export const onPublishVacancy = async (ctx) => {
     if (!isPublishingAllowed) {
       await ctx.sendMessage(vacancyLimitExceededMessageText);
 
-      logger.warn(
+      logWarn(
         `User ${chat.username} tried to exceed user monthly limit ${config.publishConfig.userMonthVacancyLimit}`
       );
-      logger.info(
-        `Publish: vacancy ${vacancy.id} was not allowed for publishing by user limit`
+      logInfo(
+        `vacancy ${vacancy.id} was not allowed for publishing by user limit`
       );
       return;
     }
@@ -109,9 +114,7 @@ export const onPublishVacancy = async (ctx) => {
       throw Error(`Failed to add vacancy ${vacancy.id} to publish queue`);
     }
 
-    logger.info(
-      `Publish: vacancy ${vacancy.id} successfully added to publish queue`
-    );
+    logInfo(`vacancy ${vacancy.id} successfully added to publish queue`);
 
     const nextTimeslotToPublish = await countNextAvailableTimeslotToPublish();
     const vacancyMessageText = buildMessageFromVacancy(
@@ -121,26 +124,21 @@ export const onPublishVacancy = async (ctx) => {
 
     await ctx.editMessageText(
       `${vacancyMessageText}\n` +
-        `___________________\n` +
+        `${SEPARATOR}\n` +
         `${getVacancyWillBePublishedText(nextTimeslotToPublish)}`,
       { parse_mode: "HTML" }
     );
 
     await updateButtonsUnderMessage(ctx);
   } catch (err) {
-    const { name, message } = (err as Error) || {};
-
-    if (name === PUBLISH_QUEUE_ERROR) {
+    if ((err as Error)?.name === PUBLISH_QUEUE_ERROR) {
       await ctx.sendMessage(publishQueueIsFullMessage);
+    } else {
+      await ctx.sendMessage(systemErrorMessage);
     }
 
     await removeFailedVacancyFromQueue(ctx);
-    await ctx.sendMessage(systemErrorMessage);
 
-    logger.error(
-      `Publish: Failed to add vacancy ${chat?.username}::${
-        chat?.id
-      }::${message_id} to publish queue - ${message || JSON.stringify(err)}`
-    );
+    logError(err);
   }
 };

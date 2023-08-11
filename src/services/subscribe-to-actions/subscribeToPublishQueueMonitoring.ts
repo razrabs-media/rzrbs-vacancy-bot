@@ -5,9 +5,12 @@ import { getTimePeriodInMilliseconds } from "../../utils/getTimePeriodInMillisec
 import { setPublishQueueMonitoringInterval } from "../../utils/publishInterval";
 import { getCurrentHours, getCurrentMinutes } from "../../utils/time";
 import { wait } from "../../utils/wait";
-import { PublishQueueService, logger } from "../index";
+import { PublishQueueService } from "../index";
+import { handleLogging } from "../logger";
 
 export const subscribeToPublishQueueMonitoring = async () => {
+  const { logInfo } = handleLogging("Publish Queue");
+
   if (!config.publishConfig.publishInterval) {
     throw Error(
       "ERROR: Publish queue won't work until PUBLISH_INTERVAL is set"
@@ -23,7 +26,7 @@ export const subscribeToPublishQueueMonitoring = async () => {
     }).getTime();
     const millisecondsToWait = nearestRoundHourDate - Date.now();
 
-    logger.info(
+    logInfo(
       `Waiting ${
         60 - currentMinutes
       }mins before starting to monitor publish queue`
@@ -32,7 +35,7 @@ export const subscribeToPublishQueueMonitoring = async () => {
     await wait(millisecondsToWait);
   }
 
-  logger.info(`Subscribed to check publish queue by timer`);
+  logInfo(`Subscribed to check publish queue by timer`);
 
   // initial execution
   PublishQueueService.monitorPublishQueueByTimer({ initialExecution: true });

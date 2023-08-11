@@ -1,4 +1,5 @@
 import { onVacancyEdit } from "../edit-vacancy";
+import { handleLogging } from "../logger";
 
 const getEditedMessageInfo = (
   text: string,
@@ -21,8 +22,16 @@ const getEditedMessageInfo = (
 };
 
 export const processEditingExistingVacancy = async (ctx) => {
+  const { from, chat, text } = ctx?.update?.message || {};
   const { messageId, updatedVacancyText, isEditedExistingVacancy } =
-    getEditedMessageInfo(ctx?.update?.message?.text, ctx?.botInfo?.username);
+    getEditedMessageInfo(text, ctx?.botInfo?.username);
+  const { logInfo } = handleLogging("processEditingExistingVacancy", {
+    fromUsername: from?.username,
+    chatId: chat?.id,
+    messageId: Number(messageId),
+  });
+
+  logInfo(`Started processing editing message`);
 
   if (isEditedExistingVacancy && updatedVacancyText && messageId) {
     await onVacancyEdit(ctx, {

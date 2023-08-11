@@ -4,10 +4,16 @@ import { getTodayWeekDay } from "../../utils/getTodayWeekDay";
 import { isVacancyPublishingAllowedToday } from "../../utils/isVacancyPublishingAllowedToday";
 import { clearDailyPublishInterval } from "../../utils/publishInterval";
 import { getCurrentHours } from "../../utils/time";
-import logger from "../logger";
+import { handleLogging } from "../logger";
 import { publishVacancyToChannels } from "../publish-vacancy/publishVacancyToChannels";
 
 export const publishNextVacancyFromQueue = async () => {
+  const { logInfo, logError } = handleLogging(
+    "Publish Next Vacancy",
+    undefined,
+    "failed to publish next vacancy"
+  );
+
   try {
     const currentHour = getCurrentHours();
     const currentWeekDay = getTodayWeekDay();
@@ -15,13 +21,13 @@ export const publishNextVacancyFromQueue = async () => {
 
     if (currentHour >= to) {
       clearDailyPublishInterval();
-      logger.info("Publish Queue: working day finished");
+      logInfo("working day finished");
     }
 
     const isPublishingAllowed = await isVacancyPublishingAllowedToday();
     if (!isPublishingAllowed) {
-      logger.info(
-        `Publish Next Vacancy: canceled, because daily limit reached ${config.publishConfig.dailyVacancyLimit}`
+      logInfo(
+        `canceled, because daily limit reached ${config.publishConfig.dailyVacancyLimit}`
       );
       return;
     }
@@ -36,15 +42,11 @@ export const publishNextVacancyFromQueue = async () => {
     });
 
     if (!publishQueueItem) {
-      logger.info("Publish Queue: nothing found to publish");
+      logInfo("nothing found to publish");
     } else {
       await publishVacancyToChannels(publishQueueItem);
     }
   } catch (err) {
-    logger.error(
-      `Publish Next Vacancy: failed to publish next vacancy - ${
-        (err as Error)?.message || JSON.stringify(err)
-      }`
-    );
+    logError(err);
   }
 };

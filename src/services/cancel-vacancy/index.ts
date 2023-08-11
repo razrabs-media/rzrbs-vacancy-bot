@@ -1,10 +1,16 @@
 import Vacancy from "../../schemas/vacancy";
-import logger from "../logger";
+import { handleLogging } from "../logger";
 
 export const onVacancyCancel = async (ctx) => {
-  try {
-    const { message_id, chat } = ctx?.update?.callback_query?.message || {};
+  const { message_id, chat } = ctx?.update?.callback_query?.message || {};
+  const { username } = chat || {};
+  const { logInfo, logError } = handleLogging(
+    "sendVacancyTemplateMessage",
+    { fromUsername: username, chatId: chat?.id, messageId: message_id },
+    `Failed to cancel vacancy`
+  );
 
+  try {
     if (!message_id || !chat?.id || !chat?.username) {
       throw Error("cannot retrieve message_id, chat.id or chat.username");
     }
@@ -18,9 +24,7 @@ export const onVacancyCancel = async (ctx) => {
     });
 
     if (!vacancy) {
-      throw Error(
-        `Vacancy from ${chat.username}::${chat.id}::${message_id} not found`
-      );
+      throw Error(`Vacancy from was not found`);
     }
 
     vacancy.set({
@@ -28,16 +32,12 @@ export const onVacancyCancel = async (ctx) => {
     });
 
     await vacancy.save();
-    logger.info(`Vacancy ${vacancy.id} marked as removed`);
+    logInfo(`Vacancy ${vacancy.id} marked as removed`);
 
     // removes buttons
     await ctx.editMessageReplyMarkup(undefined);
     await ctx.deleteMessage();
   } catch (err) {
-    logger.error(
-      `Failed to cancel vacancy - ${
-        (err as Error).message || JSON.stringify(err)
-      }`
-    );
+    logError(err);
   }
 };

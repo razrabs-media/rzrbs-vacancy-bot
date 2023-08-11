@@ -2,11 +2,16 @@ import config from "../../../utils/config";
 import * as GetRoundDateModule from "../../../utils/getRoundDate";
 import * as GetCurrentHoursModule from "../../../utils/time";
 import * as WaitModule from "../../../utils/wait";
-import logger from "../../logger";
+import * as LoggerModule from "../../logger";
 import * as MonitorPublishQueueByTimerModule from "../../publish-queue/monitorPublishQueueByTimer";
 import { subscribeToPublishQueueMonitoring } from "../subscribeToPublishQueueMonitoring";
 
-jest.mock("../../logger");
+const loggerMock = jest.fn();
+jest.spyOn(LoggerModule, "handleLogging").mockReturnValue({
+  logInfo: loggerMock,
+  logError: loggerMock,
+  logWarn: loggerMock,
+});
 
 // 20/06/2016 14:08:10
 const mockDateMs = 1466424490000;
@@ -57,11 +62,11 @@ describe("subscribeToPublishQueueMonitoring", () => {
 
     await subscribeToPublishQueueMonitoring();
 
-    expect(logger.info).toHaveBeenCalledWith(
+    expect(loggerMock).toHaveBeenCalledWith(
       "Waiting 50mins before starting to monitor publish queue"
     );
     expect(waitSpy).toHaveBeenCalledWith(mockNextRoundHourMs - mockDateMs);
-    expect(logger.info).toHaveBeenCalledWith(
+    expect(loggerMock).toHaveBeenCalledWith(
       "Subscribed to check publish queue by timer"
     );
     expect(monitorPublishQueueByTimerSpy).toHaveBeenCalledWith({
@@ -78,7 +83,7 @@ describe("subscribeToPublishQueueMonitoring", () => {
 
     await subscribeToPublishQueueMonitoring();
 
-    expect(logger.info).toHaveBeenCalledWith(
+    expect(loggerMock).toHaveBeenCalledWith(
       "Subscribed to check publish queue by timer"
     );
     expect(waitSpy).toHaveBeenCalledTimes(0);

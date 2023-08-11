@@ -1,7 +1,7 @@
 import VacancyModel from "../../schemas/vacancy";
 import { TelegramMessageParams } from "../../types/telegram";
 import { TVacancyCreationAttributes } from "../../types/vacancy";
-import logger from "../logger";
+import { handleLogging } from "../logger";
 import { createNewVacancy } from "./createNewVacancy";
 
 export const editNewVacancy = async ({
@@ -12,6 +12,12 @@ export const editNewVacancy = async ({
 }: {
   vacancy: TVacancyCreationAttributes;
 } & TelegramMessageParams) => {
+  const { logInfo, logError } = handleLogging(
+    "editNewVacancy",
+    { fromUsername, chatId, messageId },
+    "Failed to update vacancy"
+  );
+
   try {
     if (!chatId || !messageId || !fromUsername) {
       throw Error(`cannot retrieve required info`);
@@ -26,9 +32,7 @@ export const editNewVacancy = async ({
     });
 
     if (!existingVacancy) {
-      logger.info(
-        `vacancy for ${messageId}::${chatId}::${fromUsername} doesn't exist, creating the new one`
-      );
+      logInfo(`vacancy doesn't exist, creating the new one`);
       await createNewVacancy({ vacancy, messageId, chatId });
       return;
     }
@@ -41,14 +45,8 @@ export const editNewVacancy = async ({
       throw Error("creation failed on DB side");
     }
 
-    logger.info(
-      `Vacancy from message ${messageId}::${chatId} succesfully updated - ${newVacancy.id}`
-    );
+    logInfo(`Vacancy succesfully updated - ${newVacancy.id}`);
   } catch (err) {
-    logger.error(
-      `Failed to update vacancy from message ${messageId}::${chatId}::${fromUsername} - ${
-        (err as Error)?.message || JSON.stringify(err)
-      }`
-    );
+    logError(err);
   }
 };

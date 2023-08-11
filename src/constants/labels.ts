@@ -18,3 +18,5 @@ export const VACANCY_WILL_BE_PUBLISHED = "Вакансия будет опубл
 
 export const EDIT_MESSAGE_DISCLAIMER_TEXT =
   "Пожалуйста, не изменяйте информацию выше.";
+
+export const SEPARATOR = "___________________";

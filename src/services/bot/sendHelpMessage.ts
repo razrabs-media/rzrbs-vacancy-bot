@@ -1,20 +1,22 @@
 import { helpMessageText } from "../../constants/messages";
-import logger from "../logger";
+import { handleLogging } from "../logger";
 
 export const sendHelpMessage = async (ctx) => {
-  try {
-    const { username } = ctx?.update?.message?.chat || {};
+  const { chat, message_id } = ctx?.update?.message || {};
+  const { username } = chat || {};
+  const { logInfo, logError } = handleLogging(
+    "sendHelpMessage",
+    { fromUsername: username, chatId: chat?.id, messageId: message_id },
+    "Failed to send message with help info"
+  );
 
-    logger.info(`User @${username} requests for help`);
+  try {
+    logInfo(`User @${username} requests for help`);
 
     await ctx.reply(helpMessageText, { parse_mode: "HTML" });
 
-    logger.info(`Help message successfully sent to @${username}`);
+    logInfo(`Help message successfully sent to @${username}`);
   } catch (err) {
-    logger.error(
-      `Failed to send message with help info - ${
-        (err as Error)?.message || JSON.stringify(err)
-      }`
-    );
+    logError(err);
   }
 };

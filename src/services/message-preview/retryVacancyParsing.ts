@@ -5,7 +5,7 @@ import {
 } from "../../constants/messages";
 import { isRequiredVacancyFieldsFilled } from "../../utils/isRequiredVacancyFieldsFilled";
 import { parseMessageEntities } from "../../utils/parseMessageEntities";
-import logger from "../logger";
+import { handleLogging } from "../logger";
 import { constructPreviewMessage } from "./constructPreviewMessage";
 import { editNewVacancy } from "./editNewVacancy";
 import { parseMessageToVacancy } from "./parseMessageToVacancy";
@@ -14,6 +14,11 @@ export const onRetryParsing = async (ctx) => {
   const [, messageIdToParse] = ctx?.match || [];
   const { message_id, chat, reply_to_message } =
     ctx?.update?.callback_query?.message || {};
+  const { logInfo, logError } = handleLogging(
+    "onRetryParsing",
+    { fromUsername: chat?.username, chatId: chat?.id, messageId: message_id },
+    "Failed to re-parse vacancy"
+  );
   const {
     message_id: sourceMessageId,
     text: sourceText,
@@ -67,9 +72,7 @@ export const onRetryParsing = async (ctx) => {
       reply_to_message_id: message_id,
     });
 
-    logger.info(
-      `Successfully updated vacancy preview message for - ${chat?.username}::${chat?.id}::${sourceMessageId}`
-    );
+    logInfo(`Successfully updated vacancy preview message`);
 
     if (!response.message_id) {
       throw Error("preview message sending was failed");
@@ -89,11 +92,6 @@ export const onRetryParsing = async (ctx) => {
 
     await ctx.sendMessage(parsedVacancyToReviewMessage);
   } catch (err) {
-    logger.error(
-      `Failed to re-parse vacancy ${messageIdToParse}::${chat?.username} - ${
-        (err as Error).message || JSON.stringify(err)
-      }`
-    );
-    await ctx.sendMessage(systemErrorMessage);
+    logError(err);
   }
 };

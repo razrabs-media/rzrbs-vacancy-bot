@@ -1,7 +1,7 @@
 import bot from "../../launchBot";
 import { IVacancyModel } from "../../types/vacancy";
 import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
-import logger from "../logger";
+import { handleLogging } from "../logger";
 
 export const updatePublicGroupVacancyMessage = async ({
   vacancy,
@@ -11,18 +11,28 @@ export const updatePublicGroupVacancyMessage = async ({
   const {
     published_tg_chat_id: publishedChatIds,
     published_tg_message_id: publishedMessageIds,
+    author_username,
+    tg_chat_id,
+    tg_message_id,
   } = vacancy;
+  const { logInfo, logError } = handleLogging(
+    "updatePublicGroupVacancyMessage",
+    {
+      fromUsername: author_username,
+      chatId: tg_chat_id,
+      messageId: tg_message_id,
+    },
+    `Failed to update ${vacancy.id} vacancy in chats`
+  );
 
   if (!vacancy.published || vacancy.revoked || vacancy.removed) {
-    logger.error(
-      `Failed to update ${vacancy.id} vacancy in chats - vacancy not published, removed or revoked`
-    );
+    logError("vacancy not published, removed or revoked");
     return;
   }
 
   if (!publishedChatIds?.length || !publishedMessageIds?.length) {
-    logger.error(
-      `Failed to update ${vacancy.id} vacancy in chats - incorrect info in published_tg_chat_id or published_tg_message_id fields`
+    logError(
+      "incorrect info in published_tg_chat_id or published_tg_message_id fields"
     );
     return;
   }
@@ -32,7 +42,7 @@ export const updatePublicGroupVacancyMessage = async ({
     const publishedMessageId = publishedMessageIds[chatIdIndex];
 
     try {
-      logger.info(
+      logInfo(
         `Updating ${vacancy.id} vacancy in ${publishedChatIds[chatIdIndex]} chat`
       );
 
@@ -43,9 +53,7 @@ export const updatePublicGroupVacancyMessage = async ({
         buildMessageFromVacancy(vacancy)
       );
     } catch (err) {
-      logger.error(
-        `Failed to update ${vacancy.id} vacancy in ${publishedChatIds[chatIdIndex]} chat - ${err}`
-      );
+      logError(err);
     }
   }
 };

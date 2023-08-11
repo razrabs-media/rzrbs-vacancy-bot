@@ -1,12 +1,17 @@
 import VacancyModel from "../../schemas/vacancy";
 import { IPublishQueueModel } from "../../types/publish_queue";
 import config from "../../utils/config";
-import logger from "../logger";
+import { handleLogging } from "../logger";
 import { sendVacancyToContact } from "./sendVacancyToContact";
 
 export const publishVacancyToChannels = async (
   publishQueueItem: IPublishQueueModel
 ) => {
+  const { logError } = handleLogging(
+    "publishVacancyToChannels",
+    undefined,
+    `Failed to publish ${publishQueueItem?.vacancy_id} vacancy`
+  );
   try {
     if (!publishQueueItem) {
       throw Error("publishQueueItem is empty");
@@ -35,8 +40,6 @@ export const publishVacancyToChannels = async (
     });
     await publishQueueItem.save();
   } catch (err) {
-    logger.error(
-      `Failed to publish ${publishQueueItem?.vacancy_id} vacancy - ${err}`
-    );
+    logError(err);
   }
 };

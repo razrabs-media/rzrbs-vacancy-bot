@@ -2,7 +2,7 @@ import { EDIT_MESSAGE_DISCLAIMER_TEXT } from "../../../constants/labels";
 import VacancyModel from "../../../schemas/vacancy";
 import { TelegramMessageParams } from "../../../types/telegram";
 import { buildMessageFromVacancy } from "../../../utils/buildMessageFromVacancy";
-import logger from "../../logger";
+import { handleLogging } from "../../logger";
 
 export const getStructuredEditableVacancyText = async ({
   messageId,
@@ -10,16 +10,15 @@ export const getStructuredEditableVacancyText = async ({
   fromUsername,
   text,
 }: TelegramMessageParams): Promise<string> => {
+  const { logError } = handleLogging(
+    "getStructuredEditableVacancyText",
+    { fromUsername, chatId, messageId },
+    "failed to build editable vacancy text"
+  );
+
   try {
     if (!chatId || !messageId || !fromUsername || !text) {
-      throw Error(
-        `cannot retrieve required info - ${{
-          chatId,
-          messageId,
-          fromUsername,
-          text,
-        }}`
-      );
+      throw Error(`cannot retrieve required info`);
     }
 
     const vacancy = await VacancyModel.findOne({
@@ -42,11 +41,7 @@ export const getStructuredEditableVacancyText = async ({
       `${buildMessageFromVacancy(vacancy)}`
     );
   } catch (err) {
-    logger.error(
-      `Editable vacancy: failed to build editable ${fromUsername}::${chatId}::${messageId} vacancy text - ${
-        (err as Error)?.message || JSON.stringify(err)
-      }`
-    );
+    logError(err);
     return "";
   }
 };

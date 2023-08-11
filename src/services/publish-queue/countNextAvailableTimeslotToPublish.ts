@@ -5,22 +5,15 @@ import { getTwoWeeksDaysArray } from "../../utils/getTwoWeeksDaysArray";
 import { getCurrentHours } from "../../utils/time";
 import PublishQueueError from "./PublishQueueError";
 import { countPublishIntervalForVacanciesPool } from "./countPublishIntervalForVacanciesPool";
+import { getNearestAvailableHour } from "./getNearestAvailableHour";
 import { getPublishQueueLength } from "./getPublishQueueLength";
 
-const getNearestAvailableHour = (
-  currentHour: number,
-  currentDay: [number, number],
-  publishInterval: number
-): number => {
-  const [from, to] = currentDay;
-  let nearestAvailableHour = from;
-
-  while (nearestAvailableHour < currentHour && nearestAvailableHour < to) {
-    nearestAvailableHour += publishInterval;
-  }
-  return nearestAvailableHour;
-};
-
+/**
+ * Counts next available timeslot to publish vacancy from the publish queue,
+ * by configured schedule and publish interval
+ *
+ * @returns {Date} - date and time when vacancy can be published
+ */
 export const countNextAvailableTimeslotToPublish = async (): Promise<Date> => {
   const publishInterval = await countPublishIntervalForVacanciesPool();
   const publishQueueLength = await getPublishQueueLength();
@@ -39,33 +32,29 @@ export const countNextAvailableTimeslotToPublish = async (): Promise<Date> => {
     });
   }
 
+  const [todayFrom, todayTo] = publishSchedule[todayWeekDay] || [];
+
   // if today is day off or work day is over
-  if (
-    !publishSchedule[todayWeekDay] ||
-    currentHour > publishSchedule[todayWeekDay][1]
-  ) {
+  if (!publishSchedule[todayWeekDay] || currentHour > todayTo) {
     twoWeeksDays.shift();
   }
 
   let vacanciesInQueueRemained = publishQueueLength;
 
   // if working day is in progress
-  if (
-    currentHour >= publishSchedule[todayWeekDay][0] &&
-    currentHour <= publishSchedule[todayWeekDay][1]
-  ) {
+  if (currentHour >= todayFrom && currentHour <= todayTo) {
     const nearestAvailableHour = getNearestAvailableHour(
       currentHour,
       publishSchedule[todayWeekDay],
       publishInterval
     );
-    const hoursRemained =
-      publishSchedule[todayWeekDay][1] - nearestAvailableHour;
+    const hoursRemained = todayTo - nearestAvailableHour;
     const vacanciesAvailableToPublish = Math.ceil(
       hoursRemained / publishInterval
     );
 
-    if (vacanciesAvailableToPublish < publishQueueLength) {
+    // we can publish all the queue today
+    if (vacanciesAvailableToPublish >= publishQueueLength) {
       return getRoundDate({
         hour: nearestAvailableHour + publishQueueLength * publishInterval,
       });

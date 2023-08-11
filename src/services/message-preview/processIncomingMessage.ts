@@ -1,4 +1,4 @@
-import logger from "../logger";
+import { handleLogging } from "../logger";
 import { processEditingExistingVacancy } from "./processEditingExistingVacancy";
 import { processNewVacancyMessage } from "./processNewVacancyMessage";
 
@@ -20,6 +20,11 @@ const isEditingExistingVacancy = (
  */
 export const processIncomingMessage = async (ctx) => {
   const { message_id, from, text, chat } = ctx?.update?.message || {};
+  const { logError } = handleLogging(
+    "processIncomingMessage",
+    { fromUsername: from?.username, chatId: chat?.id, messageId: message_id },
+    "Failed to process incoming message"
+  );
 
   try {
     if (!message_id || !from?.username || !chat?.id) {
@@ -32,10 +37,6 @@ export const processIncomingMessage = async (ctx) => {
       await processNewVacancyMessage(ctx);
     }
   } catch (err) {
-    logger.error(
-      `Failed to process incoming message ${from?.username}::${
-        chat?.id
-      }::${message_id} - ${(err as Error)?.message || JSON.stringify(err)}`
-    );
+    logError(err);
   }
 };

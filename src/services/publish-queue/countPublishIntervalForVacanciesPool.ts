@@ -1,6 +1,6 @@
 import config from "../../utils/config";
 import { getTwoWeeksDaysArray } from "../../utils/getTwoWeeksDaysArray";
-import logger from "../logger";
+import { handleLogging } from "../logger";
 import { getPublishQueueLength } from "./getPublishQueueLength";
 
 // TODO: optimise
@@ -9,6 +9,7 @@ export const countPublishIntervalForVacanciesPool =
     const { publishInterval, minPublishInterval, schedule } =
       config.publishConfig;
     const publishQueueItemsLength = await getPublishQueueLength();
+    const { logInfo, logWarn } = handleLogging("Publish Queue");
 
     if (!publishQueueItemsLength) {
       return publishInterval > minPublishInterval
@@ -19,18 +20,14 @@ export const countPublishIntervalForVacanciesPool =
     const twoWeeksDays = getTwoWeeksDaysArray();
     for (
       let currentIntervalHours = publishInterval;
-      currentIntervalHours > minPublishInterval;
+      currentIntervalHours >= minPublishInterval;
       currentIntervalHours--
     ) {
       let availableVacanciesToPublish = 0;
 
       for (const weekDay of twoWeeksDays) {
-        if (schedule[weekDay] === undefined) {
+        if (!schedule[weekDay]) {
           continue;
-        }
-
-        if (availableVacanciesToPublish >= publishQueueItemsLength) {
-          return currentIntervalHours;
         }
 
         const [from, to] = schedule[weekDay];
@@ -45,17 +42,24 @@ export const countPublishIntervalForVacanciesPool =
           dailyVacanciesAmount++;
           hourPointer += currentIntervalHours;
         }
+
+        if (availableVacanciesToPublish >= publishQueueItemsLength) {
+          logInfo(
+            `vacancies will be published with ${currentIntervalHours}h interval`
+          );
+          return currentIntervalHours;
+        }
       }
 
       if (availableVacanciesToPublish >= publishQueueItemsLength) {
-        logger.info(
-          `Publish Queue: vacancies will be published with ${currentIntervalHours}h interval`
+        logInfo(
+          `vacancies will be published with ${currentIntervalHours}h interval`
         );
         return currentIntervalHours;
       }
     }
-    logger.warn(
-      `Publish Queue: vacancies can't be published in two weeks, interval is - ${minPublishInterval}h`
+    logWarn(
+      `vacancies can't be published in two weeks, interval is - ${minPublishInterval}h`
     );
     return minPublishInterval;
   };

@@ -4,7 +4,7 @@ import { getTimePeriodInMilliseconds } from "../../utils/getTimePeriodInMillisec
 import { getTodayWeekDay } from "../../utils/getTodayWeekDay";
 import { setDailyPublishInterval } from "../../utils/publishInterval";
 import { getCurrentHours } from "../../utils/time";
-import logger from "../logger";
+import { handleLogging } from "../logger";
 import { countPublishIntervalForVacanciesPool } from "./countPublishIntervalForVacanciesPool";
 import { publishNextVacancyFromQueue } from "./publishNextVacancyFromQueue";
 
@@ -14,14 +14,13 @@ export const monitorPublishQueueByTimer = async (params?: {
   const currentHour = getCurrentHours();
   const currentWeekDay = getTodayWeekDay();
   const [from, to] = config.publishConfig.schedule[currentWeekDay] || [];
+  const { logInfo } = handleLogging("Publish Queue");
 
   if (currentHour === 0) {
-    logger.info(`Publish Queue: new day started`);
+    logInfo(`new day started`);
 
     if (!from && !to) {
-      logger.info(
-        "Publish Queue: Today is a day off, analyzis finished for today"
-      );
+      logInfo("Today is a day off, analyzis finished for today");
       return;
     }
   }
@@ -30,10 +29,10 @@ export const monitorPublishQueueByTimer = async (params?: {
     params?.initialExecution && currentHour >= from && currentHour < to;
 
   if (shouldStartAnalysisWithInitialExec || currentHour === from) {
-    logger.info(`Publish Queue: analysis by timer...`);
+    logInfo(`analysis by timer...`);
     const publishInterval = await countPublishIntervalForVacanciesPool();
 
-    logger.info(
+    logInfo(
       `Vacancies will be published with ${publishInterval} hours interval`
     );
 
@@ -47,8 +46,8 @@ export const monitorPublishQueueByTimer = async (params?: {
       )
     );
   } else if (params?.initialExecution && !shouldStartAnalysisWithInitialExec) {
-    logger.info(
-      `Publish Queue: analysis wasnt't started with initial execution of monitoring, ` +
+    logInfo(
+      `analysis wasnt't started with initial execution of monitoring, ` +
         `because now is outside of working hours`
     );
   }

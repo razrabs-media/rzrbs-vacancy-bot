@@ -3,10 +3,15 @@ import { InlineKeyboardButton } from "telegraf/typings/core/types/typegram";
 
 import { ActionButtonLabels, BotActions } from "../../../constants/actions";
 import { getVacancyEditButton } from "../../edit-vacancy/getVacancyEditButton";
-import logger from "../../logger";
+import { handleLogging } from "../../logger";
 
 export const updateButtonsUnderMessage = async (ctx) => {
   const { message_id, chat, text } = ctx?.update?.callback_query?.message || {};
+  const { logError } = handleLogging(
+    "updateButtonsUnderMessage",
+    { fromUsername: chat?.username, chatId: chat?.id, messageId: message_id },
+    "Failed to edit vacancy text"
+  );
 
   try {
     await ctx?.editMessageReplyMarkup({
@@ -26,12 +31,6 @@ export const updateButtonsUnderMessage = async (ctx) => {
       ],
     });
   } catch (err) {
-    logger.error(
-      `Failed to edit ${chat?.username}::${
-        chat?.id
-      }::${message_id} vacancy text - ${
-        (err as Error).message || JSON.stringify(err)
-      }`
-    );
+    logError(err);
   }
 };

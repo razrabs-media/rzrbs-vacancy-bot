@@ -2,14 +2,19 @@ import bot from "../../launchBot";
 import VacancyModel from "../../schemas/vacancy";
 import { IVacancy } from "../../types/vacancy";
 import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
-import logger from "../logger";
+import { handleLogging } from "../logger";
 
 export const sendVacancyToContact = async (
   vacancy: IVacancy,
   chatId: string
 ) => {
+  const { logInfo, logError } = handleLogging(
+    "sendVacancyToContact",
+    undefined,
+    `Failed to publish ${vacancy.id} vacancy to ${chatId}`
+  );
   try {
-    logger.info(`Sending ${vacancy.id} vacancy to ${chatId}...`);
+    logInfo(`Sending ${vacancy.id} vacancy to ${chatId}...`);
 
     // FIXME: add parsed entitles, store them in DB?
     const message = await bot.telegram?.sendMessage(
@@ -48,10 +53,8 @@ export const sendVacancyToContact = async (
     });
 
     await vacancyInstance.save();
-    logger.info(`Success: ${vacancy.id} vacancy sent to ${chatId}`);
+    logInfo(`Success: ${vacancy.id} vacancy sent to ${chatId}`);
   } catch (err) {
-    logger.error(
-      `Failed to publish ${vacancy.id} vacancy to ${chatId} - ${err}`
-    );
+    logError(err);
   }
 };
