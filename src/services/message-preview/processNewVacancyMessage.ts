@@ -3,9 +3,11 @@ import {
   getMissingRequiredFieldsMessage,
   parsedVacancyToReviewMessage,
   publishQueueIsFullMessage,
+  systemErrorMessage,
   textProcessingMessage,
   userLimitExceededMessage,
 } from "../../constants/messages";
+import { filterSupportedTelegramEntities } from "../../utils/filterSupportedTelegramEntities";
 import { isPublishingAllowedDuringTwoWeeks } from "../../utils/isPublishingAllowedDuringTwoWeeks";
 import { isPublishingAllowedForCompany } from "../../utils/isPublishingAllowedForCompany";
 import { isPublishingAllowedForUser } from "../../utils/isPublishingAllowedForUser";
@@ -82,34 +84,42 @@ export const processNewVacancyMessage = async (ctx) => {
     throw new PublishQueueError("publish queue is full");
   }
 
-  const { previewMessageText, messageOptions } =
-    constructPreviewMessage(
-      { messageId: message_id, chatId: chat.id, fromUsername: from.username },
-      parsedMessage,
-      parseMessageEntities(text, entities)
-    ) || {};
+  try {
+    const { previewMessageText, messageOptions } =
+      constructPreviewMessage(
+        { messageId: message_id, chatId: chat.id, fromUsername: from.username },
+        parsedMessage,
+        parseMessageEntities(text, entities)
+      ) || {};
 
-  await ctx.sendMessage(parsedVacancyToReviewMessage);
+    await ctx.sendMessage(parsedVacancyToReviewMessage);
 
-  const response = await ctx.sendMessage(previewMessageText, {
-    ...messageOptions,
-    reply_to_message_id: message_id,
-  });
+    const response = await ctx.sendMessage(previewMessageText, {
+      ...messageOptions,
+      reply_to_message_id: message_id,
+    });
 
-  logInfo(`Successfully sent vacancy preview message`);
+    logInfo(`Successfully sent vacancy preview message`);
 
-  if (!response.message_id) {
-    throw Error("preview message sending was failed");
+    if (!response.message_id) {
+      throw Error("preview message sending was failed");
+    }
+
+    await createNewVacancy({
+      vacancy: {
+        ...parsedMessage,
+        author_username: from.username,
+        tg_message_id: response.message_id,
+        tg_chat_id: response.chat.id,
+        tg_parsed_entities: JSON.stringify(
+          parseMessageEntities(text, filterSupportedTelegramEntities(entities))
+        ),
+      },
+      messageId: response.message_id,
+      chatId: response.chat.id,
+    });
+  } catch (err) {
+    await ctx.sendMessage(systemErrorMessage);
+    throw err;
   }
-
-  await createNewVacancy({
-    vacancy: {
-      ...parsedMessage,
-      author_username: from.username,
-      tg_message_id: response.message_id,
-      tg_chat_id: response.chat.id,
-    },
-    messageId: response.message_id,
-    chatId: response.chat.id,
-  });
 };

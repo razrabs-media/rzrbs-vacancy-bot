@@ -33,27 +33,24 @@ const getSalaryInfo = ({
   return "";
 };
 
-export const buildMessageFromVacancy = (
-  {
-    title,
-    description,
-    company_name,
-    company_description,
-    salary_amount_from,
-    salary_amount_to,
-    salary_currency,
-    salary_type,
-    salary_negotiable,
-    format_of_work_description,
-    format_of_work_title,
-    type_of_employment,
-    contact_info,
-    hiring_process,
-    location,
-  }: IVacancyParsed,
-  parsedEntities?: IParsedMessageEntity[]
-): string => {
-  let result =
+export const getVacancyMessageText = ({
+  title,
+  description,
+  company_name,
+  company_description,
+  salary_amount_from,
+  salary_amount_to,
+  salary_currency,
+  salary_type,
+  salary_negotiable,
+  format_of_work_description,
+  format_of_work_title,
+  type_of_employment,
+  contact_info,
+  hiring_process,
+  location,
+}: IVacancyParsed) => {
+  return (
     `${title}\n\n` +
     `${VacancyFieldLabel.Company}: ${company_name}\n` +
     `${location ? `${VacancyFieldLabel.Location}: ${location}\n` : ""}` +
@@ -80,7 +77,15 @@ export const buildMessageFromVacancy = (
         ? `${VacancyFieldLabel.CompanyDescription}: ${company_description}\n\n`
         : ""
     }` +
-    `${VacancyFieldLabel.Description}: ${description}`;
+    `${VacancyFieldLabel.Description}: ${description}`
+  );
+};
+
+export const buildMessageFromVacancy = (
+  parsedVacancy: IVacancyParsed,
+  parsedEntities?: IParsedMessageEntity[]
+): string => {
+  let result = getVacancyMessageText(parsedVacancy);
 
   if (parsedEntities?.length) {
     parsedEntities.forEach(({ word, value, entity_type }) => {

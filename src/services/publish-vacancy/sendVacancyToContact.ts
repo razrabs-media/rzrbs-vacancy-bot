@@ -16,10 +16,12 @@ export const sendVacancyToContact = async (
   try {
     logInfo(`Sending ${vacancy.id} vacancy to ${chatId}...`);
 
-    // FIXME: add parsed entitles, store them in DB?
     const message = await bot.telegram?.sendMessage(
       chatId,
-      buildMessageFromVacancy(vacancy),
+      buildMessageFromVacancy(
+        vacancy,
+        JSON.parse(vacancy.tg_parsed_entities || "{}")
+      ),
       {
         parse_mode: "HTML",
       }

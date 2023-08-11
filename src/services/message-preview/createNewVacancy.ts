@@ -16,6 +16,7 @@ export const createNewVacancy = async ({
     { fromUsername: vacancy?.author_username, chatId, messageId },
     "Failed to create vacancy"
   );
+
   try {
     const newVacancy = await VacancyModel.create(vacancy, {
       isNewRecord: true,

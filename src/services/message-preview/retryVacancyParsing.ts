@@ -3,6 +3,7 @@ import {
   parsedVacancyToReviewMessage,
   systemErrorMessage,
 } from "../../constants/messages";
+import { filterSupportedTelegramEntities } from "../../utils/filterSupportedTelegramEntities";
 import { isRequiredVacancyFieldsFilled } from "../../utils/isRequiredVacancyFieldsFilled";
 import { parseMessageEntities } from "../../utils/parseMessageEntities";
 import { handleLogging } from "../logger";
@@ -84,6 +85,12 @@ export const onRetryParsing = async (ctx) => {
         author_username: chat?.username,
         tg_message_id: response.message_id,
         tg_chat_id: response.chat.id,
+        tg_parsed_entities: JSON.stringify(
+          parseMessageEntities(
+            sourceText,
+            filterSupportedTelegramEntities(sourceEntities)
+          )
+        ),
       },
       messageId: response.message_id,
       chatId: response.chat.id,

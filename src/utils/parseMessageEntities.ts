@@ -1,11 +1,6 @@
 import { MessageEntityType } from "../constants/messages";
-
-interface IMessageEntity {
-  offset: number;
-  length: number;
-  type: MessageEntityType;
-  url?: string;
-}
+import { TelegramMessageEntity } from "../types/telegram";
+import { filterSupportedTelegramEntities } from "./filterSupportedTelegramEntities";
 
 export interface IParsedMessageEntity {
   word: string;
@@ -13,20 +8,15 @@ export interface IParsedMessageEntity {
   entity_type: MessageEntityType;
 }
 
-const SUPPORTED_MSG_ENTITIES = [MessageEntityType.TextLink];
-
 export const parseMessageEntities = (
   messageText: string,
-  entities: IMessageEntity[]
+  entities: TelegramMessageEntity[]
 ): IParsedMessageEntity[] => {
-  const supportedEntities: IMessageEntity[] = entities.filter(({ type }) =>
-    SUPPORTED_MSG_ENTITIES.includes(type)
-  );
-  return supportedEntities.reduce(
+  return filterSupportedTelegramEntities(entities).reduce(
     (acc, { url, offset, length, type }) => [
       ...acc,
       {
-        word: messageText.slice(offset, offset + length - 1),
+        word: messageText.slice(offset, offset + length),
         value: url || "",
         entity_type: type,
       },

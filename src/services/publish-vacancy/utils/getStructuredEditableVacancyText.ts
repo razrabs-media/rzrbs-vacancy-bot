@@ -33,12 +33,14 @@ export const getStructuredEditableVacancyText = async ({
       throw Error("vacancy not found");
     }
 
-    // FIXME: add entitles, store them in DB?
     return (
       `> ${messageId}\n` +
       `${EDIT_MESSAGE_DISCLAIMER_TEXT}\n` +
       `\n` +
-      `${buildMessageFromVacancy(vacancy)}`
+      `${buildMessageFromVacancy(
+        vacancy,
+        JSON.parse(vacancy?.tg_parsed_entities || "{}")
+      )}`
     );
   } catch (err) {
     logError(err);

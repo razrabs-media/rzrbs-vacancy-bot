@@ -3,7 +3,9 @@ import {
   systemErrorMessage,
 } from "../../constants/messages";
 import Vacancies from "../../schemas/vacancy";
+import { filterSupportedTelegramEntities } from "../../utils/filterSupportedTelegramEntities";
 import { isRequiredVacancyFieldsFilled } from "../../utils/isRequiredVacancyFieldsFilled";
+import { parseMessageEntities } from "../../utils/parseMessageEntities";
 import { parseUpdatedVacancyWithAI } from "../ai/parseUpdatedVacancyWithAI";
 import { handleLogging } from "../logger";
 import { updatePrivateVacancyMessage } from "./updatePrivateVacancyMessage";
@@ -18,7 +20,7 @@ export const onVacancyEdit = async (
   ctx,
   { messageId, updatedText }: IExistingVacancy
 ) => {
-  const { from, chat, message_id } = ctx?.update?.message || {};
+  const { from, chat, message_id, entities } = ctx?.update?.message || {};
   const { logInfo, logError } = handleLogging(
     "onVacancyEdit",
     { fromUsername: from?.username, chatId: chat?.id, messageId: message_id },
@@ -55,13 +57,21 @@ export const onVacancyEdit = async (
 
     if (!isRequiredFieldsFilled) {
       await ctx.sendMessage(getMissingRequiredFieldsMessage(missingFields));
-      throw Error(`missing fields - ${missingFields.join(", ")}`);
+      logError(`missing fields - ${missingFields.join(", ")}`);
+      return;
     }
 
     logInfo(`Edited fields parsed, updating vacancy in DB...`);
     for (const key in updatedVacancyFields) {
       vacancy[key] = updatedVacancyFields[key];
     }
+    vacancy.tg_parsed_entities = JSON.stringify(
+      parseMessageEntities(
+        updatedText,
+        filterSupportedTelegramEntities(entities)
+      )
+    );
+
     const updatedVacancy = await vacancy.save();
 
     logInfo(

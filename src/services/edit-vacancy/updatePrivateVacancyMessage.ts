@@ -24,6 +24,7 @@ export const updatePrivateVacancyMessage = async ({
     chatId,
     messageId,
   });
+
   try {
     const updatedInlineMarkup = Markup.inlineKeyboard(
       [
@@ -44,7 +45,10 @@ export const updatePrivateVacancyMessage = async ({
       chatId,
       messageId,
       undefined,
-      buildMessageFromVacancy(vacancy),
+      buildMessageFromVacancy(
+        vacancy,
+        JSON.parse(vacancy.tg_parsed_entities || "{}")
+      ),
       updatedInlineMarkup
     );
 

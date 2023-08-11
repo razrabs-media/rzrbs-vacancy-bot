@@ -19,6 +19,7 @@ export type TVacancyAttributes = {
   author_username: string;
   tg_message_id: number;
   tg_chat_id: number;
+  tg_parsed_entities?: string;
   published_tg_message_id?: string[];
   published_tg_chat_id?: string[];
   company_name: string;
