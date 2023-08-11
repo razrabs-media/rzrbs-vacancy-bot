@@ -33,7 +33,7 @@ export interface IConfig {
     dailyVacancyLimit: number;
     /** number of vacancies one user allowed to publish in one month, by default 1 */
     userMonthVacancyLimit: number;
-    /** */
+    /** number of vacancies one company hrs allowed to publish in one month, by default 10 */
     companyMonthVacancyLimit: number;
   };
 }
