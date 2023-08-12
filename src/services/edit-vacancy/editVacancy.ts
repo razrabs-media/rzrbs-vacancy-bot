@@ -1,6 +1,6 @@
 import {
+  editingFailedMessage,
   getMissingRequiredFieldsMessage,
-  systemErrorMessage,
 } from "../../constants/messages";
 import Vacancies from "../../schemas/vacancy";
 import { filterSupportedTelegramEntities } from "../../utils/filterSupportedTelegramEntities";
@@ -99,8 +99,7 @@ export const onVacancyEdit = async (
 
     await ctx.deleteMessage();
   } catch (err) {
-    // FIXME?: add message "something went wrong, try again"?
-    await ctx.reply(systemErrorMessage);
+    await ctx.reply(editingFailedMessage);
     await ctx.deleteMessage();
 
     logError(err);
