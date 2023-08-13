@@ -1,4 +1,3 @@
-import PublishQueueItemModel from "../../schemas/publish_queue";
 import config from "../../utils/config";
 import { getTodayWeekDay } from "../../utils/getTodayWeekDay";
 import { isVacancyPublishingAllowedToday } from "../../utils/isVacancyPublishingAllowedToday";
@@ -6,6 +5,7 @@ import { clearDailyPublishInterval } from "../../utils/publishInterval";
 import { getCurrentHours } from "../../utils/time";
 import { handleLogging } from "../logger";
 import { publishVacancyToChannels } from "../publish-vacancy/publishVacancyToChannels";
+import { getNearestPublishQueueItem } from "./getNearestPublishQueueItem";
 
 export const publishNextVacancyFromQueue = async () => {
   const { logInfo, logError } = handleLogging(
@@ -32,14 +32,7 @@ export const publishNextVacancyFromQueue = async () => {
       return;
     }
 
-    const [publishQueueItem] = await PublishQueueItemModel.findAll({
-      where: {
-        published: false,
-        removed: false,
-      },
-      order: [["createdAt", "ASC"]],
-      limit: 1,
-    });
+    const publishQueueItem = await getNearestPublishQueueItem();
 
     if (!publishQueueItem) {
       logInfo("nothing found to publish");

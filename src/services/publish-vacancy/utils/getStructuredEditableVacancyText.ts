@@ -37,10 +37,7 @@ export const getStructuredEditableVacancyText = async ({
       `> ${messageId}\n` +
       `${EDIT_MESSAGE_DISCLAIMER_TEXT}\n` +
       `\n` +
-      `${buildMessageFromVacancy(
-        vacancy,
-        JSON.parse(vacancy?.tg_parsed_entities || "{}")
-      )}`
+      `${buildMessageFromVacancy(vacancy)}`
     );
   } catch (err) {
     logError(err);

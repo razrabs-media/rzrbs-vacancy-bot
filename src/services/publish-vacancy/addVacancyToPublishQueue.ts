@@ -9,10 +9,10 @@ import VacancyModel from "../../schemas/vacancy";
 import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
 import config from "../../utils/config";
 import { getVacancyWillBePublishedText } from "../../utils/getVacancyWillBePublishedText";
+import { isPublishQueueError } from "../../utils/isPublishQueueError";
 import { isPublishingAllowedForUser } from "../../utils/isPublishingAllowedForUser";
 import { parseMessageEntities } from "../../utils/parseMessageEntities";
 import { handleLogging } from "../logger";
-import { PUBLISH_QUEUE_ERROR } from "../publish-queue/PublishQueueError";
 import { countNextAvailableTimeslotToPublish } from "../publish-queue/countNextAvailableTimeslotToPublish";
 import { updateButtonsUnderMessage } from "./utils/updateButtonsUnderMessage";
 
@@ -131,7 +131,7 @@ export const onPublishVacancy = async (ctx) => {
 
     await updateButtonsUnderMessage(ctx);
   } catch (err) {
-    if ((err as Error)?.name === PUBLISH_QUEUE_ERROR) {
+    if (isPublishQueueError(err)) {
       await ctx.sendMessage(publishQueueIsFullMessage);
     } else {
       await ctx.sendMessage(systemErrorMessage);

@@ -25,7 +25,7 @@ export const parseNewVacancyWithAI = async (
               - format_of_work_description (dict of any details about work from office or home and employment process information by local laws (for example "по ТК РФ") or individual entrepreneur or b2b) (if present)
               - contact_info (dict of mobile and landline phone numbers if present, or telegram nickname (add @ before it) or email address or full site url)
               - hiring_process (dict of description of hiring process, if present)
-              - salary (dict of salary or wage for job done as range of numbers from 0 to positive infinity (as dict of max and min) and currency and taxes (net or gross), note that "до вычета" is equal to gross and "чистыми" is equal to net)
+              - salary (dict of salary or wage for job done as range of numbers from 0 to positive infinity (as dict of max and min numbers, return null if non-numbers given) and currency and taxes (net or gross or null), note that "до вычета" is equal to gross and "чистыми" is equal to net)
               - salary_negotiable (set true if find "по договоренности" or "по результатам собеседования" instead of salary numbers)
               - type_of_employment (fulltime or parttime or contract or internship)
               - description (array of the rest of the information about skills, offers, job information, benefits, bonuses as a text with all newline symbols saved, please sanitize any emoji and hashtags)

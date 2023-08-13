@@ -1,3 +1,5 @@
+import { VACANCY_IS_PUBLISHED } from "../../constants/labels";
+import bot from "../../launchBot";
 import VacancyModel from "../../schemas/vacancy";
 import { IPublishQueueModel } from "../../types/publish_queue";
 import config from "../../utils/config";
@@ -39,6 +41,10 @@ export const publishVacancyToChannels = async (
       published: true,
     });
     await publishQueueItem.save();
+
+    await bot.telegram.sendMessage(vacancy.tg_chat_id, VACANCY_IS_PUBLISHED, {
+      reply_to_message_id: vacancy.tg_message_id,
+    });
   } catch (err) {
     logError(err);
   }

@@ -1,6 +1,7 @@
 import PublishQueueItemModel from "../../schemas/publish_queue";
 import VacancyModel from "../../schemas/vacancy";
 import { handleLogging } from "../logger";
+import { notifyUsersAboutPublishingDateChange } from "./notifyUserAboutPublishingDateChange";
 
 export const onVacancyRevoke = async (ctx) => {
   const { message_id, text, chat } = ctx?.update?.callback_query?.message || {};
@@ -51,6 +52,8 @@ export const onVacancyRevoke = async (ctx) => {
     logInfo(`vacancy ${vacancy.id} marked as revoked`);
 
     await ctx.editMessageText(`[ОТОЗВАНО]\n${text}`, undefined);
+
+    await notifyUsersAboutPublishingDateChange();
   } catch (err) {
     logError(err);
   }

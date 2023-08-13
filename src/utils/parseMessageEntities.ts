@@ -16,7 +16,10 @@ export const parseMessageEntities = (
     (acc, { url, offset, length, type }) => [
       ...acc,
       {
-        word: messageText.slice(offset, offset + length),
+        word: messageText
+          .slice(offset, offset + length)
+          .trim()
+          .replace("\n", ""),
         value: url || "",
         entity_type: type,
       },

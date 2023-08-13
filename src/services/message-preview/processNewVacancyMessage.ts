@@ -84,24 +84,29 @@ export const processNewVacancyMessage = async (ctx) => {
     throw new PublishQueueError("publish queue is full");
   }
 
+  let sendingPreviewMessageResponse;
   try {
+    const parsedEntities = parseMessageEntities(
+      text,
+      filterSupportedTelegramEntities(entities)
+    );
     const { previewMessageText, messageOptions } =
       constructPreviewMessage(
         { messageId: message_id, chatId: chat.id, fromUsername: from.username },
         parsedMessage,
-        parseMessageEntities(text, entities)
+        parsedEntities
       ) || {};
 
     await ctx.sendMessage(parsedVacancyToReviewMessage);
 
-    const response = await ctx.sendMessage(previewMessageText, {
+    sendingPreviewMessageResponse = await ctx.sendMessage(previewMessageText, {
       ...messageOptions,
       reply_to_message_id: message_id,
     });
 
     logInfo(`Successfully sent vacancy preview message`);
 
-    if (!response.message_id) {
+    if (!sendingPreviewMessageResponse?.message_id) {
       throw Error("preview message sending was failed");
     }
 
@@ -109,17 +114,21 @@ export const processNewVacancyMessage = async (ctx) => {
       vacancy: {
         ...parsedMessage,
         author_username: from.username,
-        tg_message_id: response.message_id,
-        tg_chat_id: response.chat.id,
-        tg_parsed_entities: JSON.stringify(
-          parseMessageEntities(text, filterSupportedTelegramEntities(entities))
-        ),
+        tg_message_id: sendingPreviewMessageResponse.message_id,
+        tg_chat_id: sendingPreviewMessageResponse.chat.id,
+        tg_parsed_entities: JSON.stringify(parsedEntities),
       },
-      messageId: response.message_id,
-      chatId: response.chat.id,
+      messageId: sendingPreviewMessageResponse.message_id,
+      chatId: sendingPreviewMessageResponse.chat.id,
     });
   } catch (err) {
     await ctx.sendMessage(systemErrorMessage);
+
+    // if preview message was sent, but vacancy creation finished with error
+    if (sendingPreviewMessageResponse) {
+      await ctx.deleteMessage(sendingPreviewMessageResponse.message_id);
+    }
+
     throw err;
   }
 };

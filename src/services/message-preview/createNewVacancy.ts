@@ -29,5 +29,19 @@ export const createNewVacancy = async ({
     logInfo(`Vacancy succesfully created - ${newVacancy.id}`);
   } catch (err) {
     logError(err);
+
+    // removes vacancy from DB if it was created, but process finished by error
+    const newVacancyToRemove = await VacancyModel.findOne({
+      where: {
+        tg_message_id: messageId,
+        tg_chat_id: chatId,
+      },
+    });
+    if (newVacancyToRemove) {
+      logError(`vacancy was created in DB, removing it`);
+      await newVacancyToRemove.destroy();
+    }
+
+    throw err;
   }
 };

@@ -14,9 +14,12 @@ import { getPublishQueueLength } from "./getPublishQueueLength";
  *
  * @returns {Date} - date and time when vacancy can be published
  */
-export const countNextAvailableTimeslotToPublish = async (): Promise<Date> => {
+export const countNextAvailableTimeslotToPublish = async (params?: {
+  publishQueueLength: number;
+}): Promise<Date> => {
   const publishInterval = await countPublishIntervalForVacanciesPool();
-  const publishQueueLength = await getPublishQueueLength();
+  const publishQueueLength =
+    params?.publishQueueLength || (await getPublishQueueLength());
   const publishSchedule = config.publishConfig.schedule;
   const twoWeeksDays = getTwoWeeksDaysArray();
   const todayWeekDay = getTodayWeekDay();
@@ -77,9 +80,9 @@ export const countNextAvailableTimeslotToPublish = async (): Promise<Date> => {
       (to - from) / publishInterval
     );
 
-    if (vacanciesInQueueRemained - vacanciesAvailableToPublish <= 0) {
+    if (vacanciesInQueueRemained <= vacanciesAvailableToPublish) {
       const nearestAvailableHour = getNearestAvailableHour(
-        from,
+        from + publishInterval * vacanciesInQueueRemained - 1,
         publishSchedule[weekDay],
         publishInterval
       );
@@ -89,6 +92,7 @@ export const countNextAvailableTimeslotToPublish = async (): Promise<Date> => {
       });
     }
 
+    vacanciesInQueueRemained -= vacanciesAvailableToPublish;
     daysToWait++;
   }
 

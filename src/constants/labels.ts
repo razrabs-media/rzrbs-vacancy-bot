@@ -14,7 +14,9 @@ export enum VacancyFieldLabel {
 
 export const NEGOTIABLE_SALARY = "по договоренности";
 
-export const VACANCY_WILL_BE_PUBLISHED = "Вакансия будет опубликована примерно";
+export const VACANCY_WILL_BE_PUBLISHED = "Вакансия будет опубликована";
+
+export const VACANCY_IS_PUBLISHED = "Вакансия опубликована";
 
 export const EDIT_MESSAGE_DISCLAIMER_TEXT =
   "Пожалуйста, не изменяйте информацию выше.";

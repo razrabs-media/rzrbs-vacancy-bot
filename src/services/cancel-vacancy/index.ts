@@ -39,5 +39,6 @@ export const onVacancyCancel = async (ctx) => {
     await ctx.deleteMessage();
   } catch (err) {
     logError(err);
+    // FIXME: feedback?
   }
 };

@@ -6,6 +6,7 @@ import { BotContext } from "../../types/context";
 import { TelegramMessageParams } from "../../types/telegram";
 import { IVacancyModel } from "../../types/vacancy";
 import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
+import { isTextTheSameError } from "../../utils/isTextTheSameError";
 import { handleLogging } from "../logger";
 import { getVacancyEditButton } from "./getVacancyEditButton";
 
@@ -54,14 +55,13 @@ export const updatePrivateVacancyMessage = async ({
 
     logInfo(`Vacancy message in private chat with bot updated`);
   } catch (err) {
-    const { message } = err as Error;
-
-    if (
-      message.includes(
-        "specified new message content and reply markup are exactly the same as a current content and reply markup of the message"
-      )
-    ) {
+    if (isTextTheSameError(err)) {
       logError(`Vacancy wasn't updated, because message is the same`);
+      // FIXME: add text
+      // @ts-expect-error: ctx.sendMessage was not specified by Telegraf.io
+      await ctx.sendMessage(
+        "Сообщение не было обновлено, так как текст не изменен"
+      );
     }
     throw err;
   }

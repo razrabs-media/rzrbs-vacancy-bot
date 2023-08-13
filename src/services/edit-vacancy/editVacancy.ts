@@ -57,8 +57,7 @@ export const onVacancyEdit = async (
 
     if (!isRequiredFieldsFilled) {
       await ctx.sendMessage(getMissingRequiredFieldsMessage(missingFields));
-      logError(`missing fields - ${missingFields.join(", ")}`);
-      return;
+      throw Error(`missing fields - ${missingFields.join(", ")}`);
     }
 
     logInfo(`Edited fields parsed, updating vacancy in DB...`);

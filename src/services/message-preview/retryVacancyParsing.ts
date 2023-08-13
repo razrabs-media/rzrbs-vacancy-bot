@@ -2,9 +2,11 @@ import {
   getMissingRequiredFieldsMessage,
   parsedVacancyToReviewMessage,
   systemErrorMessage,
+  textProcessingMessage,
 } from "../../constants/messages";
 import { filterSupportedTelegramEntities } from "../../utils/filterSupportedTelegramEntities";
 import { isRequiredVacancyFieldsFilled } from "../../utils/isRequiredVacancyFieldsFilled";
+import { isTextTheSameError } from "../../utils/isTextTheSameError";
 import { parseMessageEntities } from "../../utils/parseMessageEntities";
 import { handleLogging } from "../logger";
 import { constructPreviewMessage } from "./constructPreviewMessage";
@@ -27,6 +29,9 @@ export const onRetryParsing = async (ctx) => {
   } = reply_to_message || {};
 
   try {
+    logInfo(`re-parsing of vacancy was triggered`);
+    await ctx.sendMessage(textProcessingMessage);
+
     if (!reply_to_message || !sourceText) {
       throw Error(
         `cannot retrieve required info - reply_to_message, sourceText`
@@ -54,9 +59,14 @@ export const onRetryParsing = async (ctx) => {
 
     if (!isRequiredFieldsFilled) {
       await ctx.sendMessage(getMissingRequiredFieldsMessage(missingFields));
-      throw Error(`missing fields - ${missingFields.join(", ")}`);
+      logError(`missing fields - ${missingFields.join(", ")}`);
+      return;
     }
 
+    const parsedEntities = parseMessageEntities(
+      sourceText,
+      filterSupportedTelegramEntities(sourceEntities)
+    );
     const { previewMessageText, messageOptions } =
       constructPreviewMessage(
         {
@@ -65,7 +75,7 @@ export const onRetryParsing = async (ctx) => {
           fromUsername: chat?.username,
         },
         parsedVacancy,
-        parseMessageEntities(sourceText, sourceEntities)
+        parsedEntities
       ) || {};
 
     const response = await ctx.editMessageText(previewMessageText, {
@@ -85,12 +95,7 @@ export const onRetryParsing = async (ctx) => {
         author_username: chat?.username,
         tg_message_id: response.message_id,
         tg_chat_id: response.chat.id,
-        tg_parsed_entities: JSON.stringify(
-          parseMessageEntities(
-            sourceText,
-            filterSupportedTelegramEntities(sourceEntities)
-          )
-        ),
+        tg_parsed_entities: JSON.stringify(parsedEntities),
       },
       messageId: response.message_id,
       chatId: response.chat.id,
@@ -100,5 +105,14 @@ export const onRetryParsing = async (ctx) => {
     await ctx.sendMessage(parsedVacancyToReviewMessage);
   } catch (err) {
     logError(err);
+
+    if (isTextTheSameError(err)) {
+      // FIXME: add text
+      await ctx.sendMessage(
+        "Сообщение не было обновлено, так как текст не изменен"
+      );
+    } else {
+      await ctx.sendMessage(systemErrorMessage);
+    }
   }
 };

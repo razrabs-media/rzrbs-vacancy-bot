@@ -25,7 +25,7 @@ export const parseUpdatedVacancyWithAI = async (
               - format_of_work_title (from text after "${VacancyFieldLabel.FormatOfWork}", hybrid or remote or onsite (if value is not in english translate into english), modify to lowercase)
               - format_of_work_description (from text after "${VacancyFieldLabel.FormatOfWork}" and after hastags)
               - contact_info (text after "${VacancyFieldLabel.Contacts}")
-              - hiring_process (text after "${VacancyFieldLabel.HiringProcess}")
+              - hiring_process (description of hiring process from text after "${VacancyFieldLabel.HiringProcess}")
               - salary (from text after "${VacancyFieldLabel.Salary}", dict of salary or wage for job done as range of numbers from 0 to positive infinity (as dict of max and min) and currency and taxes (net or gross), note that "до вычета" is equal to gross and "чистыми" is equal to net)
               - salary_negotiable (set true if find "по договоренности" or "по результатам собеседования" instead of salary numbers)
               - type_of_employment (from text after "${VacancyFieldLabel.FormatOfWork}", one of the following - fulltime or parttime or contract or internship)
