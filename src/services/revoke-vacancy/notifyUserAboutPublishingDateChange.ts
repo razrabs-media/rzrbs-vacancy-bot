@@ -1,8 +1,10 @@
 import bot from "../../launchBot";
 import VacancyModel from "../../schemas/vacancy";
 import { getVacancyWillBePublishedText } from "../../utils/getVacancyWillBePublishedText";
-import { countNextAvailableTimeslotToPublish } from "../publish-queue";
-import { getPublishQueueItems } from "../publish-queue/getPublishQueueItems";
+import {
+  countNextAvailableTimeslotToPublish,
+  getPublishQueueItems,
+} from "../publish-queue";
 
 export const notifyUsersAboutPublishingDateChange = async () => {
   const publishQueueItems = await getPublishQueueItems();
@@ -18,17 +20,26 @@ export const notifyUsersAboutPublishingDateChange = async () => {
       return;
     }
 
-    await bot.telegram.sendMessage(
-      vacancy.tg_chat_id,
-      // FIXME: store date in DB and notify only on change
-      getVacancyWillBePublishedText(
-        await countNextAvailableTimeslotToPublish({
-          publishQueueLength: publishQueueItemIndex + 1,
-        })
-      ),
-      {
-        reply_to_message_id: vacancy.tg_message_id,
-      }
-    );
+    const nextTimeslotToPublish = await countNextAvailableTimeslotToPublish({
+      publishQueueLength: publishQueueItemIndex + 1,
+    });
+
+    // sends message with new publish date only if it's different from previous expected_publish_date
+    if (
+      vacancy.expected_publish_date &&
+      new Date(vacancy.expected_publish_date).getTime() >
+        nextTimeslotToPublish.getTime()
+    ) {
+      await bot.telegram.sendMessage(
+        vacancy.tg_chat_id,
+        getVacancyWillBePublishedText(nextTimeslotToPublish),
+        {
+          reply_to_message_id: vacancy.tg_message_id,
+        }
+      );
+
+      await vacancy.set({ expected_publish_date: nextTimeslotToPublish });
+      await vacancy.save();
+    }
   });
 };

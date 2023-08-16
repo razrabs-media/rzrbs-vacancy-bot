@@ -2,6 +2,7 @@ import { SEPARATOR } from "../../constants/labels";
 import {
   publishQueueIsFullMessage,
   systemErrorMessage,
+  vacancyCancelledByErrorMessage,
   vacancyLimitExceededMessageText,
 } from "../../constants/messages";
 import PublishQueueItemModel from "../../schemas/publish_queue";
@@ -60,6 +61,8 @@ const removeFailedVacancyFromQueue = async (ctx) => {
     );
   } catch (err) {
     logError(err);
+
+    await ctx.sendMessage(systemErrorMessage);
   }
 };
 
@@ -129,12 +132,15 @@ export const onPublishVacancy = async (ctx) => {
       { parse_mode: "HTML" }
     );
 
+    await vacancy.set({ expected_publish_date: nextTimeslotToPublish });
+    await vacancy.save();
+
     await updateButtonsUnderMessage(ctx);
   } catch (err) {
     if (isPublishQueueError(err)) {
       await ctx.sendMessage(publishQueueIsFullMessage);
     } else {
-      await ctx.sendMessage(systemErrorMessage);
+      await ctx.sendMessage(vacancyCancelledByErrorMessage);
     }
 
     await removeFailedVacancyFromQueue(ctx);

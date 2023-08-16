@@ -2,6 +2,7 @@ import { Markup, Telegraf } from "telegraf";
 import { InlineKeyboardButton } from "telegraf/typings/core/types/typegram";
 
 import { ActionButtonLabels, BotActions } from "../../constants/actions";
+import { textWasNotUpdatedMessage } from "../../constants/messages";
 import { BotContext } from "../../types/context";
 import { TelegramMessageParams } from "../../types/telegram";
 import { IVacancyModel } from "../../types/vacancy";
@@ -57,11 +58,9 @@ export const updatePrivateVacancyMessage = async ({
   } catch (err) {
     if (isTextTheSameError(err)) {
       logError(`Vacancy wasn't updated, because message is the same`);
-      // FIXME: add text
+
       // @ts-expect-error: ctx.sendMessage was not specified by Telegraf.io
-      await ctx.sendMessage(
-        "Сообщение не было обновлено, так как текст не изменен"
-      );
+      await ctx.sendMessage(textWasNotUpdatedMessage);
     }
     throw err;
   }

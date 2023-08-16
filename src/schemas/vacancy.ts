@@ -80,6 +80,7 @@ export const VacancyModel = db.define<IVacancyModel>(
     tg_parsed_entities: DataTypes.STRING(2000),
     published_tg_message_id: DataTypes.ARRAY(DataTypes.STRING),
     published_tg_chat_id: DataTypes.ARRAY(DataTypes.STRING),
+    expected_publish_date: DataTypes.DATE,
   },
   {
     timestamps: true,

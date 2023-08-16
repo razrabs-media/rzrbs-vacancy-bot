@@ -1,3 +1,7 @@
+import {
+  systemErrorMessage,
+  vacancyCancelledMessage,
+} from "../../constants/messages";
 import Vacancy from "../../schemas/vacancy";
 import { handleLogging } from "../logger";
 
@@ -37,8 +41,10 @@ export const onVacancyCancel = async (ctx) => {
     // removes buttons
     await ctx.editMessageReplyMarkup(undefined);
     await ctx.deleteMessage();
+
+    await ctx.sendMessage(vacancyCancelledMessage);
   } catch (err) {
     logError(err);
-    // FIXME: feedback?
+    await ctx.sendMessage(systemErrorMessage);
   }
 };

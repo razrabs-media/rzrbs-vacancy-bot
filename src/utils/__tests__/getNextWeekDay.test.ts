@@ -23,6 +23,6 @@ describe("getNextWeekDay", () => {
       error = err;
     }
     expect(result).toBeUndefined();
-    expect(error!.message).toBe("week day is unknown - unknown_week_day");
+    expect(error.message).toBe("week day is unknown - unknown_week_day");
   });
 });

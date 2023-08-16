@@ -113,3 +113,12 @@ export const publishQueueIsFullMessage =
 
 export const editingFailedMessage =
   "Не удалось отредактировать вакансию, попробуйте еще раз или свяжитесь с администратором";
+
+export const vacancyCancelledMessage =
+  "Публикация отменена. Для создания новой публикации отправь мне свежую вакансию";
+
+export const vacancyCancelledByErrorMessage =
+  "Что-то пошло не так. Публикация была отменена. Пожалуйста, свяжись с администратором";
+
+export const textWasNotUpdatedMessage =
+  "Сообщение не было обновлено, так как текст не изменен";

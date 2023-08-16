@@ -5,9 +5,9 @@ describe("getVacancyWillBePublishedText", () => {
     const mockDate = new Date(1466424490000);
     const result = getVacancyWillBePublishedText(mockDate);
     expect(
-      // unix system result
+      // macos system result
       result === "Вакансия будет опубликована: 20 июня 2016 г. в 15:08" ||
-        // github ci result
+        // github ci result (ubuntu-latest)
         result === "Вакансия будет опубликована: 20 июня 2016 г., 15:08"
     ).toBe(true);
   });

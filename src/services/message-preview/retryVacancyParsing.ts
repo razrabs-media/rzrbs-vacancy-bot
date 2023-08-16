@@ -3,6 +3,7 @@ import {
   parsedVacancyToReviewMessage,
   systemErrorMessage,
   textProcessingMessage,
+  textWasNotUpdatedMessage,
 } from "../../constants/messages";
 import { filterSupportedTelegramEntities } from "../../utils/filterSupportedTelegramEntities";
 import { isRequiredVacancyFieldsFilled } from "../../utils/isRequiredVacancyFieldsFilled";
@@ -107,10 +108,7 @@ export const onRetryParsing = async (ctx) => {
     logError(err);
 
     if (isTextTheSameError(err)) {
-      // FIXME: add text
-      await ctx.sendMessage(
-        "Сообщение не было обновлено, так как текст не изменен"
-      );
+      await ctx.sendMessage(textWasNotUpdatedMessage);
     } else {
       await ctx.sendMessage(systemErrorMessage);
     }
