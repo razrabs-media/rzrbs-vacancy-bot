@@ -17,8 +17,6 @@ export const VacancyModel = db.define<IVacancyModel>(
       type: DataTypes.STRING(2000),
       validate: { notEmpty: true, len: [0, 2000] },
     },
-    published_tg_message_id: DataTypes.ARRAY(DataTypes.STRING),
-    published_tg_chat_id: DataTypes.ARRAY(DataTypes.STRING),
     publishedAt: DataTypes.DATE,
     published: {
       type: DataTypes.BOOLEAN,
@@ -40,8 +38,6 @@ export const VacancyModel = db.define<IVacancyModel>(
       defaultValue: false,
       validate: { notEmpty: true },
     },
-    tg_message_id: { type: DataTypes.INTEGER, validate: { notEmpty: true } },
-    tg_chat_id: { type: DataTypes.INTEGER, validate: { notEmpty: true } },
     hiring_process: DataTypes.STRING(500),
     location: DataTypes.STRING,
     contact_info: {
@@ -69,20 +65,22 @@ export const VacancyModel = db.define<IVacancyModel>(
     },
     // in case we want to explain it more - like "hybrid, 2 days a week work from office"
     format_of_work_description: DataTypes.STRING,
-    work_experience: {
-      type: DataTypes.STRING(500),
-      allowNull: false,
-      validate: { notEmpty: true },
-    },
 
     company_name: { type: DataTypes.STRING, allowNull: false },
     company_description: DataTypes.STRING,
 
+    /* Telegram fields */
     author_username: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: { notEmpty: true },
     },
+    tg_message_id: { type: DataTypes.INTEGER, validate: { notEmpty: true } },
+    tg_chat_id: { type: DataTypes.INTEGER, validate: { notEmpty: true } },
+    tg_parsed_entities: DataTypes.STRING(2000),
+    published_tg_message_id: DataTypes.ARRAY(DataTypes.STRING),
+    published_tg_chat_id: DataTypes.ARRAY(DataTypes.STRING),
+    expected_publish_date: DataTypes.DATE,
   },
   {
     timestamps: true,

@@ -1,7 +1,12 @@
-import PublishQueueItemModel from "../../../schemas/publish_queue";
-import logger from "../../logger";
+import PublishQueueItemModel from "../../schemas/publish_queue";
+import { handleLogging } from "../logger";
 
 export const getPublishQueueLength = async (): Promise<number> => {
+  const { logInfo, logError } = handleLogging(
+    "getPublishQueueLength",
+    undefined,
+    "Failed to fetch publish queue items"
+  );
   try {
     const { count: publishQueueItemsAmount } =
       await PublishQueueItemModel.findAndCountAll({
@@ -12,19 +17,13 @@ export const getPublishQueueLength = async (): Promise<number> => {
       });
 
     if (!publishQueueItemsAmount) {
-      logger.info(`Publish queue is empty`);
+      logInfo(`Publish queue is empty`);
       return 0;
     }
-    logger.info(
-      `Publish queue - ${publishQueueItemsAmount} vacancies are waiting to be published`
-    );
+    logInfo(`${publishQueueItemsAmount} vacancies are waiting to be published`);
     return publishQueueItemsAmount;
   } catch (err) {
-    logger.error(
-      `Failed to fetch publish queue items - ${
-        (err as Error).message || JSON.stringify(err)
-      }`
-    );
+    logError(err);
     return 0;
   }
 };

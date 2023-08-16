@@ -10,6 +10,7 @@ describe("utils/config", () => {
       process.env.MIN_PUBLISH_INTERVAL = 10;
       process.env.PUBLISH_INTERVAL = 100;
       process.env.USER_MONTH_VACANCY_LIMIT = 10;
+      process.env.COMPANY_MONTH_VACANCY_LIMIT = 1000;
       process.env.DAILY_VACANCY_LIMIT = 10;
       process.env.PUBLISH_CONFIG =
         '{ "mon": [10,18], "tue": [10,18], "wed": [10,18], "thu": [10,18], "fri": [10,18], "sat": [17, 18] }';
@@ -35,6 +36,7 @@ describe("utils/config", () => {
           minPublishInterval: 10,
           publishInterval: 100,
           userMonthVacancyLimit: 10,
+          companyMonthVacancyLimit: 1000,
           schedule: {
             [WeekDay.Monday]: [10, 18],
             [WeekDay.Tuesday]: [10, 18],
@@ -59,6 +61,7 @@ describe("utils/config", () => {
       delete process.env.MIN_PUBLISH_INTERVAL;
       delete process.env.PUBLISH_INTERVAL;
       delete process.env.USER_MONTH_VACANCY_LIMIT;
+      delete process.env.COMPANY_MONTH_VACANCY_LIMIT;
       delete process.env.DAILY_VACANCY_LIMIT;
       delete process.env.PUBLISH_CONFIG;
       delete process.env.DB_SSL_ENABLED;
@@ -81,6 +84,7 @@ describe("utils/config", () => {
           minPublishInterval: 2,
           publishInterval: 5,
           userMonthVacancyLimit: 1,
+          companyMonthVacancyLimit: 10,
           schedule: {},
         },
       });

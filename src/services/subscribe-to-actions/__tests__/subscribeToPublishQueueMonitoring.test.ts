@@ -1,11 +1,22 @@
 import config from "../../../utils/config";
+import * as GetRoundDateModule from "../../../utils/getRoundDate";
 import * as GetCurrentHoursModule from "../../../utils/time";
 import * as WaitModule from "../../../utils/wait";
-import logger from "../../logger";
-import * as MonitorPublishQueueByTimerModule from "../../publish-vacancy/monitorPublishQueueByTimer";
+import * as LoggerModule from "../../logger";
+import * as MonitorPublishQueueByTimerModule from "../../publish-queue/monitorPublishQueueByTimer";
 import { subscribeToPublishQueueMonitoring } from "../subscribeToPublishQueueMonitoring";
 
-jest.mock("../../logger");
+const loggerMock = jest.fn();
+jest.spyOn(LoggerModule, "handleLogging").mockReturnValue({
+  logInfo: loggerMock,
+  logError: loggerMock,
+  logWarn: loggerMock,
+});
+
+// 20/06/2016 14:08:10
+const mockDateMs = 1466424490000;
+// 20/06/2016 15:00:00
+const mockNextRoundHourMs = 1466427600000;
 
 const waitSpy = jest.spyOn(WaitModule, "wait").mockResolvedValue();
 const monitorPublishQueueByTimerSpy = jest.spyOn(
@@ -16,6 +27,9 @@ const monitorPublishQueueByTimerSpy = jest.spyOn(
 const getCurrentMinutesSpy = jest
   .spyOn(GetCurrentHoursModule, "getCurrentMinutes")
   .mockReturnValue(0);
+jest
+  .spyOn(GetRoundDateModule, "getRoundDate")
+  .mockReturnValue(new Date(mockNextRoundHourMs));
 
 const setIntervalSpy = jest
   .spyOn(global, "setInterval")
@@ -44,14 +58,15 @@ describe("subscribeToPublishQueueMonitoring", () => {
   it("should wait for next round hour for initial execution and then run publish monitoring", async () => {
     config.publishConfig.publishInterval = 2;
     getCurrentMinutesSpy.mockReturnValueOnce(10);
+    jest.spyOn(Date, "now").mockReturnValue(mockDateMs);
 
     await subscribeToPublishQueueMonitoring();
 
-    expect(logger.info).toHaveBeenCalledWith(
+    expect(loggerMock).toHaveBeenCalledWith(
       "Waiting 50mins before starting to monitor publish queue"
     );
-    expect(waitSpy).toHaveBeenCalledWith(50 * 60 * 1000);
-    expect(logger.info).toHaveBeenCalledWith(
+    expect(waitSpy).toHaveBeenCalledWith(mockNextRoundHourMs - mockDateMs);
+    expect(loggerMock).toHaveBeenCalledWith(
       "Subscribed to check publish queue by timer"
     );
     expect(monitorPublishQueueByTimerSpy).toHaveBeenCalledWith({
@@ -68,7 +83,7 @@ describe("subscribeToPublishQueueMonitoring", () => {
 
     await subscribeToPublishQueueMonitoring();
 
-    expect(logger.info).toHaveBeenCalledWith(
+    expect(loggerMock).toHaveBeenCalledWith(
       "Subscribed to check publish queue by timer"
     );
     expect(waitSpy).toHaveBeenCalledTimes(0);

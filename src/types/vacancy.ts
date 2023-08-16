@@ -19,8 +19,10 @@ export type TVacancyAttributes = {
   author_username: string;
   tg_message_id: number;
   tg_chat_id: number;
+  tg_parsed_entities?: string;
   published_tg_message_id?: string[];
   published_tg_chat_id?: string[];
+  expected_publish_date?: Date;
   company_name: string;
   company_description?: string;
   hiring_process?: string;
@@ -34,7 +36,6 @@ export type TVacancyAttributes = {
   format_of_work_title?: FormatOfWork;
   format_of_work_description?: string;
 
-  work_experience?: string;
   type_of_employment: EmploymentType;
   location?: string;
   contact_info: string;

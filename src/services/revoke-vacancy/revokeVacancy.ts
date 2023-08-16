@@ -1,9 +1,15 @@
 import PublishQueueItemModel from "../../schemas/publish_queue";
 import VacancyModel from "../../schemas/vacancy";
-import logger from "../logger";
+import { handleLogging } from "../logger";
+import { notifyUsersAboutPublishingDateChange } from "./notifyUserAboutPublishingDateChange";
 
 export const onVacancyRevoke = async (ctx) => {
   const { message_id, text, chat } = ctx?.update?.callback_query?.message || {};
+  const { logInfo, logError } = handleLogging(
+    "onVacancyRevoke",
+    { fromUsername: chat?.username, chatId: chat?.id, messageId: message_id },
+    "Failed to revoke vacancy"
+  );
 
   try {
     if (!message_id || !text || !chat?.id || !chat?.username) {
@@ -36,21 +42,19 @@ export const onVacancyRevoke = async (ctx) => {
       removed: true,
     });
     await vacancyInQueue.save();
-    logger.info(`Revoke: vacancy ${vacancy.id} removed from publish queue`);
+    logInfo(`vacancy ${vacancy.id} removed from publish queue`);
 
     vacancy.set({
       revoked: true,
       removed: true,
     });
     await vacancy.save();
-    logger.info(`Revoke: vacancy ${vacancy.id} marked as revoked`);
+    logInfo(`vacancy ${vacancy.id} marked as revoked`);
 
     await ctx.editMessageText(`[ОТОЗВАНО]\n${text}`, undefined);
+
+    await notifyUsersAboutPublishingDateChange();
   } catch (err) {
-    logger.error(
-      `Revoke: Failed to revoke vacancy ${chat?.username}::${
-        chat?.id
-      }::${message_id} - ${(err as Error)?.message || JSON.stringify(err)}`
-    );
+    logError(err);
   }
 };

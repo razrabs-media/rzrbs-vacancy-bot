@@ -1,5 +1,5 @@
-import VacancyModel from "../../../schemas/vacancy";
-import config from "../../../utils/config";
+import VacancyModel from "../schemas/vacancy";
+import config from "./config";
 
 export const isVacancyPublishingAllowedToday = async () => {
   const startOfADay = new Date().setHours(0);

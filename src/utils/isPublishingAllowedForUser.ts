@@ -1,15 +1,16 @@
-import VacancyModel from "../../../schemas/vacancy";
-import config from "../../../utils/config";
+import VacancyModel from "../schemas/vacancy";
+import config from "./config";
+import { getRoundDate } from "./getRoundDate";
 
 export const isPublishingAllowedForUser = async (
-  telegramUsername?: string
+  telegramUsername: string
 ): Promise<boolean> => {
   if (!telegramUsername) {
     throw Error(`isPublishingAllowedForUser: telegramUsername is required`);
   }
 
   const today = new Date();
-  const dayOneMonthAgo = new Date(today.setMonth(today.getMonth() - 1));
+  const firstDayOfMonth = getRoundDate({ day: 1 });
 
   const { count: vacanciesPublishedByUserAmount } =
     await VacancyModel.findAndCountAll({
@@ -20,9 +21,9 @@ export const isPublishingAllowedForUser = async (
         author_username: telegramUsername,
         publishedAt: {
           // greater than
-          $gt: dayOneMonthAgo,
+          $gt: firstDayOfMonth,
           // less than
-          $lt: new Date(),
+          $lt: today,
         },
       },
       order: [["publishedAt", "ASC"]],

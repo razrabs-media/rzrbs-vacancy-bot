@@ -1,13 +1,8 @@
-import { WeekDay } from "../../../../constants/common";
-import config, { IConfig } from "../../../../utils/config";
-import { getTodayWeekDay } from "../../../../utils/getTodayWeekDay";
-import {
-  countPublishIntervalForVacanciesPool,
-  getTwoWeeksDaysArray,
-} from "../countPublishIntervalForVacanciesPool";
+import { WeekDay } from "../../../constants/common";
+import config, { IConfig } from "../../../utils/config";
+import { countPublishIntervalForVacanciesPool } from "../countPublishIntervalForVacanciesPool";
 import { getPublishQueueLength } from "../getPublishQueueLength";
 
-jest.mock("../../../../utils/getTodayWeekDay");
 jest.mock("../getPublishQueueLength");
 
 describe("countPublishIntervalForVacanciesPool", () => {
@@ -58,27 +53,5 @@ describe("countPublishIntervalForVacanciesPool", () => {
     config.publishConfig.minPublishInterval = 10;
 
     expect(await countPublishIntervalForVacanciesPool()).toBe(10);
-  });
-
-  describe("util/getTwoWeeksDaysArray", () => {
-    it("should return array with 14 week days name including today - %s", () => {
-      (getTodayWeekDay as jest.Mock).mockReturnValueOnce(WeekDay.Saturday);
-      expect(getTwoWeeksDaysArray()).toStrictEqual([
-        WeekDay.Saturday,
-        WeekDay.Sunday,
-        WeekDay.Monday,
-        WeekDay.Tuesday,
-        WeekDay.Wednesday,
-        WeekDay.Thursday,
-        WeekDay.Friday,
-        WeekDay.Saturday,
-        WeekDay.Sunday,
-        WeekDay.Monday,
-        WeekDay.Tuesday,
-        WeekDay.Wednesday,
-        WeekDay.Thursday,
-        WeekDay.Friday,
-      ]);
-    });
   });
 });

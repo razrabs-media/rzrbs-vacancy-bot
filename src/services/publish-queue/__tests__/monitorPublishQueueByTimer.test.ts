@@ -2,15 +2,20 @@ import { WeekDay } from "../../../constants/common";
 import config, { IConfig } from "../../../utils/config";
 import * as GetTodayWeekDayModule from "../../../utils/getTodayWeekDay";
 import * as GetCurrentHoursModule from "../../../utils/time";
-import logger from "../../logger";
+import * as LoggerModule from "../../logger";
 import { monitorPublishQueueByTimer } from "../monitorPublishQueueByTimer";
 import { publishNextVacancyFromQueue } from "../publishNextVacancyFromQueue";
 
-jest.mock("../../logger");
+const loggerMock = jest.fn();
+jest.spyOn(LoggerModule, "handleLogging").mockReturnValue({
+  logInfo: loggerMock,
+  logError: loggerMock,
+  logWarn: loggerMock,
+});
 jest.mock("../publishNextVacancyFromQueue", () => ({
   publishNextVacancyFromQueue: jest.fn().mockResolvedValue(true),
 }));
-jest.mock("../utils/countPublishIntervalForVacanciesPool", () => ({
+jest.mock("../../publish-queue/countPublishIntervalForVacanciesPool", () => ({
   countPublishIntervalForVacanciesPool: jest.fn().mockResolvedValue(2),
 }));
 
@@ -39,9 +44,9 @@ describe("monitorPublishQueueByTimer", () => {
 
     await monitorPublishQueueByTimer();
 
-    expect(logger.info).toHaveBeenCalledWith("Publish Queue: new day started");
-    expect(logger.info).toHaveBeenCalledWith(
-      "Publish Queue: Today is a day off, analyzis finished for today"
+    expect(loggerMock).toHaveBeenCalledWith("new day started");
+    expect(loggerMock).toHaveBeenCalledWith(
+      "Today is a day off, analyzis finished for today"
     );
 
     expect(publishNextVacancyFromQueue).toHaveBeenCalledTimes(0);
@@ -53,7 +58,7 @@ describe("monitorPublishQueueByTimer", () => {
 
     await monitorPublishQueueByTimer();
 
-    expect(logger.info).toHaveBeenCalledWith(
+    expect(loggerMock).toHaveBeenCalledWith(
       "Vacancies will be published with 2 hours interval"
     );
 
@@ -72,8 +77,8 @@ describe("monitorPublishQueueByTimer", () => {
 
       await monitorPublishQueueByTimer({ initialExecution: true });
 
-      expect(logger.info).toHaveBeenCalledWith(
-        "Publish Queue: analysis wasnt't started with initial execution of monitoring, because now is outside of working hours"
+      expect(loggerMock).toHaveBeenCalledWith(
+        "analysis wasnt't started with initial execution of monitoring, because now is outside of working hours"
       );
 
       expect(publishNextVacancyFromQueue).toHaveBeenCalledTimes(0);
@@ -85,8 +90,8 @@ describe("monitorPublishQueueByTimer", () => {
 
       await monitorPublishQueueByTimer({ initialExecution: true });
 
-      expect(logger.info).toHaveBeenCalledWith(
-        "Publish Queue: analysis wasnt't started with initial execution of monitoring, because now is outside of working hours"
+      expect(loggerMock).toHaveBeenCalledWith(
+        "analysis wasnt't started with initial execution of monitoring, because now is outside of working hours"
       );
 
       expect(publishNextVacancyFromQueue).toHaveBeenCalledTimes(0);
@@ -99,8 +104,8 @@ describe("monitorPublishQueueByTimer", () => {
 
       await monitorPublishQueueByTimer({ initialExecution: true });
 
-      expect(logger.info).toHaveBeenCalledWith(
-        "Publish Queue: analysis wasnt't started with initial execution of monitoring, because now is outside of working hours"
+      expect(loggerMock).toHaveBeenCalledWith(
+        "analysis wasnt't started with initial execution of monitoring, because now is outside of working hours"
       );
 
       expect(publishNextVacancyFromQueue).toHaveBeenCalledTimes(0);

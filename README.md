@@ -21,7 +21,8 @@
 
     MIN_PUBLISH_INTERVAL=<number of hours> # the smallest interval between vacancy publishing, by default 2
     PUBLISH_INTERVAL=<number of hours> # interval between vacancy publishing, by default 5
-    USER_MONTH_VACANCY_LIMIT=<number> # number of vacancies one user allowed to publish in one month, by default 1
+    USER_MONTH_VACANCY_LIMIT=<number> # number of vacancies one user is allowed to publish in one month, by default 1
+    COMPANY_MONTH_VACANCY_LIMIT=<number> # number of vacancies one company is allowed to publish in one month, by default 10
     DAILY_VACANCY_LIMIT=<number> # number of vacancies which can be published in a day, by default 2
     PUBLISH_CONFIG='{ "mon": [10,18], "tue": [10,18], "wed": [10,18], "thu": [10,18], "fri": [10,18] }' # daily publish config in format JSON<{ "week day": [from hours, to hours] }>
 ```

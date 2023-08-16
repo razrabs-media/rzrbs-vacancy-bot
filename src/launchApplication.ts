@@ -5,6 +5,7 @@ import bot from "./launchBot";
 import PublishQueueItemModel from "./schemas/publish_queue";
 import VacancyModel from "./schemas/vacancy";
 import { BotService, SubscribeToActionsService, logger } from "./services";
+import { Environment } from "./types/common";
 import config from "./utils/config";
 
 if (!config.aiApiKey || !config.aiOrganizationId) {
@@ -15,8 +16,8 @@ if (!config.botConsultantUsername) {
   logger.warn("Variable BOT_CONSULTANT_USERNAME is missing");
 }
 
-VacancyModel.sync();
-PublishQueueItemModel.sync();
+VacancyModel.sync({ alter: config.environment !== Environment.Prod });
+PublishQueueItemModel.sync({ alter: config.environment !== Environment.Prod });
 
 // catches any bot errors
 bot.catch(BotService.handleErrors);

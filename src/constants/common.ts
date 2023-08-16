@@ -1,3 +1,5 @@
+import { MessageEntityType } from "./messages";
+
 export enum WeekDay {
   Monday = "mon",
   Tuesday = "tue",
@@ -24,3 +26,5 @@ export const WEEK: WeekDay[] = [
   WeekDay.Saturday,
   WeekDay.Sunday,
 ];
+
+export const SUPPORTED_MSG_ENTITIES = [MessageEntityType.TextLink];

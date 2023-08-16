@@ -2,10 +2,13 @@ import { Markup, Telegraf } from "telegraf";
 import { InlineKeyboardButton } from "telegraf/typings/core/types/typegram";
 
 import { ActionButtonLabels, BotActions } from "../../constants/actions";
+import { textWasNotUpdatedMessage } from "../../constants/messages";
 import { BotContext } from "../../types/context";
+import { TelegramMessageParams } from "../../types/telegram";
 import { IVacancyModel } from "../../types/vacancy";
 import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
-import logger from "../logger";
+import { isTextTheSameError } from "../../utils/isTextTheSameError";
+import { handleLogging } from "../logger";
 import { getVacancyEditButton } from "./getVacancyEditButton";
 
 export const updatePrivateVacancyMessage = async ({
@@ -16,11 +19,14 @@ export const updatePrivateVacancyMessage = async ({
   vacancy,
 }: {
   ctx: Telegraf<BotContext>;
-  chatId: number;
-  messageId: number;
-  fromUsername: string;
   vacancy: IVacancyModel;
-}) => {
+} & TelegramMessageParams) => {
+  const { logInfo, logError } = handleLogging("updatePrivateVacancyMessage", {
+    fromUsername,
+    chatId,
+    messageId,
+  });
+
   try {
     const updatedInlineMarkup = Markup.inlineKeyboard(
       [
@@ -41,20 +47,20 @@ export const updatePrivateVacancyMessage = async ({
       chatId,
       messageId,
       undefined,
-      buildMessageFromVacancy(vacancy),
+      buildMessageFromVacancy(
+        vacancy,
+        JSON.parse(vacancy.tg_parsed_entities || "{}")
+      ),
       updatedInlineMarkup
     );
 
-    logger.info(`Vacancy message in private chat with bot updated`);
+    logInfo(`Vacancy message in private chat with bot updated`);
   } catch (err) {
-    const { message } = err as Error;
+    if (isTextTheSameError(err)) {
+      logError(`Vacancy wasn't updated, because message is the same`);
 
-    if (
-      message.includes(
-        "specified new message content and reply markup are exactly the same as a current content and reply markup of the message"
-      )
-    ) {
-      logger.error(`Vacancy wasn't updated, because message is the same`);
+      // @ts-expect-error: ctx.sendMessage was not specified by Telegraf.io
+      await ctx.sendMessage(textWasNotUpdatedMessage);
     }
     throw err;
   }

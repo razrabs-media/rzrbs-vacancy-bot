@@ -2,28 +2,34 @@ import { Markup } from "telegraf";
 import { InlineKeyboardMarkup } from "telegraf/typings/core/types/typegram";
 
 import { ActionButtonLabels, BotActions } from "../../constants/actions";
+import { Maybe } from "../../types/mixins";
+import { TelegramMessageParams } from "../../types/telegram";
 import { IVacancyParsed } from "../../types/vacancy";
 import { buildMessageFromVacancy } from "../../utils/buildMessageFromVacancy";
 import { IParsedMessageEntity } from "../../utils/parseMessageEntities";
-import logger from "../logger";
+import { handleLogging } from "../logger";
+
+interface ConstructPreviewMessageResult {
+  previewMessageText: string;
+  messageOptions: {
+    parse_mode: string;
+    reply_markup: Markup.Markup<InlineKeyboardMarkup>["reply_markup"];
+  };
+}
 
 export const constructPreviewMessage = (
-  ctx,
+  { chatId, messageId, fromUsername }: TelegramMessageParams,
   parsedVacancy: IVacancyParsed,
   parsedEntities: IParsedMessageEntity[]
-):
-  | {
-      previewMessageText: string;
-      messageOptions: {
-        parse_mode: string;
-        reply_markup: Markup.Markup<InlineKeyboardMarkup>["reply_markup"];
-      };
-    }
-  | undefined => {
-  const { message_id, chat, from } = ctx?.update?.message || {};
+): Maybe<ConstructPreviewMessageResult> => {
+  const { logInfo, logError } = handleLogging(
+    "constructPreviewMessage",
+    { fromUsername, chatId, messageId },
+    "Failed to create vacancy preview"
+  );
 
   try {
-    if (!message_id || !chat?.id || !from?.username) {
+    if (!messageId || !chatId || !fromUsername) {
       throw Error("cannot retrieve message_id, chat.id of from.username");
     }
 
@@ -38,13 +44,11 @@ export const constructPreviewMessage = (
       ),
       Markup.button.callback(
         ActionButtonLabels[BotActions.RetryParsing],
-        `${BotActions.RetryParsing}-${message_id}`
+        `${BotActions.RetryParsing}-${messageId}`
       ),
     ]);
 
-    logger.info(
-      `Successfully constructed vacancy preview message for - ${from.username}::${chat?.id}::${message_id}`
-    );
+    logInfo(`Successfully constructed vacancy preview message`);
 
     return {
       previewMessageText: buildMessageFromVacancy(
@@ -57,10 +61,6 @@ export const constructPreviewMessage = (
       },
     };
   } catch (err) {
-    logger.error(
-      `Failed to create vacancy from message ${from.username}::${
-        chat?.id
-      }::${message_id} - ${(err as Error).message || JSON.stringify(err)}`
-    );
+    logError(err);
   }
 };

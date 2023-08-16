@@ -1,12 +1,16 @@
 import { TimePeriod } from "../../constants/common";
 import config from "../../utils/config";
+import { getRoundDate } from "../../utils/getRoundDate";
 import { getTimePeriodInMilliseconds } from "../../utils/getTimePeriodInMilliseconds";
 import { setPublishQueueMonitoringInterval } from "../../utils/publishInterval";
-import { getCurrentMinutes } from "../../utils/time";
+import { getCurrentHours, getCurrentMinutes } from "../../utils/time";
 import { wait } from "../../utils/wait";
-import { PublishVacancyService, logger } from "../index";
+import { PublishQueueService } from "../index";
+import { handleLogging } from "../logger";
 
 export const subscribeToPublishQueueMonitoring = async () => {
+  const { logInfo } = handleLogging("Publish Queue");
+
   if (!config.publishConfig.publishInterval) {
     throw Error(
       "ERROR: Publish queue won't work until PUBLISH_INTERVAL is set"
@@ -16,25 +20,29 @@ export const subscribeToPublishQueueMonitoring = async () => {
   // corner case to wait for round hour to start publishing
   const currentMinutes = getCurrentMinutes();
   if (currentMinutes > 0) {
-    logger.info(
+    const currentHour = getCurrentHours();
+    const nearestRoundHourDate = getRoundDate({
+      hour: currentHour + 1,
+    }).getTime();
+    const millisecondsToWait = nearestRoundHourDate - Date.now();
+
+    logInfo(
       `Waiting ${
         60 - currentMinutes
       }mins before starting to monitor publish queue`
     );
 
-    await wait(
-      getTimePeriodInMilliseconds(60 - currentMinutes, TimePeriod.Minutes)
-    );
+    await wait(millisecondsToWait);
   }
 
-  logger.info(`Subscribed to check publish queue by timer`);
+  logInfo(`Subscribed to check publish queue by timer`);
 
   // initial execution
-  PublishVacancyService.monitorPublishQueueByTimer({ initialExecution: true });
+  PublishQueueService.monitorPublishQueueByTimer({ initialExecution: true });
 
   setPublishQueueMonitoringInterval(
     setInterval(
-      PublishVacancyService.monitorPublishQueueByTimer,
+      PublishQueueService.monitorPublishQueueByTimer,
       getTimePeriodInMilliseconds(1, TimePeriod.Hours)
     )
   );

@@ -3,23 +3,17 @@ import { InlineKeyboardButton } from "telegraf/typings/core/types/typegram";
 
 import { ActionButtonLabels, BotActions } from "../../constants/actions";
 import { Environment } from "../../types/common";
+import { TelegramMessageParams } from "../../types/telegram";
 import config from "../../utils/config";
 import logger from "../logger";
 import { getStructuredEditableVacancyText } from "../publish-vacancy/utils/getStructuredEditableVacancyText";
-
-interface GetVacancyEditButtonParams {
-  messageId: number;
-  chatId: number;
-  fromUsername: string;
-  text?: string;
-}
 
 export const getVacancyEditButton = async ({
   messageId,
   chatId,
   fromUsername,
   text,
-}: GetVacancyEditButtonParams): Promise<
+}: TelegramMessageParams): Promise<
   InlineKeyboardButton.SwitchInlineCurrentChatButton | undefined
 > => {
   const isButtonHidden = config.environment === Environment.Prod;
